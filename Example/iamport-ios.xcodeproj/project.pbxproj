@@ -41,12 +41,12 @@
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		61DAE207E0A74368D61D711E /* Pods-iamport-ios_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iamport-ios_Example.debug.xcconfig"; path = "Target Support Files/Pods-iamport-ios_Example/Pods-iamport-ios_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		B512228E67DB6516AA34A458 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		B512228E67DB6516AA34A458 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		C10002365B76A119E48656FD /* Pods_iamport_ios_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iamport_ios_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD11D7EB36FC0C2E69737271 /* Pods-iamport-ios_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iamport-ios_Example.release.xcconfig"; path = "Target Support Files/Pods-iamport-ios_Example/Pods-iamport-ios_Example.release.xcconfig"; sourceTree = "<group>"; };
-		E43CD40D3CAF1047B48244CB /* iamport-ios.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = "iamport-ios.podspec"; path = "../iamport-ios.podspec"; sourceTree = "<group>"; };
+		E43CD40D3CAF1047B48244CB /* iamport-ios.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = "iamport-ios.podspec"; path = "../iamport-ios.podspec"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		F3F67D6BB4583B3BE5CDA0C4 /* Pods-iamport-ios_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iamport-ios_Tests.release.xcconfig"; path = "Target Support Files/Pods-iamport-ios_Tests/Pods-iamport-ios_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		F7A18D80D66312537941CE29 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		F7A18D80D66312537941CE29 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,7 +156,6 @@
 				3825DDBB220985A13875F0E0 /* Pods-iamport-ios_Tests.debug.xcconfig */,
 				F3F67D6BB4583B3BE5CDA0C4 /* Pods-iamport-ios_Tests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -228,6 +227,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
