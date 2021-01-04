@@ -1,5 +1,5 @@
 import XCTest
-import iamport-ios
+//import iamport-ios
 
 class Tests: XCTestCase {
     
