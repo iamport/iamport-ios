@@ -3,10 +3,13 @@ use_frameworks!
 platform :ios, '9.0'
 
 
+def util_pods
+  pod 'Then'
+end
+
 def di_pods
   pod 'Swinject'
 end
-
 
 def network_pods
   # 대표적인 네트워크 라이브러리입니다.
@@ -31,9 +34,9 @@ target 'iamport-ios_Example' do
 
   use_frameworks!
 
+  util_pods
   network_pods
   di_pods
-
   rx_swift_pods
 
   target 'iamport-ios_Tests' do

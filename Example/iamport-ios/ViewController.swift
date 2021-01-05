@@ -7,12 +7,24 @@
 //
 
 import UIKit
+import WebKit
+import iamport_ios
 
-class ViewController: UIViewController {
+
+class ViewController: UIViewController, WKUIDelegate, WKScriptMessageHandler {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+
+        guard let webView = Iamport.sharedInstance.getWebView() else {
+            print("웹뷰가 없음")
+            return
+        }
+
+        view.addSubview(webView)
+        webView.frame = view.bounds
+
     }
 
     override func didReceiveMemoryWarning() {
@@ -20,5 +32,8 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+
+    }
 }
 
