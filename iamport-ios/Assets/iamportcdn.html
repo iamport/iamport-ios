@@ -9,18 +9,18 @@
         console.log("Wait cdn-iamport-sdk...");
         document.addEventListener('DOMContentLoaded', () => {
             console.log("Load finish cdn-iamport-sdk...");
+            window.webkit.messageHandlers.startRequestPay.postMessage({})
+        });
 
-            var userCode = IAMPORT.getUserCode()
-            var impRequest = IAMPORT.getRequestParams()
-
+        function requestPay(userCode, impRequest) {
             function callback(response) {
-               console.log(response)
-               IAMPORT.customCallback(JSON.stringify(response))
-             }
+                console.log(response)
+                window.webkit.messageHandlers.customCallback.postMessage(JSON.stringify(response))
+            }
 
             IMP.init(userCode);
             IMP.request_pay(JSON.parse(impRequest), callback);
-        });
+        }
     </script>
     <script defer type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
     <script defer type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.8.js"></script>
