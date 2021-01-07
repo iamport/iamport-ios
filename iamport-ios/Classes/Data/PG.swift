@@ -32,10 +32,13 @@ public enum PG: String {
 
     public func getPgSting(storeId: String? = nil) -> String {
         var id: String = CONST.EMPTY_STR
-        if ((storeId?.isEmpty) != nil) {
-            id = ".\(storeId)"
+        if let store = storeId {
+            if (store.count > 0) {
+                id = ".\(store)"
+            }
         }
-        return "\(self.rawValue)\(id)"
+
+        return "\(self)\(id)"
     }
 
 }
