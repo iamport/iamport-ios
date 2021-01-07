@@ -4,7 +4,7 @@
 
 import Foundation
 
-class Payment {
+struct Payment : Codable{
     let userCode: String
     let iamPortRequest: IamPortRequest
 

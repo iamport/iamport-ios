@@ -18,6 +18,7 @@
                 window.webkit.messageHandlers.customCallback.postMessage(JSON.stringify(response))
             }
 
+            window.webkit.messageHandlers.received.postMessage(userCode)
             IMP.init(userCode);
             IMP.request_pay(JSON.parse(impRequest), callback);
         }

@@ -40,7 +40,9 @@ public class IamportSdk {
 //            preventOverlapRun.launch { requestPayment(pay) }
 
             let wvController = WebViewController()
+            wvController.setPayment(payment) // TODO 이방식이 맞는지 생각해보자
             parentViewController.navigationController?.pushViewController(wvController, animated: true)
+
             print("check nvc :: \(parentViewController.navigationController)")
         }
     }

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public enum Currency {
+public enum Currency: String,Codable {
     case KRW
     case USD
     case EUR

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public enum PayMethod: String {
+public enum PayMethod: String, Codable {
     case card = "신용카드"
     case trans = "실시간계좌이체"
     case vbank = "가상계좌"

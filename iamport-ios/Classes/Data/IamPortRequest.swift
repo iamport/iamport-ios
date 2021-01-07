@@ -5,7 +5,7 @@
 import Foundation
 import Then
 
-public class IamPortRequest {
+public class IamPortRequest : Codable {
     let pg: String // 없음안됨
     public var pay_method: PayMethod = PayMethod.card // 명세상 필수인지 불명확함 default card
     public var escrow: Bool? = nil // default false
