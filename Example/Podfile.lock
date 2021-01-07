@@ -4,7 +4,17 @@ PODS:
     - Alamofire (~> 4.7)
   - AlamofireNetworkActivityIndicator (2.4.0):
     - Alamofire (~> 4.8)
-  - iamport-ios (0.1.0)
+  - iamport-ios (0.1.0):
+    - Alamofire
+    - AlamofireActivityLogger
+    - AlamofireNetworkActivityIndicator
+    - RxCocoa
+    - RxOptional
+    - RxRelay
+    - RxSwift
+    - RxViewController
+    - Swinject
+    - Then
   - RxBlocking (5.1.1):
     - RxSwift (~> 5)
   - RxCocoa (5.1.1):
@@ -62,7 +72,7 @@ SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
   AlamofireActivityLogger: 4dbb52cbd9a26590775df5d4d0284fa81f9b9b5b
   AlamofireNetworkActivityIndicator: 9acc3de3ca6645bf0efed462396b0df13dd3e7b8
-  iamport-ios: d121686c08d135949c6c3d20af9c1b13f5156815
+  iamport-ios: c36776fe31f93776038bca114d9cf4c4f25da6fd
   RxBlocking: 5f700a78cad61ce253ebd37c9a39b5ccc76477b4
   RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
   RxOptional: b1fcd60856807a564c0215c2184b8d33e7826dc2
@@ -73,6 +83,6 @@ SPEC CHECKSUMS:
   Swinject: ddf78b8486dd9b71a667b852cad919ab4484478e
   Then: acfe0be7e98221c6204e12f8161459606d5d822d
 
-PODFILE CHECKSUM: 2883f3a226ebd6bb92780be0a9cee2999bdf0a63
+PODFILE CHECKSUM: f0cea44339a0954a5be01df084868919f76fed3c
 
 COCOAPODS: 1.10.0
