@@ -31,7 +31,7 @@ class ViewController: UIViewController {
         let pg = PG.html5_inicis
         let payMethod = PayMethod.card
         let paymentName = "배달의 민족 주문~"
-        let merchantUid = "muid_ios_\(Date().timeIntervalSince)"
+        let merchantUid = "muid_ios_\(Int(Date().timeIntervalSince1970))"
         let amount = "1000" // 결제금액
         let buyer_name = "남궁안녕"
 
