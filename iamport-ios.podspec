@@ -39,4 +39,36 @@ TODO: Add long description of the pod here.
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
+   
+   def util_pods
+     pod 'Then'
+   end
+
+   def di_pods
+     pod 'Swinject'
+   end
+
+   def network_pods
+     # 대표적인 네트워크 라이브러리입니다.
+     pod 'Alamofire'
+     # Alamofire를 사용할 때 상단 상태 바에 통신중일때 기본 인디케이터가 나타나도록 합니다.
+     pod 'AlamofireNetworkActivityIndicator'
+     # Alamofire를 이용할 때 로그를 쉽게 볼 수 있습니다.
+     pod 'AlamofireActivityLogger'
+   end
+
+   # Pods for RxSwift+MVVM
+   def rx_swift_pods
+     pod 'RxSwift'
+     pod 'RxCocoa'
+     pod 'RxRelay'
+     pod 'RxOptional'
+     pod 'RxViewController'
+   end
+
+  di_pods
+  network_pods
+  util_pods
+  rx_swift_pods
+
 end
