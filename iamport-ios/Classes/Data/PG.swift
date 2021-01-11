@@ -4,7 +4,7 @@
 
 import Foundation
 
-public enum PG: String {
+public enum PG: String, CaseIterable {
     case chai = "차이 간편결제"
     case kcp = "NHN KCP"
     case html5_inicis = "이니시스웹표준"
@@ -37,8 +37,22 @@ public enum PG: String {
                 id = ".\(store)"
             }
         }
-
         return "\(self)\(id)"
     }
 
+    static func convertPG(pgString: String) -> PG? {
+        for value in self.allCases {
+            if(pgString == value.rawValue) {
+                return value
+            }
+        }
+
+        return nil
+    }
+
+//    static func getPGNames() -> Array<String> {
+//        values().map {
+//            "${it.korName} (${it.name})"
+//        }.toList()
+//    }
 }

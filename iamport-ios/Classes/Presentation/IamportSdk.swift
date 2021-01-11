@@ -4,14 +4,24 @@
 
 import Foundation
 import WebKit
+import RxBus
+import RxSwift
 
 public class IamportSdk {
 
     let viewModel = WebViewModel()
     let parentViewController: UIViewController
+    var paymentResultCallback: ((IamPortResponse?) -> Void)?
+    var disposeBag = DisposeBag()
 
     public init(_ parentViewController: UIViewController) {
         self.parentViewController = parentViewController
+    }
+
+    struct Events {
+        struct PaymentBus: BusEvent {
+            let payment: Payment
+        }
     }
 
     /**
@@ -22,10 +32,19 @@ public class IamportSdk {
 //        updatePolling(false)
 //        controlForegroundService(false)
 //        viewModel.clearData()
+        disposeBag = DisposeBag()
     }
 
     internal func initStart(payment: Payment, paymentResultCallback: ((IamPortResponse?) -> Void)?) {
+        self.paymentResultCallback = paymentResultCallback
         observeViewModel(payment) // 관찰할 LiveData
+    }
+
+
+    private func sdkFinish(_ iamportResponse: IamPortResponse?) {
+        print("iamportSdk 에서 종료입니다")
+        clearData()
+        paymentResultCallback?(iamportResponse)
     }
 
     private func observeViewModel(_ payment: Payment?) {
@@ -39,11 +58,16 @@ public class IamportSdk {
             // 결제 시작
 //            preventOverlapRun.launch { requestPayment(pay) }
 
-            let wvController = WebViewController()
-            wvController.setPayment(payment) // TODO 이방식이 맞는지 생각해보자
-            parentViewController.navigationController?.pushViewController(wvController, animated: true)
+            EventBus.shared.impResponseBus.subscribe { [weak self] iamportResponse in
+                self?.sdkFinish(iamportResponse)
+            }.disposed(by: disposeBag)
 
-            print("check nvc :: \(parentViewController.navigationController)")
+            EventBus.shared.paymentSubject.onNext(payment)
+
+            let wvController = WebViewController()
+            parentViewController.navigationController?.pushViewController(wvController, animated: false)
+
+            print("check navigationController :: \(parentViewController.navigationController)")
         }
     }
 

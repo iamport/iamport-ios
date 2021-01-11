@@ -3,6 +3,181 @@
 //
 
 import Foundation
+import RxSwift
+
+enum BusThread {
+    //- utility: 유저의 프로세스에 필요한 연산작업에 사용한다. 프로그래스바, I/O, Networking 등
+    //- background: 유저에게 직접적으로 필요하지 않은 작업들. logging 등
+
+    case main, background, utility, `default`
+
+    func toScheduler() -> SchedulerType {
+        switch self {
+        case .main:
+            return MainScheduler.instance
+        case .background:
+            return ConcurrentDispatchQueueScheduler(qos: .background)
+        case .utility:
+            return ConcurrentDispatchQueueScheduler(qos: .utility)
+        case .default:
+            return ConcurrentDispatchQueueScheduler(qos: .default)
+        }
+    }
+}
+
+extension ObservableType {
+
+    public func subscribeOnMain() -> Observable<Element> {
+        subscribeOn(BusThread.main.toScheduler())
+    }
+
+    public func subscribeOnBg() -> Observable<Element> {
+        subscribeOn(BusThread.background.toScheduler())
+    }
+
+    public func subscribeOnUtility() -> Observable<Element> {
+        subscribeOn(BusThread.utility.toScheduler())
+    }
+
+    public func observeOnMain() -> Observable<Element> {
+        observeOn(BusThread.main.toScheduler())
+    }
+
+    public func observeOnBg() -> Observable<Element> {
+        observeOn(BusThread.background.toScheduler())
+    }
+
+    public func observeOnUtility() -> Observable<Element> {
+        observeOn(BusThread.utility.toScheduler())
+    }
+
+    public func main() -> Observable<Element> {
+        subscribeOnMain().observeOnMain()
+    }
+
+    public func bgMain() -> Observable<Element> {
+        subscribeOnBg().observeOnMain()
+    }
+
+    public func asyncMain() -> Observable<Element> {
+        subscribeOnUtility().observeOnMain()
+    }
+
+}
+
+extension URL {
+    func queryParams() -> [String: Any] {
+        let queryItems = URLComponents(url: self, resolvingAgainstBaseURL: false)?.queryItems
+        let queryTuples: [(String, Any)] = queryItems?.compactMap {
+            guard let value = $0.value else {
+                return nil
+            }
+            return ($0.name, value)
+        } ?? []
+        return Dictionary(uniqueKeysWithValues: queryTuples)
+    }
+
+    func valueOf(_ queryParamaterName: String) -> String? {
+        guard let url = URLComponents(string: self.absoluteString) else {
+            return nil
+        }
+        return url.queryItems?.first(where: { $0.name == queryParamaterName })?.value
+    }
+}
+
+extension Dictionary {
+    func toJsonData() -> Data {
+        var jsonData: Data?
+        do {
+            jsonData = try JSONSerialization.data(withJSONObject: self, options: .init(rawValue: 0))
+        } catch {
+            print(error)
+        }
+        return jsonData!
+    }
+
+    func toJsonDataPrettyPrinted() -> Data {
+        var jsonData: Data?
+        do {
+            jsonData = try JSONSerialization.data(withJSONObject: self, options: JSONSerialization.WritingOptions.prettyPrinted)
+        } catch {
+            print(error)
+        }
+        return jsonData!
+    }
+
+    func toJsonString() -> String {
+        return toJsonData().toString()
+    }
+
+    func toPrettyPrintedJsonString() -> String {
+        return toJsonDataPrettyPrinted().toString()
+    }
+}
+
+extension Data {
+    func hexString() -> String {
+        return map {
+            String(format: "%02hhx", $0)
+        }.joined()
+    }
+
+    func toString() -> String {
+        return String(data: self, encoding: String.Encoding.utf8)!
+    }
+}
+
 
 class Utils {
+    // http://localhost/iamport?imp_uid=imp_040178854425&merchant_uid=muid_ios_1610349177&imp_success=false&error_msg=F0005%3A%EA%B2%B0%EC%A0%9C%EA%B0%80+%EC%A4%91%EB%8B%A8%EB%90%98%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4%28imp_040178854425%29.01+%7C+%EC%82%AC%EC%9A%A9%EC%9E%90%EA%B0%80+%EA%B2%B0%EC%A0%9C%EB%A5%BC+%EC%B7%A8%EC%86%8C+%ED%95%98%EC%98%80%EC%8A%B5%EB%8B%88%EB%8B%A4.
+    static public func getQueryStringToImpResponse(_ url: URL) -> IamPortResponse? {
+        print(url.queryParams().toJsonString())
+        let decoder = JSONDecoder()
+        let data = url.queryParams().toJsonData()
+        if let impStruct = try? decoder.decode(IamPortResponseStruct.self, from: data) {
+            return IamPortResponse.structToClass(impStruct)
+        }
+        return nil
+    }
+
+    static func getMarketUrl(url: String, scheme: String) -> String {
+        switch (scheme) {
+        case "kftc-bankpay": // 뱅크페이
+            return "https://itunes.apple.com/kr/app/id398456030";
+        case "ispmobile": // ISP/페이북
+            return "https://itunes.apple.com/kr/app/id369125087";
+        case "hdcardappcardansimclick": // 현대카드 앱카드
+            return "https://itunes.apple.com/kr/app/id702653088";
+        case "shinhan-sr-ansimclick": // 신한 앱카드
+            return "https://itunes.apple.com/app/id572462317";
+        case "kb-acp": // KB국민 앱카드
+            return "https://itunes.apple.com/kr/app/id695436326";
+        case "mpocket.online.ansimclick": // 삼성앱카드
+            return "https://itunes.apple.com/kr/app/id535125356";
+        case "lottesmartpay": // 롯데 모바일결제
+            return "https://itunes.apple.com/kr/app/id668497947";
+        case "lotteappcard": // 롯데 앱카드
+            return "https://itunes.apple.com/kr/app/id688047200";
+        case "cloudpay": // 하나1Q페이(앱카드)
+            return "https://itunes.apple.com/kr/app/id847268987";
+        case "citimobileapp": // 시티은행 앱카드
+            return "https://itunes.apple.com/kr/app/id1179759666";
+        case "payco": // 페이코
+            return "https://itunes.apple.com/kr/app/id924292102";
+        case "kakaotalk": // 카카오톡
+            return "https://itunes.apple.com/kr/app/id362057947";
+        case "lpayapp": // 롯데 L.pay
+            return "https://itunes.apple.com/kr/app/id1036098908";
+        case "wooripay": // 우리페이
+            return "https://itunes.apple.com/kr/app/id1201113419";
+        case "nhallonepayansimclick": // NH농협카드 올원페이(앱카드)
+            return "https://itunes.apple.com/kr/app/id1177889176";
+        case "hanawalletmembers": // 하나카드(하나멤버스 월렛)
+            return "https://itunes.apple.com/kr/app/id1038288833";
+        case "shinsegaeeasypayment": // 신세계 SSGPAY
+            return "https://itunes.apple.com/app/id666237916";
+        default:
+            return url;
+        }
+    }
 }

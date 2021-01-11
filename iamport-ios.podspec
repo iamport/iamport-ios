@@ -54,6 +54,7 @@ TODO: Add long description of the pod here.
     s.dependency 'AlamofireActivityLogger'
 
     # Pods for RxSwift+MVVM
+    s.dependency 'RxBus'
     s.dependency 'RxSwift'
     s.dependency 'RxCocoa'
     s.dependency 'RxRelay'

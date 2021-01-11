@@ -8,7 +8,7 @@ import WebKit
 // 머천트에서 직접 가져다가 쓰는 부분
 open class Iamport {
 
-    public static let sharedInstance = Iamport()
+    public static let shared = Iamport()
 
     var iamportSdk: IamportSdk? = nil
     private var impCallbackFunction: ((IamPortResponse?) -> Void)? = nil // 결제결과 callbck type#2 함수 호출
@@ -20,14 +20,13 @@ open class Iamport {
         iamportSdk = IamportSdk(parentVC)
     }
 
+
     public func payment(userCode: String, iamPortRequest: IamPortRequest, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
 //        preventOverlapRun?.launch {
 //            corePayment(userCode, iamPortRequest, approveCallback, paymentResultCallback)
 //        }
-
         corePayment(userCode: userCode, iamPortRequest: iamPortRequest, paymentResultCallback: paymentResultCallback)
     }
-
 
     func corePayment(
             userCode: String,

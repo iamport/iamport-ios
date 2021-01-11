@@ -10,25 +10,36 @@ import UIKit
 import WebKit
 import Then
 import iamport_ios
+import RxCocoa
+import RxSwift
+import RxViewController
 
 // 저는 머천트 앱 입니다.
-class ViewController: UIViewController {
+class ViewController: UIViewController, UIGestureRecognizerDelegate {
+
+    var disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-    }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        payment()
+        print("처음 접속 했어요")
+
+        // Do any additional setup after loading the view, typically from a nib.
+//        self.view.backgroundColor = UIColor.green
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
+
+        // 처음 보일때 하고 clear 버튼 눌렀을 때
+        paymentButton.rx.tap.bind { [weak self] in self?.payment() }
+                .disposed(by: disposeBag)
     }
 
     func payment() {
-        Iamport.sharedInstance.start(self)
+        print("payment")
+        Iamport.shared.start(self)
 
         let userCode = "imp96304110"
-        let pg = PG.html5_inicis
+//        let pg = PG.html5_inicis
+        let pg = PG.kcp
         let payMethod = PayMethod.card
         let paymentName = "배달의 민족 주문~"
         let merchantUid = "muid_ios_\(Int(Date().timeIntervalSince1970))"
@@ -39,13 +50,18 @@ class ViewController: UIViewController {
             $0.pay_method = payMethod
             $0.name = paymentName
             $0.buyer_name = buyer_name
+            $0.app_scheme = "iamport.ios.demo"
         }
 
         dump(request)
 
         // 웹뷰고 나발이고 여기선 파라미터 받아서 호출만 해야 함
-        Iamport.sharedInstance.payment(userCode: userCode, iamPortRequest: request) { iamPortResponse in
+        Iamport.shared.payment(userCode: userCode, iamPortRequest: request) { iamPortResponse in
             print("결과 왔습니다~~")
+            dump(iamPortResponse)
+            let resultVC = PaymentResultViewController()
+            resultVC.impResponseSubject.onNext(iamPortResponse)
+            self.navigationController?.pushViewController(resultVC, animated: true)
         }
     }
 

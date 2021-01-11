@@ -5,7 +5,7 @@
 import Foundation
 import Then
 
-public class IamPortRequest : Codable {
+public class IamPortRequest: Codable {
     let pg: String // 없음안됨
     public var pay_method: PayMethod = PayMethod.card // 명세상 필수인지 불명확함 default card
     public var escrow: Bool? = nil // default false
@@ -37,4 +37,18 @@ public class IamPortRequest : Codable {
     }
 }
 
-extension IamPortRequest: Then {}
+extension IamPortRequest {
+
+    /**
+     * string pg 으로 enum PG 가져옴
+     */
+    var pgEnum: PG? {
+        get {
+            PG.convertPG(pgString: pg)
+        }
+    }
+
+}
+
+extension IamPortRequest: Then {
+}

@@ -8,6 +8,7 @@ PODS:
     - Alamofire
     - AlamofireActivityLogger
     - AlamofireNetworkActivityIndicator
+    - RxBus
     - RxCocoa
     - RxOptional
     - RxRelay
@@ -17,6 +18,8 @@ PODS:
     - Then
   - RxBlocking (5.1.1):
     - RxSwift (~> 5)
+  - RxBus (1.3.1):
+    - RxSwift (~> 5.0)
   - RxCocoa (5.1.1):
     - RxRelay (~> 5)
     - RxSwift (~> 5)
@@ -55,6 +58,7 @@ SPEC REPOS:
     - AlamofireActivityLogger
     - AlamofireNetworkActivityIndicator
     - RxBlocking
+    - RxBus
     - RxCocoa
     - RxOptional
     - RxRelay
@@ -72,8 +76,9 @@ SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
   AlamofireActivityLogger: 4dbb52cbd9a26590775df5d4d0284fa81f9b9b5b
   AlamofireNetworkActivityIndicator: 9acc3de3ca6645bf0efed462396b0df13dd3e7b8
-  iamport-ios: f2f8854b1b420a8dbdcc094fe6532ece72f0efc5
+  iamport-ios: 893d0dbd8c96535980b5a19c2efe64d2ba152023
   RxBlocking: 5f700a78cad61ce253ebd37c9a39b5ccc76477b4
+  RxBus: ee5cb413fe4e0853712144c9ed20705d9e8e03cd
   RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
   RxOptional: b1fcd60856807a564c0215c2184b8d33e7826dc2
   RxRelay: d77f7d771495f43c556cbc43eebd1bb54d01e8e9
