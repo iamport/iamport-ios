@@ -63,14 +63,15 @@ extension IamPortResponseStruct: Decodable {
     public init(from decoder: Decoder) throws {
 
         let values = try decoder.container(keyedBy: CodingKeys.self)
-
-
         let decodeImp_success = try? values.decode(String.self, forKey: .imp_success)
+
         if let imp = decodeImp_success {
             guard let imp_successBool = Bool(imp) else {
                 fatalError("The imp_success is not an Bool")
             }
             imp_success = imp_successBool
+        }else {
+            imp_success = try? values.decode(Bool.self, forKey: .imp_success)
         }
 
         let decodeSuccess = try? values.decode(String.self, forKey: .success)
@@ -79,6 +80,8 @@ extension IamPortResponseStruct: Decodable {
                 fatalError("The success is not an Bool")
             }
             self.success = successBool
+        } else {
+            success = try? values.decode(Bool.self, forKey: .success)
         }
 
         imp_uid = try? values.decode(String.self, forKey: .imp_uid)

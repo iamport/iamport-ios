@@ -5,30 +5,80 @@
 import Foundation
 
 public enum PG: String, CaseIterable {
-    case chai = "차이 간편결제"
-    case kcp = "NHN KCP"
-    case html5_inicis = "이니시스웹표준"
-    case kcp_billing = "NHN KCP 정기결제"
-    case uplus = "LGU+"
-    case jtnet = "JTNet"
-    case kakaopay = "카카오페이"
-    case nice = "나이스페이"
-    case danal = "다날휴대폰소액결제"
-    case danal_tpay = "다날일반결제"
-    case kicc = "한국정보통신"
-    case paypal = "페이팔"
-    case mobilians = "모빌리언스 휴대폰소액결제"
-    case payco = "페이코"
-    case eximbay = "엑심베이"
-    case settle = "세틀뱅크"
-    case settle_firm = "세틀뱅크_펌"
-    case naverco = "네이버페이-주문형"
-    case naverpay = "네이버페이-결제형"
-    case smilepay = "스마일페이"
-    case payple = "페이플"
-    case alipay = "알리페이"
-    case bluewalnut = "bluewalnut"
+    case chai
+    case kcp
+    case html5_inicis
+    case kcp_billing
+    case uplus
+    case jtnet
+    case kakaopay
+    case nice
+    case danal
+    case danal_tpay
+    case kicc
+    case paypal
+    case mobilians
+    case payco
+    case eximbay
+    case settle
+    case settle_firm
+    case naverco
+    case naverpay
+    case smilepay
+    case payple
+    case alipay
+    case bluewalnut
 
+    var name: String {
+        switch self {
+        case .chai:
+            return "차이 간편결제"
+        case .kcp:
+            return "NHN KCP"
+        case .html5_inicis:
+            return "이니시스웹표준"
+        case .kcp_billing:
+            return "NHN KCP 정기결제"
+        case .uplus:
+            return "LGU+"
+        case .jtnet:
+            return "JTNet"
+        case .kakaopay:
+            return "카카오페이"
+        case .nice:
+            return "나이스페이"
+        case .danal:
+            return "다날휴대폰소액결제"
+        case .danal_tpay:
+            return "다날일반결제"
+        case .kicc:
+            return "한국정보통신"
+        case .paypal:
+            return "페이팔"
+        case .mobilians:
+            return "모빌리언스 휴대폰소액결제"
+        case .payco:
+            return "페이코"
+        case .eximbay:
+            return "엑심베이"
+        case .settle:
+            return "세틀뱅크"
+        case .settle_firm:
+            return "세틀뱅크_펌"
+        case .naverco:
+            return "네이버페이-주문형"
+        case .naverpay:
+            return "네이버페이-결제형"
+        case .smilepay:
+            return "스마일페이"
+        case .payple:
+            return "페이플"
+        case .alipay:
+            return "알리페이"
+        case .bluewalnut:
+            return "bluewalnut"
+        }
+    }
 
     public func getPgSting(storeId: String? = nil) -> String {
         var id: String = CONST.EMPTY_STR
@@ -42,7 +92,7 @@ public enum PG: String, CaseIterable {
 
     static func convertPG(pgString: String) -> PG? {
         for value in self.allCases {
-            if(pgString == value.rawValue) {
+            if (pgString == value.rawValue) {
                 return value
             }
         }

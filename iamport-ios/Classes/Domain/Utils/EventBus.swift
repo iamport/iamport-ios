@@ -41,6 +41,17 @@ class EventBus {
             let url: URL
         }
 
+        struct FinalBackPayProcess: BusEvent {
+            let url: URL
+        }
+
+        /*
+         외부앱 종료시 받은 URL(for 뱅크페이 앱 처리)
+         */
+        struct ReceivedURL : BusEvent {
+            let url: URL
+        }
+
         /**
          * 뱅크페이 외부앱 열기
          */
