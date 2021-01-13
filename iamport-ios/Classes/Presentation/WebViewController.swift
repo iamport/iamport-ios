@@ -36,30 +36,42 @@ class WebViewController: UIViewController, WKUIDelegate {
             print("observeViewModel")
             self.payment = payment
 
-//            EventBus.shared.paymentSubject.onCompleted()
-
-            RxBus.shared.asObservable(event: EventBus.WebViewEvents.PaymentEvent.self)
+            let bus = RxBus.shared
+            bus.asObservable(event: EventBus.WebViewEvents.PaymentEvent.self)
                     .subscribe { [weak self] event in
                         self?.requestPayment(event.element!.webViewPayment)
                     }.disposed(by: disposeBag)
 
-            RxBus.shared.asObservable(event: EventBus.WebViewEvents.OpenWebView.self)
+            bus.asObservable(event: EventBus.WebViewEvents.OpenWebView.self)
                     .subscribe { [weak self] event in
                         self?.openWebView(event.element!.openWebView)
                     }.disposed(by: disposeBag)
 
-            RxBus.shared.asObservable(event: EventBus.WebViewEvents.ImpResponse.self)
+            bus.asObservable(event: EventBus.WebViewEvents.ImpResponse.self)
                     .subscribe { [weak self] event in
                         self?.sdkFinish(event.element!.impResponse)
                     }.disposed(by: disposeBag)
 
-            RxBus.shared.asObservable(event: EventBus.WebViewEvents.ThirdPartyUri.self)
+            bus.asObservable(event: EventBus.WebViewEvents.ThirdPartyUri.self)
                     .subscribe { [weak self] event in
                         self?.openThirdPartyApp(event.element!.thirdPartyUri)
                     }.disposed(by: disposeBag)
 
-//            viewModel.niceTransRequestParam().observe(self, EventObserver(this::openNiceTransApp))
-//
+            bus.asObservable(event: EventBus.WebViewEvents.ReceivedURL.self)
+                    .subscribe { [weak self] event in
+                        self?.processBankPayPayment(event.element!.url)
+                    }.disposed(by: disposeBag)
+
+            bus.asObservable(event: EventBus.WebViewEvents.FinalBackPayProcess.self)
+                    .subscribe { [weak self] event in
+                        self?.finalProcessBankPayPayment(event.element!.url)
+                    }.disposed(by: disposeBag)
+
+            bus.asObservable(event: EventBus.WebViewEvents.NiceTransRequestParam.self)
+                    .subscribe { [weak self] event in
+                        self?.openNiceTransApp(it: event.element!.niceTransRequestParam)
+                    }.disposed(by: disposeBag)
+
             viewModel.startPayment(pay)
         }
     }
@@ -86,18 +98,49 @@ class WebViewController: UIViewController, WKUIDelegate {
         print("명시적 sdkFinish")
         dump(iamPortResponse)
 
-        // TODO 결과전달 및 결과창 이동
-        // TODO 뷰 컨트롤러 종료
         navigationController?.popViewController(animated: false)
         dismiss(animated: true) {
             EventBus.shared.impResponseSubject.onNext(iamPortResponse)
         }
     }
 
+    /**
+     * 뱅크페이 결과 처리 viewModel 에 요청
+     */
+    func processBankPayPayment(_ url: URL) {
+        viewModel.processBankPayPayment(url)
+    }
+
+    /**
+     * 뱅크페이 결과 처리 viewModel 에 요청
+     */
+    func finalProcessBankPayPayment(_ url: URL) {
+        print("finalProcessBankPayPayment :: \(url)")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        DispatchQueue.main.async { [self] in
+            if let wv = webView {
+                wv.uiDelegate = self
+                wv.navigationDelegate = self
+
+                wv.load(request)
+                view.addSubview(wv)
+                wv.frame = view.bounds
+            }
+        }
+    }
+
+    /**
+     * 뱅크페이 외부앱 열기 for nice PG + 실시간계좌이체(trans)
+     */
+    private func openNiceTransApp(it: String) {
+        if let url = URL(string: it) {
+            openThirdPartyApp(url)
+        }
+    }
 
     func openThirdPartyApp(_ url: URL) {
         print("openThirdPartyApp \(url)")
-//        // TODO 앱 열거나, 스토어 이동 하거나
         let application = UIApplication.shared
         if (application.canOpenURL(url)) {
             if #available(iOS 10.0, *) {
@@ -111,7 +154,7 @@ class WebViewController: UIViewController, WKUIDelegate {
     }
 
     //MARK : 앱스토어로 이동
-    func openURLToAppStore(_ url: URL) {
+    private func openURLToAppStore(_ url: URL) {
         if let openUrl = URL(string: Utils.getMarketUrl(url: url.absoluteString, scheme: url.scheme ?? "")) {
             if #available(iOS 10.0, *) {
                 UIApplication.shared.open(openUrl, options: [:], completionHandler: nil)
@@ -124,7 +167,7 @@ class WebViewController: UIViewController, WKUIDelegate {
     /**
      * 결제 요청 실행
      */
-    private func openWebView(_ _: Payment) {
+    private func openWebView(_ payment: Payment) {
         print("오픈! 웹뷰")
 
         let bundle = Bundle(for: type(of: self))
@@ -144,6 +187,7 @@ class WebViewController: UIViewController, WKUIDelegate {
         userController.add(self, name: customCallback)
         config.userContentController = userController
 
+
         DispatchQueue.main.async { [self] in
             webView = WKWebView.init(frame: view.frame, configuration: config)
             if let wv = webView {
@@ -156,29 +200,42 @@ class WebViewController: UIViewController, WKUIDelegate {
             }
         }
     }
-
 }
 
 extension WebViewController: WKNavigationDelegate {
 
     @available(iOS 8.0, *)
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        let url = navigationAction.request.url!;
         // url 변경 시점
-        RxBus.shared.post(event: EventBus.WebViewEvents.ChangeUrl(url: url))
-        if (navigationAction.navigationType == .linkActivated) {
-            decisionHandler(.cancel)
+        if let url = navigationAction.request.url {
+            RxBus.shared.post(event: EventBus.WebViewEvents.ChangeUrl(url: url))
+
+            let policy = Utils.getActionPolicy(url)
+            decisionHandler(policy ? .cancel : .allow)
         } else {
-            decisionHandler(.allow)
+            decisionHandler(.cancel)
+            failFinish(errMsg: "URL 을 찾을 수 없습니다")
         }
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        print("didFail")
+        print("didFail \(error.localizedDescription)")
+//        failFinish(errMsg: "탐색중 에러가 발생하였습니다 ::  \(error.localizedDescription)")
     }
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         print("didFailProvisionalNavigation \(error.localizedDescription)")
+//        failFinish(errMsg: "컨텐츠 로드중 에러가 발생하였습니다 :: \(error.localizedDescription)")
+    }
+
+    func failFinish(errMsg: String) {
+        if let pay = payment {
+            IamPortResponse.makeFail(payment: pay, prepareData: nil, msg: errMsg).do { it in
+                sdkFinish(it)
+            }
+        } else {
+            sdkFinish(nil)
+        }
     }
 
 }
@@ -188,7 +245,7 @@ extension WebViewController: WKScriptMessageHandler {
         print(message.body)
 
         if (message.name == startRequestPay) {
-            print("결제 시작하자!")
+            print("JS SDK 통한 결제 시작 요청")
 
             let encoder = JSONEncoder() //            encoder.outputFormatting = .prettyPrinted
             let jsonData = try? encoder.encode(payment?.iamPortRequest)
@@ -200,11 +257,16 @@ extension WebViewController: WKScriptMessageHandler {
         }
 
         if (message.name == received) {
-            print("받은거야?")
+            print("Received from webview")
         }
 
         if (message.name == customCallback) {
-            print("콜백 왔당~")
+            print("Received payment callback")
+            let decoder = JSONDecoder()
+            if let data = (message.body as? String)?.data(using: .utf8), let impStruct = try? decoder.decode(IamPortResponseStruct.self, from: data) {
+                let response = IamPortResponse.structToClass(impStruct)
+                sdkFinish(response)
+            }
         }
     }
 }

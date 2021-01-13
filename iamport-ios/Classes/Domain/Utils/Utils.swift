@@ -180,4 +180,27 @@ class Utils {
             return url;
         }
     }
+
+    /**
+     * 앱 uri 인지 여부
+     */
+    static func isAppUrl(_ uri: URL) -> Bool {
+        if let it = uri.scheme {
+            return it != CONST.HTTP_SCHEME && it != CONST.HTTPS_SCHEME && it != CONST.ABOUT_SCHEME && it != CONST.ABOUT_BLANK_SCHEME && it != CONST.FILE_SCHEME;
+        }
+        return false
+    }
+
+    /**
+     * 결제 끝났는지 여부
+     */
+    static func isPaymentOver(_ uri: URL) -> Bool {
+        uri.absoluteString.contains(CONST.IAMPORT_DUMMY_URL)
+    }
+
+    static func getActionPolicy(_ uri : URL)  -> Bool {
+        isAppUrl(uri) || isPaymentOver(uri)
+    }
+
+
 }

@@ -16,9 +16,9 @@ internal class WebViewModel {
         repository.clear()
     }
 
-    /**
-     * PG(nice or 비nice) 따라 webview client 가져오기
-     */
+//    /**
+//     * PG(nice or 비nice) 따라 webview client 가져오기
+//     */
 //    func getWebViewClient(payment: Payment) -> WebViewClient {
 //        return repository.getWebViewClient(payment)
 //    }
@@ -27,9 +27,9 @@ internal class WebViewModel {
     /**
      * 뱅크페이 결과 처리
      */
-//    func processBankPayPayment(resPair: Pair<String, String>) {
-//        repository.getNiceTransWebViewClient().processBankPayPayment(resPair)
-//    }
+    func processBankPayPayment(_ url : URL) {
+        repository.getNiceTransWebViewStrategy().processBankPayPayment(url)
+    }
 
     /**
      * activity 에서 결제 요청

@@ -11,6 +11,7 @@ class CONST {
     static let HTTPS_SCHEME = "https"
     static let ABOUT_SCHEME = "about"
     static let ABOUT_BLANK_SCHEME = "about:blank"
+    static let FILE_SCHEME = "file"
 
     static let EMPTY_STR = ""
 

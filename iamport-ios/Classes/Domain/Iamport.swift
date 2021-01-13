@@ -20,7 +20,6 @@ open class Iamport {
         iamportSdk = IamportSdk(parentVC)
     }
 
-
     public func payment(userCode: String, iamPortRequest: IamPortRequest, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
 //        preventOverlapRun?.launch {
 //            corePayment(userCode, iamPortRequest, approveCallback, paymentResultCallback)
@@ -35,5 +34,10 @@ open class Iamport {
     ) {
         impCallbackFunction = paymentResultCallback
         iamportSdk?.initStart(payment: Payment(userCode: userCode, iamPortRequest: iamPortRequest), paymentResultCallback: paymentResultCallback)
+    }
+
+    // 외부 앱 종료후 AppDelegate 에서 받은 URL
+    public func receivedURL(_ url : URL) {
+        iamportSdk?.postNiceTransURL(url)
     }
 }

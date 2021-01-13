@@ -66,17 +66,14 @@ open class BaseWebViewStrategy: IStrategy {
      * 앱 uri 인지 여부
      */
     func isAppUrl(uri: URL) -> Bool {
-        if let it = uri.scheme {
-            return it != CONST.HTTP_SCHEME && it != CONST.HTTPS_SCHEME && it != CONST.ABOUT_SCHEME && it != CONST.ABOUT_BLANK_SCHEME
-        }
-        return false
+        Utils.isAppUrl(uri)
     }
 
     /**
      * 결제 끝났는지 여부
      */
     func isPaymentOver(uri: URL) -> Bool {
-        uri.absoluteString.contains(CONST.IAMPORT_DUMMY_URL)
+        Utils.isPaymentOver(uri)
     }
 
 }

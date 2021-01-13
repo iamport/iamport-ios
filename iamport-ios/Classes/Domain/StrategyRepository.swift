@@ -25,11 +25,6 @@ class StrategyRepository {
         case CHAI, NICE, WEB
     }
 
-    struct Pair<K, V>: Then {
-        let first: K
-        let second: V
-    }
-
     /**
      * PG 와 PayMethod 로 결제 타입하여 가져옴
      * @return PaymenyKinds
@@ -37,17 +32,17 @@ class StrategyRepository {
     private func getPaymentKinds(payment: Payment) -> PaymentKinds {
 
         func isChaiPayment(pgPair: Pair<PG, PayMethod>) -> Bool {
-            pgPair.first as! PG == PG.chai
+            pgPair.first == PG.chai
         }
 
         func isNiceTransPayment(pgPair: Pair<PG, PayMethod>) -> Bool {
-            pgPair.first as! PG == PG.nice && pgPair.second as! PayMethod == PayMethod.trans
+            pgPair.first == PG.nice && pgPair.second == PayMethod.trans
         }
 
         let request = payment.iamPortRequest
+        print(request.pgEnum)
         if let it = request.pgEnum {
             let pair = Pair(first: it, second: request.pay_method)
-
             if (isChaiPayment(pgPair: pair)) {
                 return PaymentKinds.CHAI
             } else if (isNiceTransPayment(pgPair: pair)) {
@@ -69,6 +64,10 @@ class StrategyRepository {
         default:
             return webViewStrategy
         }
+    }
+
+    func getNiceTransWebViewStrategy() -> NiceTransWebViewStrategy {
+        niceTransWebViewStrategy
     }
 
 
