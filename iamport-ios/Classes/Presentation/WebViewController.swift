@@ -27,6 +27,7 @@ class WebViewController: UIViewController, WKUIDelegate {
         super.viewDidLoad()
         print("WebViewController 어서오고")
 
+//        self.view.backgroundColor = UIColor.white
         EventBus.shared.paymentBus.subscribe { [weak self] pay in
             self?.observeViewModel(pay)
         }.disposed(by: disposeBag)
@@ -229,6 +230,20 @@ extension WebViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         print("didFailProvisionalNavigation \(error.localizedDescription)")
 //        failFinish(errMsg: "컨텐츠 로드중 에러가 발생하였습니다 :: \(error.localizedDescription)")
+    }
+
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
+        let alertController = UIAlertController(title: message, message: nil, preferredStyle: .alert); let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
+            completionHandler(false)
+        }
+        let okAction = UIAlertAction(title: "확인", style: .default) { _ in
+            completionHandler(true)
+        }
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        DispatchQueue.main.async {
+            self.present(alertController, animated: true, completion: nil)
+        }
     }
 
     func failFinish(errMsg: String) {
