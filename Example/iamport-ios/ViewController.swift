@@ -50,7 +50,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
             $0.pay_method = payMethod
             $0.name = paymentName
             $0.buyer_name = buyer_name
-            $0.app_scheme = "iamport.ios.demo"
+            $0.app_scheme = "iamport"
         }
 
         dump(request)

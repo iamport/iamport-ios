@@ -6,7 +6,7 @@ import Foundation
 
 class CONST {
 
-    static let APP_SCHME = "iamport.ios.demo"
+    static let APP_SCHME = "iamport"
     static let HTTP_SCHEME = "http"
     static let HTTPS_SCHEME = "https"
     static let ABOUT_SCHEME = "about"

@@ -7,7 +7,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>iamport.ios.demo</string>
+				<string>iamport</string>
 			</array>
 		</dict>
 	</array>
