@@ -18,6 +18,7 @@ class WebViewController: UIViewController, WKUIDelegate {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         disposeBag = DisposeBag()
+        print("viewDidDisappear")
         // TODO 초기화
         viewModel.clear()
     }
@@ -62,7 +63,7 @@ class WebViewController: UIViewController, WKUIDelegate {
                         self?.processBankPayPayment(event.element!.url)
                     }.disposed(by: disposeBag)
 
-            bus.asObservable(event: EventBus.WebViewEvents.FinalBackPayProcess.self)
+            bus.asObservable(event: EventBus.WebViewEvents.FinalBankPayProcess.self)
                     .subscribe { [weak self] event in
                         self?.finalProcessBankPayPayment(event.element!.url)
                     }.disposed(by: disposeBag)
@@ -108,11 +109,15 @@ class WebViewController: UIViewController, WKUIDelegate {
      * 뱅크페이 결과 처리 viewModel 에 요청
      */
     func processBankPayPayment(_ url: URL) {
-        viewModel.processBankPayPayment(url)
+        if let it = payment {
+            // 나이스 PG 의 뱅크페이만 동작
+            // 이니시스 PG 의 뱅크페이의 경우 페이지 전환 후 m_redirect_url 이 내려오므로 그걸 이용
+            viewModel.processBankPayPayment(it, url)
+        }
     }
 
     /**
-     * 뱅크페이 결과 처리 viewModel 에 요청
+     * 나이스 뱅크페이 결과 처리 viewModel 에 요청
      */
     func finalProcessBankPayPayment(_ url: URL) {
         print("finalProcessBankPayPayment :: \(url)")
@@ -178,7 +183,6 @@ class WebViewController: UIViewController, WKUIDelegate {
 
         let request = URLRequest(url: url)
         dump(url)
-//        dump(request)
 
         let config = WKWebViewConfiguration.init()
         let userController = WKUserContentController()
@@ -186,7 +190,6 @@ class WebViewController: UIViewController, WKUIDelegate {
         userController.add(self, name: startRequestPay)
         userController.add(self, name: customCallback)
         config.userContentController = userController
-
 
         DispatchQueue.main.async { [self] in
             webView = WKWebView.init(frame: view.frame, configuration: config)

@@ -38,6 +38,6 @@ open class Iamport {
 
     // 외부 앱 종료후 AppDelegate 에서 받은 URL
     public func receivedURL(_ url : URL) {
-        iamportSdk?.postNiceTransURL(url)
+        iamportSdk?.postReceivedURL(url)
     }
 }

@@ -70,5 +70,11 @@ class StrategyRepository {
         niceTransWebViewStrategy
     }
 
+    func processBankPayPayment(_ payment : Payment, _ url : URL) {
+        if(getPaymentKinds(payment: payment) == PaymentKinds.NICE) {
+            niceTransWebViewStrategy.processBankPayPayment(url)
+        }
+    }
+
 
 }

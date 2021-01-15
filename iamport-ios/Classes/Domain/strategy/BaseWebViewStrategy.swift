@@ -14,10 +14,12 @@ protocol IStrategy {
     func sdkFinish(_ response: IamPortResponse?)
 }
 
-open class BaseWebViewStrategy: IStrategy {
+public class BaseWebViewStrategy: IStrategy {
     var disposeBag = DisposeBag()
+    var payment : Payment?
 
     func clear() {
+        payment = nil
         disposeBag = DisposeBag()
     }
 
@@ -41,7 +43,6 @@ open class BaseWebViewStrategy: IStrategy {
     }
 
     func start() {
-        clear()
         RxBus.shared.asObservable(event: EventBus.WebViewEvents.ChangeUrl.self)
                 .asyncMain().subscribe { [weak self] event in
                     self?.onChangeUrl(url: event.element!.url)
@@ -49,6 +50,8 @@ open class BaseWebViewStrategy: IStrategy {
     }
 
     func doWork(_ payment: Payment) {
+        clear()
+        self.payment = payment
         start()
     }
 
@@ -60,20 +63,6 @@ open class BaseWebViewStrategy: IStrategy {
      */
     func successFinish(payment: Payment) {
         successFinish(payment: payment, msg: CONST.EMPTY_STR)
-    }
-
-    /**
-     * 앱 uri 인지 여부
-     */
-    func isAppUrl(uri: URL) -> Bool {
-        Utils.isAppUrl(uri)
-    }
-
-    /**
-     * 결제 끝났는지 여부
-     */
-    func isPaymentOver(uri: URL) -> Bool {
-        Utils.isPaymentOver(uri)
     }
 
 }

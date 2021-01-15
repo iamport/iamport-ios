@@ -129,7 +129,6 @@ extension Data {
 
 
 class Utils {
-    // http://localhost/iamport?imp_uid=imp_040178854425&merchant_uid=muid_ios_1610349177&imp_success=false&error_msg=F0005%3A%EA%B2%B0%EC%A0%9C%EA%B0%80+%EC%A4%91%EB%8B%A8%EB%90%98%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4%28imp_040178854425%29.01+%7C+%EC%82%AC%EC%9A%A9%EC%9E%90%EA%B0%80+%EA%B2%B0%EC%A0%9C%EB%A5%BC+%EC%B7%A8%EC%86%8C+%ED%95%98%EC%98%80%EC%8A%B5%EB%8B%88%EB%8B%A4.
     static public func getQueryStringToImpResponse(_ url: URL) -> IamPortResponse? {
         print(url.queryParams().toJsonString())
         let decoder = JSONDecoder()
@@ -198,7 +197,7 @@ class Utils {
         uri.absoluteString.contains(CONST.IAMPORT_DUMMY_URL)
     }
 
-    static func getActionPolicy(_ uri : URL)  -> Bool {
+    static func getActionPolicy(_ uri: URL) -> Bool {
         isAppUrl(uri) || isPaymentOver(uri)
     }
 

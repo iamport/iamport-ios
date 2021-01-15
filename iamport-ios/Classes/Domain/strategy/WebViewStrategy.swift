@@ -20,17 +20,48 @@ class WebViewStrategy: BaseWebViewStrategy {
         super.onChangeUrl(url: url)
 
         print("onChangeUrl \(url)")
-
-        if(isAppUrl(uri: url)) {
-            RxBus.shared.post(event: EventBus.WebViewEvents.ThirdPartyUri(thirdPartyUri: url))
+        if let appScheme = payment?.iamPortRequest.app_scheme {
+            if (url.absoluteString.hasPrefix(appScheme)) {
+                processInisisTrans(url)
+                return
+            }
         }
 
-        if(isPaymentOver(uri: url)) {
+        if (Utils.isAppUrl(url)) {
+            print("isAppUrl")
+            RxBus.shared.post(event: EventBus.WebViewEvents.ThirdPartyUri(thirdPartyUri: url))
+            return
+        }
+
+        if (Utils.isPaymentOver(url)) {
             let response = Utils.getQueryStringToImpResponse(url)
             print("paymentOver :: \(response)")
             dump(response)
             sdkFinish(response)
+            return
+        }
+    }
+
+    private func processInisisTrans(_ url: URL) {
+        func isParseUrl(_ str: String) -> Bool {
+            if URL(string: str) != nil {
+                return true
+            } else {
+                return false
+            }
         }
 
+        let urlString: String = url.absoluteString
+        let removeAppScheme = urlString.replacingOccurrences(of: "\(CONST.APP_SCHME)://?", with: "")
+        let separated = removeAppScheme.components(separatedBy: "=")
+        let redirectUrl = separated.map { s -> String in
+            s.removingPercentEncoding ?? s
+        }.filter { s in
+            s.contains(CONST.IAMPORT_DUMMY_URL)
+        }.first
+        if let urlStr = redirectUrl, let url = URL(string: urlStr) {
+            print("parse url \(url.absoluteString)")
+            RxBus.shared.post(event: EventBus.WebViewEvents.FinalBankPayProcess(url: url))
+        }
     }
 }

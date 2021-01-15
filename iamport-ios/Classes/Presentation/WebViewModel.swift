@@ -27,8 +27,8 @@ internal class WebViewModel {
     /**
      * 뱅크페이 결과 처리
      */
-    func processBankPayPayment(_ url : URL) {
-        repository.getNiceTransWebViewStrategy().processBankPayPayment(url)
+    func processBankPayPayment(_ payment : Payment, _ url : URL) {
+        repository.processBankPayPayment(payment, url)
     }
 
     /**

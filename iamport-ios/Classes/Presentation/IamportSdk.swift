@@ -47,7 +47,7 @@ public class IamportSdk {
         paymentResultCallback?(iamportResponse)
     }
 
-    func postNiceTransURL(_ url : URL) {
+    func postReceivedURL(_ url : URL) {
         print("외부 결제앱 종료 후에 url 전달 받음 \(url)")
         RxBus.shared.post(event: EventBus.WebViewEvents.ReceivedURL(url: url))
     }

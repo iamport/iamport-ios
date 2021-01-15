@@ -41,7 +41,7 @@ class EventBus {
             let url: URL
         }
 
-        struct FinalBackPayProcess: BusEvent {
+        struct FinalBankPayProcess: BusEvent {
             let url: URL
         }
 

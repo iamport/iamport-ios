@@ -9,7 +9,6 @@ import RxSwift
 
 class NiceTransWebViewStrategy: WebViewStrategy {
 
-    var payment: Payment?
     var bankTid: String?
     var niceTransUrl: String?
 
@@ -68,7 +67,7 @@ class NiceTransWebViewStrategy: WebViewStrategy {
                 print("BankPayResultCode :: OK")
                 if let url = URL(string: makeNiceTransPaymentsQuery(res: resPair)) {
                     print("url :: \(url)")
-                    RxBus.shared.post(event: EventBus.WebViewEvents.FinalBackPayProcess(url: url))
+                    RxBus.shared.post(event: EventBus.WebViewEvents.FinalBankPayProcess(url: url))
                 }
             case .CANCEL, .TIME_OUT, .FAIL_SIGN, .FAIL_OTP, .FAIL_CERT_MODULE_INIT:
                 print(code.desc)
