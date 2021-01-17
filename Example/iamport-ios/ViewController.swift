@@ -14,63 +14,63 @@ import RxCocoa
 import RxSwift
 import RxViewController
 
-// 저는 머천트 앱 입니다.
 class ViewController: UIViewController, UIGestureRecognizerDelegate {
-
     var disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        print("처음 접속 했어요")
-
-        // Do any additional setup after loading the view, typically from a nib.
-//        self.view.backgroundColor = UIColor.green
         navigationController?.interactivePopGestureRecognizer?.delegate = self
-
-        // 처음 보일때 하고 clear 버튼 눌렀을 때
-        paymentButton.rx.tap.bind { [weak self] in self?.payment() }
-                .disposed(by: disposeBag)
+        view.backgroundColor = UIColor.white
+        Iamport.shared.close()
     }
 
-    func payment() {
-        print("payment")
-        Iamport.shared.start(self)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        bindUI()
+    }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        disposeBag = DisposeBag()
+    }
+
+    func bindUI() {
+        paymentButton?.rx.tap.bind { [weak self] in
+            self?.requestPayment()
+        }.disposed(by: disposeBag)
+    }
+
+    // 아임포트 SDK 결제 요청
+    func requestPayment() {
         let userCode = "imp96304110"
-//        let pg = PG.html5_inicis
-        let pg = PG.kcp
-        let payMethod = PayMethod.card
-        let paymentName = "배달의 민족 주문~"
-        let merchantUid = "muid_ios_\(Int(Date().timeIntervalSince1970))"
-        let amount = "1000" // 결제금액
-        let buyer_name = "남궁안녕"
-
-        let request = IamPortRequest(pg: pg.getPgSting(storeId: ""), merchant_uid: merchantUid, amount: amount).then {
-            $0.pay_method = payMethod
-            $0.name = paymentName
-            $0.buyer_name = buyer_name
-            $0.app_scheme = "iamport"
-        }
-
-        dump(request)
-
-        // 웹뷰고 나발이고 여기선 파라미터 받아서 호출만 해야 함
-        Iamport.shared.payment(userCode: userCode, iamPortRequest: request) { iamPortResponse in
-            print("결과 왔습니다~~")
-            dump(iamPortResponse)
-            let resultVC = PaymentResultViewController()
-            resultVC.impResponseSubject.onNext(iamPortResponse)
-            self.navigationController?.pushViewController(resultVC, animated: true)
+        let request = createPaymentData()
+        Iamport.shared.payment(navController: navigationController, userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+            self?.paymentCallback(iamPortResponse)
         }
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    // 아임포트 결제 데이터 생성
+    func createPaymentData() -> IamPortRequest {
+        IamPortRequest(
+                pg: PG.html5_inicis.getPgSting(storeId: ""),
+                merchant_uid: "muid_ios_\(Int(Date().timeIntervalSince1970))",
+                amount: "1000").then {
+            $0.pay_method = PayMethod.card
+            $0.name = "배달의 민족 주문~"
+            $0.buyer_name = "남궁안녕"
+            $0.app_scheme = "iamport://"
+        }
+    }
+
+    // 결제 완료 후 콜백 함수 (예시)
+    func paymentCallback(_ response: IamPortResponse?) {
+        print("결과 왔습니다~~")
+        let resultVC = PaymentResultViewController()
+        resultVC.impResponseSubject.onNext(response)
+        navigationController?.present(resultVC, animated: true)
     }
 
 
-    @IBOutlet var paymentButton: UIButton!
+    @IBOutlet var paymentButton: UIButton?
 }
 

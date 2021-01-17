@@ -14,42 +14,36 @@ import RxCocoa
 import RxSwift
 import RxViewController
 
-// 저는 머천트 앱 입니다.
+// 결과 화면
 class PaymentResultViewController: UIViewController, UIGestureRecognizerDelegate {
 
+    // 결과 전달 받을 RxSubject
     let impResponseSubject = BehaviorSubject<IamPortResponse?>(value: nil)
-
-    private var impResponseBus: Observable<IamPortResponse?> {
-        impResponseSubject.asObservable()
-    }
-
     var disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
 
         print("종료 됐어요")
 
-        // Do any additional setup after loading the view, typically from a nib.
-
-        navigationController?.interactivePopGestureRecognizer?.delegate = self
-
         let successColor = UIColor.green
         let failColor = UIColor.orange
-        impResponseBus.subscribe { [weak self] iamportResponse in
-            guard let response = iamportResponse.element else {
-                self?.view.backgroundColor = failColor
-                return
+        impResponseSubject.asObservable().subscribe { iamportResponseEvent in
+            var color: UIColor = failColor
+            // 성공 케이스
+            if let iamportResponse = iamportResponseEvent.element, let response = iamportResponse {
+                dump(iamportResponse)
+                if (self.isSuccess(response)) {
+                    color = successColor
+                }
             }
-
-            let isSuccess = response?.imp_success ?? false || response?.success ?? false
-            if (isSuccess) {
-                self?.view.backgroundColor = successColor
-            } else {
-                self?.view.backgroundColor = failColor
-            }
+            self.view.backgroundColor = color
         }.disposed(by: disposeBag)
+    }
 
+    private func isSuccess(_ iamportResponse: IamPortResponse) -> Bool {
+        iamportResponse.imp_success ?? false || iamportResponse.success ?? false
     }
 
     override func viewDidDisappear(_ animated: Bool) {

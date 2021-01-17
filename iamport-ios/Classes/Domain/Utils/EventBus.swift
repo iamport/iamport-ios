@@ -22,7 +22,14 @@ class EventBus {
         impResponseSubject.asObservable()
     }
 
+    let closeSubject = PublishSubject<Void>()
+
+    public var closeBus: Observable<Void> {
+        closeSubject.asObservable()
+    }
+
     struct WebViewEvents {
+
         /**
          * 결제 데이터
          */
@@ -34,10 +41,9 @@ class EventBus {
          * 오픈 웹뷰
          */
         struct OpenWebView: BusEvent {
-            let openWebView: Payment
         }
 
-        struct ChangeUrl: BusEvent {
+        struct UpdateUrl: BusEvent {
             let url: URL
         }
 
@@ -48,7 +54,7 @@ class EventBus {
         /*
          외부앱 종료시 받은 URL(for 뱅크페이 앱 처리)
          */
-        struct ReceivedURL : BusEvent {
+        struct ReceivedAppDelegateURL: BusEvent {
             let url: URL
         }
 

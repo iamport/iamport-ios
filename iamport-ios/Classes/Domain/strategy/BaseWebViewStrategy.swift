@@ -16,7 +16,7 @@ protocol IStrategy {
 
 public class BaseWebViewStrategy: IStrategy {
     var disposeBag = DisposeBag()
-    var payment : Payment?
+    var payment: Payment?
 
     func clear() {
         payment = nil
@@ -38,14 +38,19 @@ public class BaseWebViewStrategy: IStrategy {
     }
 
     func sdkFinish(_ response: IamPortResponse?) {
-        disposeBag = DisposeBag()
+        clear()
         RxBus.shared.post(event: EventBus.WebViewEvents.ImpResponse(impResponse: response))
     }
 
     func start() {
-        RxBus.shared.asObservable(event: EventBus.WebViewEvents.ChangeUrl.self)
-                .asyncMain().subscribe { [weak self] event in
-                    self?.onChangeUrl(url: event.element!.url)
+        RxBus.shared.asObservable(event: EventBus.WebViewEvents.UpdateUrl.self)
+                .subscribe { [weak self] event in
+                    guard let el = event.element else {
+                        print("Error not found WebViewEvents")
+                        return
+                    }
+                    print("onUpdatedUrl \(el.url)")
+                    self?.onUpdatedUrl(url: el.url)
                 }.disposed(by: disposeBag)
     }
 
@@ -55,7 +60,7 @@ public class BaseWebViewStrategy: IStrategy {
         start()
     }
 
-    func onChangeUrl(url: URL) {
+    func onUpdatedUrl(url: URL) {
     }
 
     /**

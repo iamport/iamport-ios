@@ -7,22 +7,24 @@ import Then
 
 class StrategyRepository {
 
-//    let judgeStrategy: JudgeStrategy by inject() // 결제 중 BG 폴링하는 차이 전략
+//    let judgeStrategy: JudgeStrategy by inject() // 결제 판별
 //    let chaiStrategy: ChaiStrategy by inject() // 결제 중 BG 폴링하는 차이 전략
 
     private let webViewStrategy = WebViewStrategy() // webview 사용하는 pg
     private let niceTransWebViewStrategy = NiceTransWebViewStrategy()
+    private let inisisTransWebViewStrategy = InisisTransWebViewStrategy()
 
     func clear() {
         webViewStrategy.clear()
         niceTransWebViewStrategy.clear()
+        inisisTransWebViewStrategy.clear()
     }
 
     /**
      * 실제로 앱 띄울 결제 타입
      */
     enum PaymentKinds {
-        case CHAI, NICE, WEB
+        case CHAI, NICE, WEB, INISIS
     }
 
     /**
@@ -39,6 +41,10 @@ class StrategyRepository {
             pgPair.first == PG.nice && pgPair.second == PayMethod.trans
         }
 
+        func isInisisTransPayment(pgPair: Pair<PG, PayMethod>) -> Bool {
+            pgPair.first == PG.html5_inicis && pgPair.second == PayMethod.trans
+        }
+
         let request = payment.iamPortRequest
         print(request.pgEnum)
         if let it = request.pgEnum {
@@ -47,6 +53,8 @@ class StrategyRepository {
                 return PaymentKinds.CHAI
             } else if (isNiceTransPayment(pgPair: pair)) {
                 return PaymentKinds.NICE
+            } else if (isInisisTransPayment(pgPair: pair)) {
+                return PaymentKinds.INISIS
             } else {
                 return PaymentKinds.WEB
             }
@@ -59,6 +67,8 @@ class StrategyRepository {
         switch getPaymentKinds(payment: payment) {
         case .NICE:
             return niceTransWebViewStrategy
+        case .INISIS:
+            return inisisTransWebViewStrategy
         case .WEB:
             return webViewStrategy
         default:

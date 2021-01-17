@@ -8,35 +8,17 @@ import Foundation
 
 internal class WebViewModel {
 
-    var disposeBag = DisposeBag()
     let repository = StrategyRepository()
 
     func clear() {
-        disposeBag = DisposeBag()
         repository.clear()
     }
-
-//    /**
-//     * PG(nice or 비nice) 따라 webview client 가져오기
-//     */
-//    func getWebViewClient(payment: Payment) -> WebViewClient {
-//        return repository.getWebViewClient(payment)
-//    }
-
 
     /**
      * 뱅크페이 결과 처리
      */
     func processBankPayPayment(_ payment : Payment, _ url : URL) {
         repository.processBankPayPayment(payment, url)
-    }
-
-    /**
-     * activity 에서 결제 요청
-     */
-    func startPayment(_ payment: Payment) {
-        print("startPayment")
-        RxBus.shared.post(event: EventBus.WebViewEvents.PaymentEvent(webViewPayment: payment))
     }
 
     /**

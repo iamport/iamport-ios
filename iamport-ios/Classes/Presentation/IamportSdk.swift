@@ -9,70 +9,61 @@ import RxSwift
 
 public class IamportSdk {
 
-    let viewModel = WebViewModel()
-    let parentViewController: UIViewController
-    var paymentResultCallback: ((IamPortResponse?) -> Void)?
+//    let viewModel = ViewModel()
+    let naviController: UINavigationController
+    var paymentResult: ((IamPortResponse?) -> Void)?
     var disposeBag = DisposeBag()
 
-    public init(_ parentViewController: UIViewController) {
-        self.parentViewController = parentViewController
+    public init(_ naviController: UINavigationController) {
+        self.naviController = naviController
     }
 
-    struct Events {
-        struct PaymentBus: BusEvent {
-            let payment: Payment
-        }
-    }
-
-    /**
-     * 뷰모델 데이터 클리어
-     */
+    // 뷰모델 데이터 클리어
     func clearData() {
 //        d("clearData!")
 //        updatePolling(false)
 //        controlForegroundService(false)
 //        viewModel.clearData()
+        EventBus.shared.closeSubject.onNext(())
         disposeBag = DisposeBag()
     }
 
-    internal func initStart(payment: Payment, paymentResultCallback: ((IamPortResponse?) -> Void)?) {
-        self.paymentResultCallback = paymentResultCallback
-        observeViewModel(payment) // 관찰할 LiveData
-    }
-
-
     private func sdkFinish(_ iamportResponse: IamPortResponse?) {
-        print("iamportSdk 에서 종료입니다")
+        print("Iamport SDK 에서 종료입니다")
         clearData()
-        paymentResultCallback?(iamportResponse)
+        paymentResult?(iamportResponse)
     }
 
-    func postReceivedURL(_ url : URL) {
-        print("외부 결제앱 종료 후에 url 전달 받음 \(url)")
-        RxBus.shared.post(event: EventBus.WebViewEvents.ReceivedURL(url: url))
+    internal func initStart(payment: Payment, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
+        clearData()
+        paymentResult = paymentResultCallback
+        observe(payment) // 관찰할 옵저버블
     }
 
-    private func observeViewModel(_ payment: Payment?) {
-        if let payment = payment {
-            // 결제결과 옵저빙
-//            viewModel.impResponse().observe(owner, EventObserver(this::sdkFinish))
+    func postReceivedURL(_ url: URL) {
+        print("외부앱 종료 후 전달 받음 => \(url)")
+        RxBus.shared.post(event: EventBus.WebViewEvents.ReceivedAppDelegateURL(url: url))
+    }
 
-            // 웹뷰앱 열기
-//            viewModel.webViewPayment().observe(owner, EventObserver(this::requestWebViewPayment))
+    private func observe(_ payment: Payment) {
+        // 결제결과 옵저빙
+        EventBus.shared.impResponseBus.subscribe { [weak self] iamportResponse in
+            self?.sdkFinish(iamportResponse)
+        }.disposed(by: disposeBag)
 
-            // 결제 시작
-//            preventOverlapRun.launch { requestPayment(pay) }
+        // TODO for observe CHAI
+        // ...
 
-            EventBus.shared.impResponseBus.subscribe { [weak self] iamportResponse in
-                self?.sdkFinish(iamportResponse)
-            }.disposed(by: disposeBag)
+        openWebViewController(payment)
+    }
 
+    // 웹뷰 컨트롤러 열기 및 데이터 전달
+    private func openWebViewController(_ payment: Payment) {
+        DispatchQueue.main.async { [weak self] in
             EventBus.shared.paymentSubject.onNext(payment)
-
-            let wvController = WebViewController()
-            parentViewController.navigationController?.pushViewController(wvController, animated: false)
-
-            print("check navigationController :: \(parentViewController.navigationController)")
+            self?.naviController.pushViewController(WebViewController(), animated: true)
+//            self?.naviController.present(WebViewController(), animated: true)
+            print("check navigationController :: \(self?.naviController.navigationController)")
         }
     }
 

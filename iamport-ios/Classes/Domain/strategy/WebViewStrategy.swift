@@ -13,19 +13,11 @@ class WebViewStrategy: BaseWebViewStrategy {
         super.doWork(payment)
         print("헬로 WebViewStrategy")
         // 오픈 웹뷰!
-        RxBus.shared.post(event: EventBus.WebViewEvents.OpenWebView(openWebView: payment))
+        RxBus.shared.post(event: EventBus.WebViewEvents.OpenWebView())
     }
 
-    override func onChangeUrl(url: URL) {
-        super.onChangeUrl(url: url)
-
-        print("onChangeUrl \(url)")
-        if let appScheme = payment?.iamPortRequest.app_scheme {
-            if (url.absoluteString.hasPrefix(appScheme)) {
-                processInisisTrans(url)
-                return
-            }
-        }
+    override func onUpdatedUrl(url: URL) {
+        super.onUpdatedUrl(url: url)
 
         if (Utils.isAppUrl(url)) {
             print("isAppUrl")
@@ -39,29 +31,6 @@ class WebViewStrategy: BaseWebViewStrategy {
             dump(response)
             sdkFinish(response)
             return
-        }
-    }
-
-    private func processInisisTrans(_ url: URL) {
-        func isParseUrl(_ str: String) -> Bool {
-            if URL(string: str) != nil {
-                return true
-            } else {
-                return false
-            }
-        }
-
-        let urlString: String = url.absoluteString
-        let removeAppScheme = urlString.replacingOccurrences(of: "\(CONST.APP_SCHME)://?", with: "")
-        let separated = removeAppScheme.components(separatedBy: "=")
-        let redirectUrl = separated.map { s -> String in
-            s.removingPercentEncoding ?? s
-        }.filter { s in
-            s.contains(CONST.IAMPORT_DUMMY_URL)
-        }.first
-        if let urlStr = redirectUrl, let url = URL(string: urlStr) {
-            print("parse url \(url.absoluteString)")
-            RxBus.shared.post(event: EventBus.WebViewEvents.FinalBankPayProcess(url: url))
         }
     }
 }

@@ -17,7 +17,7 @@ class NiceTransWebViewStrategy: WebViewStrategy {
         self.payment = payment
     }
 
-    override func onChangeUrl(url: URL) {
+    override func onUpdatedUrl(url: URL) {
 
         print("아주 나이스~ \(url)")
         if (isNiceTransScheme(url)) {
@@ -33,7 +33,7 @@ class NiceTransWebViewStrategy: WebViewStrategy {
             return
         }
 
-        super.onChangeUrl(url: url)
+        super.onUpdatedUrl(url: url)
     }
 
     /**
