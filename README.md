@@ -82,6 +82,15 @@ pod 'iamport-ios'
   Iamport.shared.close() // sdk 종료 원할시 호출
 ```
 
+
+```swift
+  // AppDelegate.swift 설정
+  func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+      Iamport.shared.receivedURL(url)
+      return true
+  }
+```
+
 ## Author
 
 bingbong, akrasias2@naver.com
