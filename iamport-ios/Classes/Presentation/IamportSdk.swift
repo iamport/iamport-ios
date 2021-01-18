@@ -41,7 +41,9 @@ public class IamportSdk {
     }
 
     func postReceivedURL(_ url: URL) {
+        #if DEBUG
         print("외부앱 종료 후 전달 받음 => \(url)")
+        #endif
         RxBus.shared.post(event: EventBus.WebViewEvents.ReceivedAppDelegateURL(url: url))
     }
 
@@ -63,7 +65,9 @@ public class IamportSdk {
             EventBus.shared.paymentSubject.onNext(payment)
             self?.naviController.pushViewController(WebViewController(), animated: true)
 //            self?.naviController.present(WebViewController(), animated: true)
+            #if DEBUG
             print("check navigationController :: \(self?.naviController)")
+            #endif
         }
     }
 

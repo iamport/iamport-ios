@@ -25,7 +25,9 @@ internal class WebViewModel {
      * 결제 요청
      */
     func requestPayment(payment: Payment) {
+        #if DEBUG
         print("뷰모델에 요청했니")
+        #endif
         DispatchQueue.main.async {
             self.repository.getWebViewStrategy(payment).doWork(payment)
         }

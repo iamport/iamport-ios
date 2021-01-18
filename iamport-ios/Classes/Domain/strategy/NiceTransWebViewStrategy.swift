@@ -18,8 +18,9 @@ class NiceTransWebViewStrategy: WebViewStrategy {
     }
 
     override func onUpdatedUrl(url: URL) {
-
+        #if DEBUG
         print("아주 나이스~ \(url)")
+        #endif
         if (isNiceTransScheme(url)) {
             let queryParams = url.queryParams()
             bankTid = (queryParams[NiceBankpay.USER_KEY] as? String)
@@ -55,7 +56,9 @@ class NiceTransWebViewStrategy: WebViewStrategy {
                         "?\(NiceBankpay.CALLBACKPARAM2)=\(tid)" +
                         "&\(NiceBankpay.CODE)=\(res.first)" +
                         "&\(NiceBankpay.VALUE)=\(res.second)"
+                #if DEBUG
                 print("makeNiceTransPaymentsQuery \(result)")
+                #endif
                 return result
             }
             return ""
@@ -66,11 +69,15 @@ class NiceTransWebViewStrategy: WebViewStrategy {
             case .OK:
                 print("BankPayResultCode :: OK")
                 if let url = URL(string: makeNiceTransPaymentsQuery(res: resPair)) {
+                    #if DEBUG
                     print("url :: \(url)")
+                    #endif
                     RxBus.shared.post(event: EventBus.WebViewEvents.FinalBankPayProcess(url: url))
                 }
             case .CANCEL, .TIME_OUT, .FAIL_SIGN, .FAIL_OTP, .FAIL_CERT_MODULE_INIT:
+                #if DEBUG
                 print(code.desc)
+                #endif
                 if let it = payment {
                     failureFinish(payment: it, msg: code.desc)
                 }
@@ -85,7 +92,9 @@ class NiceTransWebViewStrategy: WebViewStrategy {
         let prefix = ProvidePgScheme.BANKPAY.getNiceBankPayPrefix()
         let index = prefix.index(prefix.startIndex, offsetBy: prefix.count)
         let returnString = uri.absoluteString.substring(from: index).removingPercentEncoding
+        #if DEBUG
         print("makeBankPayData :: \(returnString)")
+        #endif
         return returnString
     }
 

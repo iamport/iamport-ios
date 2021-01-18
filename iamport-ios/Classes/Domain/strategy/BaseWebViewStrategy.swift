@@ -49,7 +49,9 @@ public class BaseWebViewStrategy: IStrategy {
                         print("Error not found WebViewEvents")
                         return
                     }
+                    #if DEBUG
                     print("onUpdatedUrl \(el.url)")
+                    #endif
                     self?.onUpdatedUrl(url: el.url)
                 }.disposed(by: disposeBag)
     }

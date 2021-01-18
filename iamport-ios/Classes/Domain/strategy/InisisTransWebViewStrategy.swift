@@ -44,7 +44,9 @@ class InisisTransWebViewStrategy: WebViewStrategy {
         }.first
 
         if let urlStr = redirectUrl, let url = URL(string: urlStr) {
+            #if DEBUG
             print("parse url \(url.absoluteString)")
+            #endif
             RxBus.shared.post(event: EventBus.WebViewEvents.FinalBankPayProcess(url: url))
         }
     }

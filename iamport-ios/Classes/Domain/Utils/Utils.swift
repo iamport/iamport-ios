@@ -131,7 +131,9 @@ extension Data {
 
 class Utils {
     static public func getQueryStringToImpResponse(_ url: URL) -> IamPortResponse? {
+        #if DEBUG
         print(url.queryParams().toJsonString())
+        #endif
         let decoder = JSONDecoder()
         let data = url.queryParams().toJsonData()
         if let impStruct = try? decoder.decode(IamPortResponseStruct.self, from: data) {

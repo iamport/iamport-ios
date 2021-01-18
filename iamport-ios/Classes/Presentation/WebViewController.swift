@@ -20,14 +20,18 @@ class WebViewController: UIViewController, WKUIDelegate {
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        #if DEBUG
         print("viewDidDisappear")
+        #endif
         clear()
         disposeBag = DisposeBag()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        #if DEBUG
         print("WebViewController 어서오고")
+        #endif
         view.backgroundColor = UIColor.white
         observePaymentData()
     }
@@ -140,7 +144,9 @@ class WebViewController: UIViewController, WKUIDelegate {
      */
     func sdkFinish(_ iamPortResponse: IamPortResponse?) {
         print("명시적 sdkFinish")
+        #if DEBUG
         dump(iamPortResponse)
+        #endif
 
 //        clear()
         navigationController?.popViewController(animated: false)
@@ -164,7 +170,9 @@ class WebViewController: UIViewController, WKUIDelegate {
      * 나이스 뱅크페이 결과 처리 viewModel 에 요청
      */
     func finalProcessBankPayPayment(_ url: URL) {
+        #if DEBUG
         print("finalProcessBankPayPayment :: \(url)")
+        #endif
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         DispatchQueue.main.async { [weak self] in
@@ -183,7 +191,9 @@ class WebViewController: UIViewController, WKUIDelegate {
 
 
     func openThirdPartyApp(_ url: URL) {
+        #if DEBUG
         print("openThirdPartyApp \(url)")
+        #endif
         let application = UIApplication.shared
         if (application.canOpenURL(url)) {
             if #available(iOS 10.0, *) {
@@ -220,7 +230,9 @@ class WebViewController: UIViewController, WKUIDelegate {
         }
 
         let request = URLRequest(url: url)
+        #if DEBUG
         dump(url)
+        #endif
 
         let config = WKWebViewConfiguration.init()
         let userController = WKUserContentController()
@@ -300,7 +312,9 @@ extension WebViewController: WKNavigationDelegate {
 
 extension WebViewController: WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        #if DEBUG
         print(message.body)
+        #endif
 
         // TODO enum 으로 분기 및 코드정리
         if (message.name == JsInterface.START_REQUEST_PAY.rawValue) {
@@ -310,7 +324,9 @@ extension WebViewController: WKScriptMessageHandler {
             let jsonData = try? encoder.encode(payment?.iamPortRequest)
 //            dump(payment)
             if let json = jsonData, let code = payment?.userCode, let request = String(data: json, encoding: .utf8) {
+                #if DEBUG
                 print("'\(code)', '\(request)'")
+                #endif
                 webView?.evaluateJavaScript("requestPay('\(code)', '\(request)');")
             }
         }
