@@ -63,7 +63,7 @@ public class IamportSdk {
             EventBus.shared.paymentSubject.onNext(payment)
             self?.naviController.pushViewController(WebViewController(), animated: true)
 //            self?.naviController.present(WebViewController(), animated: true)
-            print("check navigationController :: \(self?.naviController.navigationController)")
+            print("check navigationController :: \(self?.naviController)")
         }
     }
 

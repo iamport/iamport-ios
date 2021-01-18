@@ -3,7 +3,6 @@ import WebKit
 import RxBus
 import RxSwift
 
-
 class WebViewController: UIViewController, WKUIDelegate {
 
     // for communicate WebView
@@ -69,7 +68,7 @@ class WebViewController: UIViewController, WKUIDelegate {
         }.disposed(by: disposeBag)
 
         bus.asObservable(event: events.OpenWebView.self).subscribe { [weak self] event in
-            guard let el = event.element else {
+            guard nil != event.element else {
                 print("Error not found OpenWebView")
                 return
             }
@@ -127,14 +126,14 @@ class WebViewController: UIViewController, WKUIDelegate {
      * 결제 요청 실행
      */
     private func requestPayment(_ it: Payment) {
-        // TODO 네트워크 체크
-//        if (!Util.isInternetAvailable(this)) {
-//            sdkFinish(IamPortResponse.makeFail(it, msg = "네트워크 연결 안됨"))
-//            return
-//        }
+        if (!Utils.isInternetAvailable()) {
+            sdkFinish(IamPortResponse.makeFail(payment: it, msg: "네트워크 연결 안됨"))
+            return
+        }
 
         viewModel.requestPayment(payment: it)
     }
+    
 
     /*
      모든 결과 처리 및 SDK 종료

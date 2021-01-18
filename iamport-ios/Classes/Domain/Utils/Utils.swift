@@ -4,6 +4,7 @@
 
 import Foundation
 import RxSwift
+import SystemConfiguration
 
 enum BusThread {
     //- utility: 유저의 프로세스에 필요한 연산작업에 사용한다. 프로그래스바, I/O, Networking 등
@@ -201,5 +202,29 @@ class Utils {
         isAppUrl(uri) || isPaymentOver(uri)
     }
 
+    static func isInternetAvailable() -> Bool {
+
+        var zeroAddress = sockaddr_in()
+        zeroAddress.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+
+        guard let defaultRouteReachability = withUnsafePointer(to: &zeroAddress, {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                SCNetworkReachabilityCreateWithAddress(nil, $0)
+            }
+        }) else {
+            return false
+        }
+
+        var flags: SCNetworkReachabilityFlags = []
+
+        if !SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) {
+            return false
+        }
+
+        let isReachable = flags.contains(.reachable)
+        let needsConnection = flags.contains(.connectionRequired)
+        return (isReachable && !needsConnection)
+    }
 
 }
