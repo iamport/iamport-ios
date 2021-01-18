@@ -7,18 +7,73 @@
 //
 
 import UIKit
+import WebKit
+import Then
+import iamport_ios
+import RxCocoa
+import RxSwift
+import RxViewController
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UIGestureRecognizerDelegate {
+    var disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        print("Merchant viewDidLoad")
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
+        view.backgroundColor = UIColor.white
+        Iamport.shared.close() // sdk 종료 원할시 호출
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print("Merchant viewWillAppear")
+        bindUI()
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        print("Merchant viewDidDisappear")
+        disposeBag = DisposeBag()
+    }
+
+    func bindUI() {
+        paymentButton?.rx.tap.bind { [weak self] in
+            self?.requestPayment()
+        }.disposed(by: disposeBag)
+    }
+
+    // 아임포트 SDK 결제 요청
+    func requestPayment() {
+        let userCode = "imp96304110"
+        let request = createPaymentData()
+        Iamport.shared.payment(navController: navigationController, userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+            self?.paymentCallback(iamPortResponse)
+        }
+    }
+
+    // 아임포트 결제 데이터 생성
+    func createPaymentData() -> IamPortRequest {
+        IamPortRequest(
+                pg: PG.html5_inicis.getPgSting(storeId: ""),
+                merchant_uid: "muid_ios_\(Int(Date().timeIntervalSince1970))",
+                amount: "1000").then {
+            $0.pay_method = PayMethod.card
+            $0.name = "배달의 민족 주문~"
+            $0.buyer_name = "남궁안녕"
+            $0.app_scheme = "iamport://"
+        }
+    }
+
+    // 결제 완료 후 콜백 함수 (예시)
+    func paymentCallback(_ response: IamPortResponse?) {
+        print("결과 왔습니다~~")
+        let resultVC = PaymentResultViewController()
+        resultVC.impResponseSubject.onNext(response)
+        navigationController?.present(resultVC, animated: true)
+    }
+
+
+    @IBOutlet var paymentButton: UIButton?
 }
 

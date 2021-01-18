@@ -1,0 +1,29 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!-- 현재 콜백은 불필요 할 듯 onPageFinished 쓰니까..! -->
+    <script type="text/javascript">
+        console.log("Wait cdn-iamport-sdk...");
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Load finish cdn-iamport-sdk...");
+            window.webkit.messageHandlers.startRequestPay.postMessage("")
+        });
+
+        function requestPay(userCode, impRequest) {
+            function callback(response) {
+                console.log(response)
+                window.webkit.messageHandlers.customCallback.postMessage(JSON.stringify(response))
+            }
+
+            window.webkit.messageHandlers.received.postMessage("")
+            IMP.init(userCode);
+            IMP.request_pay(JSON.parse(impRequest), callback);
+        }
+    </script>
+    <script defer type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script defer type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.8.js"></script>
+</body>
+</html>

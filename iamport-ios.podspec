@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'iamport-ios'
-  s.version          = '0.1.0'
-  s.summary          = 'iamport-ios will help develop for your iOS App\' payments'
+  s.version          = '0.0.1'
+  s.summary          = 'iamport-ios will help develop for your iOS App payments'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+  iamport-ios will help develop for your iOS App payments
                        DESC
 
   s.homepage         = 'https://github.com/iamport/iamport-ios'
@@ -27,16 +27,39 @@ TODO: Add long description of the pod here.
   s.author           = { 'bingbong' => 'bingbong@chai.finance' }
   s.source           = { :git => 'https://github.com/iamport/iamport-ios.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
-
-  s.ios.deployment_target = '13.0'
-
+  
+  s.swift_versions = '5.0'
+  s.ios.deployment_target = '9.0'
+  
   s.source_files = 'iamport-ios/Classes/**/*'
   
-  # s.resource_bundles = {
-  #   'iamport-ios' => ['iamport-ios/Assets/*.png']
-  # }
+#   s.resource_bundles = {
+#     'iamport-ios' => ['iamport-ios/Assets/**/*']
+#   }
+
+   s.resources = "iamport-ios/Assets/**/*"
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
+   
+    s.dependency 'Then'
+
+    s.dependency 'Swinject'
+       
+    # 대표적인 네트워크 라이브러리입니다.
+    s.dependency 'Alamofire'
+    # Alamofire를 사용할 때 상단 상태 바에 통신중일때 기본 인디케이터가 나타나도록 합니다.
+    s.dependency 'AlamofireNetworkActivityIndicator'
+    # Alamofire를 이용할 때 로그를 쉽게 볼 수 있습니다.
+    s.dependency 'AlamofireActivityLogger'
+
+    # Pods for RxSwift+MVVM
+    s.dependency 'RxBus'
+    s.dependency 'RxSwift'
+    s.dependency 'RxCocoa'
+    s.dependency 'RxRelay'
+    s.dependency 'RxOptional'
+    s.dependency 'RxViewController'
+
 end

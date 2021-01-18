@@ -4,9 +4,22 @@ PODS:
     - Alamofire (~> 4.7)
   - AlamofireNetworkActivityIndicator (2.4.0):
     - Alamofire (~> 4.8)
-  - iamport-ios (0.1.0)
+  - iamport-ios (0.0.1-dev02):
+    - Alamofire
+    - AlamofireActivityLogger
+    - AlamofireNetworkActivityIndicator
+    - RxBus
+    - RxCocoa
+    - RxOptional
+    - RxRelay
+    - RxSwift
+    - RxViewController
+    - Swinject
+    - Then
   - RxBlocking (5.1.1):
     - RxSwift (~> 5)
+  - RxBus (1.3.1):
+    - RxSwift (~> 5.0)
   - RxCocoa (5.1.1):
     - RxRelay (~> 5)
     - RxSwift (~> 5)
@@ -22,6 +35,7 @@ PODS:
     - RxCocoa (~> 5.0)
     - RxSwift (~> 5.0)
   - Swinject (2.7.1)
+  - Then (2.7.0)
 
 DEPENDENCIES:
   - Alamofire
@@ -36,6 +50,7 @@ DEPENDENCIES:
   - RxTest
   - RxViewController
   - Swinject
+  - Then
 
 SPEC REPOS:
   trunk:
@@ -43,6 +58,7 @@ SPEC REPOS:
     - AlamofireActivityLogger
     - AlamofireNetworkActivityIndicator
     - RxBlocking
+    - RxBus
     - RxCocoa
     - RxOptional
     - RxRelay
@@ -50,6 +66,7 @@ SPEC REPOS:
     - RxTest
     - RxViewController
     - Swinject
+    - Then
 
 EXTERNAL SOURCES:
   iamport-ios:
@@ -59,8 +76,9 @@ SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
   AlamofireActivityLogger: 4dbb52cbd9a26590775df5d4d0284fa81f9b9b5b
   AlamofireNetworkActivityIndicator: 9acc3de3ca6645bf0efed462396b0df13dd3e7b8
-  iamport-ios: 49f748bb8d6ec1539101b4b4c148cce7d641ed23
+  iamport-ios: b76593200eae10689b48b6d17b250a88274f2c43
   RxBlocking: 5f700a78cad61ce253ebd37c9a39b5ccc76477b4
+  RxBus: ee5cb413fe4e0853712144c9ed20705d9e8e03cd
   RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
   RxOptional: b1fcd60856807a564c0215c2184b8d33e7826dc2
   RxRelay: d77f7d771495f43c556cbc43eebd1bb54d01e8e9
@@ -68,7 +86,8 @@ SPEC CHECKSUMS:
   RxTest: 711632d5644dffbeb62c936a521b5b008a1e1faa
   RxViewController: 7330a46e5c31cd680db169da4c9fc8676e975a81
   Swinject: ddf78b8486dd9b71a667b852cad919ab4484478e
+  Then: acfe0be7e98221c6204e12f8161459606d5d822d
 
-PODFILE CHECKSUM: 05b72e77b90fc29ee9ea3fc251b6b307debf5484
+PODFILE CHECKSUM: f0cea44339a0954a5be01df084868919f76fed3c
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.10.1
