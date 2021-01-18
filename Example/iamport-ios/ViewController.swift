@@ -19,18 +19,21 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("Merchant viewDidLoad")
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         view.backgroundColor = UIColor.white
-        Iamport.shared.close()
+        Iamport.shared.close() // sdk 종료 원할시 호출
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        print("Merchant viewWillAppear")
         bindUI()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        print("Merchant viewDidDisappear")
         disposeBag = DisposeBag()
     }
 
