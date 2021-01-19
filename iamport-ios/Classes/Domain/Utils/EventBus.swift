@@ -28,6 +28,12 @@ class EventBus {
         closeSubject.asObservable()
     }
 
+    let clearSubject = PublishSubject<Void>()
+
+    public var clearBus: Observable<Void> {
+        clearSubject.asObservable()
+    }
+
     struct WebViewEvents {
 
         /**

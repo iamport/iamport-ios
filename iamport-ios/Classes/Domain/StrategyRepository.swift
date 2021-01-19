@@ -15,9 +15,7 @@ class StrategyRepository {
     private let inisisTransWebViewStrategy = InisisTransWebViewStrategy()
 
     func clear() {
-        webViewStrategy.clear()
-        niceTransWebViewStrategy.clear()
-        inisisTransWebViewStrategy.clear()
+        EventBus.shared.closeSubject.onNext(())
     }
 
     /**

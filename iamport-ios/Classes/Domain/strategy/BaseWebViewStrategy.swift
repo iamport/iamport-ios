@@ -43,6 +43,11 @@ public class BaseWebViewStrategy: IStrategy {
     }
 
     func start() {
+
+        EventBus.shared.closeSubject.subscribe { [weak self] event in
+            self?.clear()
+        }.disposed(by: disposeBag)
+
         RxBus.shared.asObservable(event: EventBus.WebViewEvents.UpdateUrl.self)
                 .subscribe { [weak self] event in
                     guard let el = event.element else {

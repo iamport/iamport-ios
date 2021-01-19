@@ -96,7 +96,7 @@ class WebViewController: UIViewController, WKUIDelegate {
         let bus = RxBus.shared
         let events = EventBus.WebViewEvents.self
 
-        // Start abount Nice PG, Trans PayMethod Pair BankPay
+        // Start about Nice PG, Trans PayMethod Pair BankPay
 
         bus.asObservable(event: events.NiceTransRequestParam.self).subscribe { [weak self] event in
             guard let el = event.element else {
