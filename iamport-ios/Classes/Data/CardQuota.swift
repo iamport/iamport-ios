@@ -4,6 +4,10 @@
 
 import Foundation
 
-public class CardQuota : Codable{
-    var card_quota: Array<Int>?
+public class CardQuota: Codable {
+    public var card_quota: Array<Int>?
+
+    public init() {
+        card_quota = nil
+    }
 }
