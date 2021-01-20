@@ -283,9 +283,21 @@ extension WebViewController: WKNavigationDelegate {
 //        failFinish(errMsg: "컨텐츠 로드중 에러가 발생하였습니다 :: \(error.localizedDescription)")
     }
 
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+        let alertController = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "확인", style: .default) { _ in
+            completionHandler()
+        }
+        alertController.addAction(okAction)
+        DispatchQueue.main.async {
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
+
     // for Alert(for 주로 모빌리언스 + 휴대폰 소액결제 Pair)
     func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
-        let alertController = UIAlertController(title: message, message: nil, preferredStyle: .alert); let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
+        let alertController = UIAlertController(title: message, message: nil, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
             completionHandler(false)
         }
         let okAction = UIAlertAction(title: "확인", style: .default) { _ in
