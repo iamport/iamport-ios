@@ -11,7 +11,7 @@ import Then
  (PG : .smilepay, pay_method : .card) 또한 :// 으로 CNS 측에 등록되어있을 수 있으니 확인해주세요. 안그러면 스마일페이 앱에서 404 에러남.
  */
 public class IamPortRequest: Codable {
-    let pg: String // 없음안됨
+    var pg: String // 없음안됨
     public var pay_method: PayMethod = PayMethod.card // 명세상 필수인지 불명확함 default card
     public var escrow: Bool? // default false
     public let merchant_uid: String // 없음안됨 // default "random"

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public enum PG: String, CaseIterable {
+public enum PG: String, CaseIterable, Codable {
     case chai
     case kcp
     case html5_inicis

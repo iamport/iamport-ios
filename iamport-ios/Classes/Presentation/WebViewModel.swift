@@ -8,7 +8,7 @@ import Foundation
 
 internal class WebViewModel {
 
-    let repository = StrategyRepository()
+    let repository = StrategyRepository() // sTODO dependency inject
 
     func clear() {
         repository.clear()

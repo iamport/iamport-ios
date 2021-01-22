@@ -5,7 +5,7 @@
 import Foundation
 import Then
 
-struct Pair<K, V>: Then {
-    let first: K
-    let second: V
+struct Pair<A, B>: Then {
+    let first: A
+    let second: B
 }

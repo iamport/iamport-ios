@@ -9,7 +9,7 @@ import RxSwift
 
 public class IamportSdk {
 
-//    let viewModel = ViewModel()
+    let viewModel = MainViewModel()
     let naviController: UINavigationController
     var paymentResult: ((IamPortResponse?) -> Void)?
     var disposeBag = DisposeBag()
@@ -53,10 +53,25 @@ public class IamportSdk {
             self?.sdkFinish(iamportResponse)
         }.disposed(by: disposeBag)
 
-        // TODO for observe CHAI
-        // ...
+        // TODO subscribe 결제결과
+        // TODO subscribe 웹뷰열기
+        // TODO subscribe 차이앱열기
+        // TODO subscribe 폴링여부
+        // TODO 차이 결제 상태 approve 처리
 
-        openWebViewController(payment)
+        requestPayment(payment)
+//        openWebViewController(payment)
+    }
+
+    private func requestPayment(_ payment: Payment) {
+
+        // TODO Payment data validator
+
+        // TODO 네트워크 상태 체크
+
+        // TODO judge strategy
+
+        viewModel.judgePayment(payment)
     }
 
     // 웹뷰 컨트롤러 열기 및 데이터 전달

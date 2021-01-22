@@ -3,10 +3,11 @@
 //
 
 import Foundation
+import Then
 
-struct Payment : Codable{
+struct Payment: Codable, Then {
     let userCode: String
-    let iamPortRequest: IamPortRequest
+    var iamPortRequest: IamPortRequest
 
     init(userCode: String, iamPortRequest: IamPortRequest) {
         self.userCode = userCode

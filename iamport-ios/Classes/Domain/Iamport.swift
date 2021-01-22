@@ -13,6 +13,11 @@ open class Iamport {
     private var sdk: IamportSdk?
     private var paymentResult: ((IamPortResponse?) -> Void)? // 결제 결과 callback
 
+    private func clear() {
+        sdk = nil
+        paymentResult = nil
+    }
+
     /**
      아임포트 SDK에 결제 요청
      - Parameters:
@@ -22,6 +27,7 @@ open class Iamport {
        - paymentResultCallback: 결제 후 콜백 함수
      */
     public func payment(navController: UINavigationController?, userCode: String, iamPortRequest: IamPortRequest, _ paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
+        clear()
 //        preventOverlapRun?.launch {
 //            corePayment(userCode, iamPortRequest, approveCallback, paymentResultCallback)
 //        }

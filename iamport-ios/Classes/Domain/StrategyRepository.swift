@@ -7,7 +7,7 @@ import Then
 
 class StrategyRepository {
 
-//    let judgeStrategy: JudgeStrategy by inject() // 결제 판별
+    let judgeStrategy = JudgeStrategy() // 결제 판별
 //    let chaiStrategy: ChaiStrategy by inject() // 결제 중 BG 폴링하는 차이 전략
 
     private let webViewStrategy = WebViewStrategy() // webview 사용하는 pg

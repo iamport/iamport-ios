@@ -47,6 +47,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     func requestPayment() {
         let userCode = "imp96304110"
         let request = createPaymentData()
+        dump(request)
         Iamport.shared.payment(navController: navigationController, userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
             self?.paymentCallback(iamPortResponse)
         }
