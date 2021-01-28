@@ -6,13 +6,14 @@ import Foundation
 
 struct PrepareData: Codable {
     let impUid: String
-    let paymentId: String? = nil
-    let idempotencyKey: String? = nil
-    let returnUrl: String? = nil
-    let publicAPIKey: String? = nil
-    let mode: String? = nil
+    var paymentId: String? = nil
+    var idempotencyKey: String? = nil
+    var returnUrl: String? = nil
+    var publicAPIKey: String? = nil
+    var mode: String? = nil
 
-    init(impUid: String) {
+    init(impUid: String, paymentId: String?) {
         self.impUid = impUid
+        self.paymentId = paymentId
     }
 }
