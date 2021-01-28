@@ -15,12 +15,14 @@ public class JudgeStrategy: BaseStrategy {
     }
 
     override func doWork(_ payment: Payment) {
+        super.doWork(payment)
 
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json"
+        ]
         let url = CONST.IAMPORT_PROD_URL + "/users/pg/\(payment.userCode)"
         print(url)
-        let headers: HTTPHeaders = [
-            "Content-Type": "varlication/json"
-        ]
+
         let doNetwork = Alamofire.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
 
         doNetwork.responseJSON { [weak self] response in
@@ -29,15 +31,15 @@ public class JudgeStrategy: BaseStrategy {
                 do {
                     let dataJson = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
                     let getData = try JSONDecoder().decode(Users.self, from: dataJson)
-                    print(getData)
 
-                    // TODO judge 처리
                     guard getData.code == 0 else {
                         self?.failureFinish(payment: payment, msg: "code : \(getData.code), msg : \(String(describing: getData.msg))")
                         return
                     }
 
-                    self?.judge(payment, getData.data)
+                    if let judge = self?.judge(payment, getData.data) {
+                        RxBus.shared.post(event: EventBus.MainEvents.JudgeEvent(judge: judge))
+                    }
                 } catch {
                     self?.failureFinish(payment: payment, msg: "success but \(error.localizedDescription)")
                 }
@@ -47,29 +49,41 @@ public class JudgeStrategy: BaseStrategy {
         }
     }
 
-    // -> (JudgeKinds, UserData?, Payment)
     private func judge(_ payment: Payment, _ userDataList: Array<UserData>) -> (JudgeKinds, UserData?, Payment) {
 
         guard !userDataList.isEmpty else {
             failureFinish(payment: payment, msg: "Not found PF [ \(payment.iamPortRequest.pg) ] and any PG in your info.")
-            // -> (JudgeKinds, UserData?, Payment)
-            // Triple(JudgeKinds.EMPTY, null, payment)
             return (JudgeKinds.EMPTY, nil, payment)
         }
 
         guard let defUser = findDefaultUserData(userDataList) else {
             failureFinish(payment: payment, msg: "Not found Default PG. All PG empty.")
-            // -> (JudgeKinds, UserData?, Payment)
-            // Triple(JudgeKinds.EMPTY, null, payment)
             return (JudgeKinds.EMPTY, nil, payment)
         }
 
-        print("userDataList :: \(userDataList)")
-        let myPg = String(payment.iamPortRequest.pg.split(separator: ".")[0])
-        let findPg = userDataList.first { data in
-            data.pg_provider?.getPgSting() == myPg
+        func find(data: UserData, myPg: String, myPgId: String) -> Bool {
+            dump(data.pg_provider?.getPgSting())
+            dump(data.pg_id)
+            return data.pg_provider?.getPgSting() == myPg && data.pg_id == myPgId
         }
 
+        print("userDataList :: \(userDataList)")
+        let split = payment.iamPortRequest.pg.split(separator: ".")
+        let myPg = String(split[0])
+        var findPg: UserData?
+
+        if (split.count > 1) {
+            let pgId = String(split[1])
+            findPg = userDataList.first { data in
+                data.pg_provider?.getPgSting() == myPg && data.pg_id == pgId
+            }
+        } else {
+            findPg = userDataList.first { data in
+                data.pg_provider?.getPgSting() == myPg
+            }
+        }
+
+        print("findPg \(findPg)")
         let result: (JudgeKinds, UserData?, Payment)
         switch findPg {
         case .none:
@@ -77,7 +91,7 @@ public class JudgeStrategy: BaseStrategy {
         case .some(let pg):
             result = getPgTriple(user: pg, payment: payment)
         }
-        print(result)
+
         return result
     }
 

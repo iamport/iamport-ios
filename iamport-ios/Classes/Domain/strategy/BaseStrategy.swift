@@ -35,18 +35,14 @@ public class BaseStrategy: IStrategy {
 //        RxBus.shared.post(event: EventBus.WebViewEvents.ImpResponse(impResponse: response))
     }
 
-    func start() {
+    func doWork(_ payment: Payment) {
+        clear()
+        self.payment = payment
 
         EventBus.shared.closeSubject.subscribe { [weak self] event in
             self?.clear()
         }.disposed(by: disposeBag)
 
-    }
-
-    func doWork(_ payment: Payment) {
-        clear()
-        self.payment = payment
-        start()
     }
 
 

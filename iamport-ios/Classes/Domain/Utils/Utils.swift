@@ -128,7 +128,6 @@ extension Data {
     }
 }
 
-
 class Utils {
     static public func getQueryStringToImpResponse(_ url: URL) -> IamPortResponse? {
         #if DEBUG
@@ -227,6 +226,22 @@ class Utils {
         let isReachable = flags.contains(.reachable)
         let needsConnection = flags.contains(.connectionRequired)
         return (isReachable && !needsConnection)
+    }
+
+    static func getOrZeroString(value: String?) -> String {
+        if let result = value {
+            return !result.isEmpty ? result : "0"
+        } else {
+            return "0"
+        }
+    }
+
+    static func getOrEmpty(value: String?) -> String {
+        if let result = value {
+            return !result.isEmpty ? result : CONST.EMPTY_STR
+        } else {
+            return CONST.EMPTY_STR
+        }
     }
 
 }

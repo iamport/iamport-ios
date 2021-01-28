@@ -34,6 +34,18 @@ class EventBus {
         clearSubject.asObservable()
     }
 
+    struct MainEvents {
+
+        struct JudgeEvent: BusEvent {
+            let judge: (JudgeStrategy.JudgeKinds, UserData?, Payment)
+        }
+
+        struct ChaiUri: BusEvent {
+            let appAddress: URL
+        }
+
+    }
+
     struct WebViewEvents {
 
         /**

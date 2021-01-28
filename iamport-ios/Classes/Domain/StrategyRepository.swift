@@ -6,9 +6,15 @@ import Foundation
 import Then
 
 class StrategyRepository {
+    /**
+     * 실제로 앱 띄울 결제 타입
+     */
+    enum PaymentKinds {
+        case CHAI, NICE, WEB, INISIS
+    }
 
     let judgeStrategy = JudgeStrategy() // 결제 판별
-//    let chaiStrategy: ChaiStrategy by inject() // 결제 중 BG 폴링하는 차이 전략
+    let chaiStrategy = ChaiStrategy() // 결제 중 BG 폴링하는 차이 전략
 
     private let webViewStrategy = WebViewStrategy() // webview 사용하는 pg
     private let niceTransWebViewStrategy = NiceTransWebViewStrategy()
@@ -18,12 +24,6 @@ class StrategyRepository {
         EventBus.shared.closeSubject.onNext(())
     }
 
-    /**
-     * 실제로 앱 띄울 결제 타입
-     */
-    enum PaymentKinds {
-        case CHAI, NICE, WEB, INISIS
-    }
 
     /**
      * PG 와 PayMethod 로 결제 타입하여 가져옴
@@ -78,8 +78,8 @@ class StrategyRepository {
         niceTransWebViewStrategy
     }
 
-    func processBankPayPayment(_ payment : Payment, _ url : URL) {
-        if(getPaymentKinds(payment: payment) == PaymentKinds.NICE) {
+    func processBankPayPayment(_ payment: Payment, _ url: URL) {
+        if (getPaymentKinds(payment: payment) == PaymentKinds.NICE) {
             niceTransWebViewStrategy.processBankPayPayment(url)
         }
     }

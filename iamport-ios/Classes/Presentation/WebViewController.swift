@@ -325,7 +325,7 @@ extension WebViewController: WKNavigationDelegate {
 extension WebViewController: WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         #if DEBUG
-        print(message.body)
+        print("body \(message.body)")
         #endif
 
         // TODO enum 으로 분기 및 코드정리

@@ -54,13 +54,36 @@ public class IamportSdk {
         }.disposed(by: disposeBag)
 
         // TODO subscribe 결제결과
-        // TODO subscribe 웹뷰열기
-        // TODO subscribe 차이앱열기
+        // subscribe 웹뷰열기
+        RxBus.shared.asObservable(event: EventBus.WebViewEvents.PaymentEvent.self).subscribe { [weak self] event in
+            guard let el = event.element else {
+                print("Error not found PaymentEvent")
+                return
+            }
+
+            self?.openWebViewController(el.webViewPayment)
+        }.disposed(by: disposeBag)
+
+        // subscribe 차이앱열기
+        RxBus.shared.asObservable(event: EventBus.MainEvents.ChaiUri.self).subscribe { [weak self] event in
+            guard let el = event.element else {
+                print("Error not found PaymentEvent")
+                return
+            }
+
+            if #available(iOS 10.0, *) {
+                UIApplication.shared.open(el.appAddress, options: [:], completionHandler: nil)
+            } else {
+                UIApplication.shared.openURL(el.appAddress)
+            }
+
+        }.disposed(by: disposeBag)
+
         // TODO subscribe 폴링여부
         // TODO 차이 결제 상태 approve 처리
 
         requestPayment(payment)
-//        openWebViewController(payment)
+
     }
 
     private func requestPayment(_ payment: Payment) {
@@ -68,8 +91,6 @@ public class IamportSdk {
         // TODO Payment data validator
 
         // TODO 네트워크 상태 체크
-
-        // TODO judge strategy
 
         viewModel.judgePayment(payment)
     }

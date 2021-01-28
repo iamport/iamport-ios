@@ -35,7 +35,9 @@ public class BaseWebViewStrategy: IStrategy {
         RxBus.shared.post(event: EventBus.WebViewEvents.ImpResponse(impResponse: response))
     }
 
-    func start() {
+    func doWork(_ payment: Payment) {
+        clear()
+        self.payment = payment
 
         EventBus.shared.closeSubject.subscribe { [weak self] event in
             self?.clear()
@@ -52,12 +54,6 @@ public class BaseWebViewStrategy: IStrategy {
                     #endif
                     self?.onUpdatedUrl(url: el.url)
                 }.disposed(by: disposeBag)
-    }
-
-    func doWork(_ payment: Payment) {
-        clear()
-        self.payment = payment
-        start()
     }
 
     func onUpdatedUrl(url: URL) {
