@@ -22,6 +22,7 @@ class ChaiStrategy: BaseStrategy {
      */
     func doWork(_ pgId: String, _ payment: Payment) {
         super.doWork(payment)
+
         chaiId = pgId
         print("doWork! \(payment)")
 
@@ -34,6 +35,7 @@ class ChaiStrategy: BaseStrategy {
         print(url)
 
         let prepareRequest = PrepareRequest.makeDictionary(chaiId: pgId, payment: payment)
+        print(prepareRequest)
         let doNetwork = Alamofire.request(url, method: .post, parameters: prepareRequest, encoding: JSONEncoding.default, headers: headers)
         print(doNetwork)
         doNetwork.responseJSON { [weak self] response in
@@ -61,10 +63,156 @@ class ChaiStrategy: BaseStrategy {
         }
     }
 
+    func pollingChaiStatus() {
+        guard let prepare = prepareData, let idempotencyKey = prepare.idempotencyKey,
+              let publicAPIKey = prepareData?.publicAPIKey, let paymentId = prepareData?.paymentId else {
+            print("prepareData 정보 찾을 수 없음")
+            return
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "Idempotency-Key": idempotencyKey,
+            "public-API-Key": publicAPIKey
+        ]
+        let url = CONST.CHAI_SERVICE_URL + "/v1/payment/\(paymentId)"
+        print(url)
+
+        let doNetwork = Alamofire.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
+
+        doNetwork.responseJSON { [weak self] response in
+
+            guard let payment = self?.payment, let prepareData = self?.prepareData else {
+                return
+            }
+
+            switch response.result {
+            case .success(let data):
+                do {
+                    let dataJson = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+                    let getData = try JSONDecoder().decode(ChaiPayment.self, from: dataJson)
+                    dump(getData)
+
+                    if let status = ChaiPaymentStatus.from(displayStatus: getData.displayStatus) {
+                        switch status {
+                        case .approved:
+                            print("결제성공! \(status.rawValue)")
+                            self?.confirmMerchant(payment: payment, prepareData: prepareData)
+
+                        case .confirmed:
+                            self?.successFinish(payment: payment, prepareData: prepareData, msg: "가맹점 측 결제 승인 완료 (결제 성공) \(status.rawValue)")
+
+                        case .partial_confirmed:
+                            self?.successFinish(payment: payment, prepareData: prepareData, msg: "부분 취소된 결제 \(status.rawValue)")
+
+                        case .waiting, .prepared:
+                            Utils.delay(bySeconds: 3, dispatchLevel: .userInteractive) {
+                                print("폴링!!")
+                                self?.pollingChaiStatus()
+                            }
+                        case .user_canceled, .canceled, .failed, .timeout:
+                            print("결제취소 \(status.rawValue)")
+                        }
+                    }
+                } catch {
+                    self?.failureFinish(payment: payment, msg: "success but \(error.localizedDescription)")
+                }
+            case .failure(let error):
+                self?.failureFinish(payment: payment, msg: "통신실패 \(error.localizedDescription)")
+            }
+        }
+    }
+
+    private func confirmMerchant(payment: Payment, prepareData: PrepareData) {
+
+        let approve = IamPortApprove.make(payment: payment, prepareData: prepareData)
+        // TODO 머천트의 approve 체크
+
+        requestApprovePayments(approve: approve)
+    }
+
+    private func requestApprovePayments(approve: IamPortApprove) {
+
+//        let headers: HTTPHeaders = [
+//            "Content-Type": "application/json",
+//            "Idempotency-Key": idempotencyKey,
+//            "public-API-Key": publicAPIKey
+//        ]
+//        let url = CONST.CHAI_SERVICE_URL + "/v1/payment/\(paymentId)"
+//        print(url)
+//
+//        let doNetwork = Alamofire.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
+//
+//        doNetwork.responseJSON { [weak self] response in
+//
+//        }
+
+        // TODO 최종결제 승인요청
+        processApprovePayments(approve: approve)
+    }
+
+    private func processApprovePayments(approve: IamPortApprove) {
+        print("결제 최종 승인 요청~~~")
+
+        let headers: HTTPHeaders = ["Content-Type": "application/json"]
+        guard let idempotencyKey = approve.idempotencyKey else {
+            print("idempotencyKey 를 찾을 수 없음")
+            return
+        }
+
+        let getUrl = CONST.IAMPORT_PROD_URL + "/chai_payments/result/\(approve.userCode)/\(idempotencyKey)"
+
+        let queryItems = [
+            URLQueryItem(name: CHAI.PAYMENT_ID, value: approve.paymentId),
+            URLQueryItem(name: CHAI.IDEMPOENCY_KEY, value: idempotencyKey),
+            URLQueryItem(name: CHAI.STATUS, value: ChaiPaymentStatus.approved.rawValue),
+            URLQueryItem(name: CHAI.NATIVE, value: OS.aos.rawValue), ]
+
+        var urlComponents = URLComponents(string: getUrl)
+        urlComponents?.queryItems = queryItems
+
+        guard let url = urlComponents?.url else {
+            print("url 없는디..?")
+            return
+        }
+
+        print(urlComponents?.url)
+
+        let doNetwork = Alamofire.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
+        print(doNetwork)
+
+        doNetwork.responseJSON { [weak self] response in
+            guard let payment = self?.payment, let prepareData = self?.prepareData else {
+                return
+            }
+
+            switch response.result {
+            case .success(let data):
+                do {
+                    let dataJson = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+                    print(dataJson)
+                    let getData = try JSONDecoder().decode(Approve.self, from: dataJson)
+                    dump(getData)
+
+                    guard getData.code == 0 else {
+                        self?.failureFinish(payment: payment, prepareData: prepareData, msg: "결제실패 \(String(describing: approve.msg))")
+                        return
+                    }
+
+                    self?.successFinish(payment: payment, prepareData: prepareData, msg: "결제성공")
+
+                } catch {
+                    self?.failureFinish(payment: payment, prepareData: prepareData, msg: "결제콜백")
+                }
+            case .failure(let error):
+                self?.failureFinish(payment: payment, prepareData: prepareData, msg: "결제실패 \(error.localizedDescription)")
+            }
+        }
+    }
+
     private func processPrepare(_ prepareData: PrepareData) {
         self.prepareData = prepareData
 
-        // TODO 차이앱 띄우기 ㄱㄱ
         let queryItems = [
             URLQueryItem(name: "publicAPIKey", value: prepareData.publicAPIKey),
             URLQueryItem(name: "paymentId", value: prepareData.paymentId),
@@ -78,6 +226,7 @@ class ChaiStrategy: BaseStrategy {
             RxBus.shared.post(event: EventBus.MainEvents.ChaiUri(appAddress: url))
         }
 
+        pollingChaiStatus()
     }
 
 }
