@@ -32,6 +32,8 @@ class CONST {
     static let CHAI_SERVICE_URL = "https://api.chai.finance"
     static let CHAI_SERVICE_STAGING_URL = "https://api-staging.chai.finance"
 
+    static let SMILE_PAY_BASE_URL = "https://www.mysmilepay.com"
+
     static let PAYMENT_PLAY_STORE_URL = "market://details?id="
 
     static let PAYMENT_FILE_URL = "경로/iamportcdn.html"

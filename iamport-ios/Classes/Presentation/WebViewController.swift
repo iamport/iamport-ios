@@ -18,12 +18,22 @@ class WebViewController: UIViewController, WKUIDelegate {
     var webView: WKWebView?
     var payment: Payment?
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         #if DEBUG
-        print("viewDidDisappear")
+        print("viewWillDisappear")
         #endif
-        clear()
+
+        if let wv = webView {
+            wv.stopLoading()
+            wv.removeFromSuperview()
+            wv.uiDelegate = nil
+            wv.navigationDelegate = nil
+        }
+        webView = nil
+        view.removeFromSuperview()
+
+//        clear()
         disposeBag = DisposeBag()
     }
 
@@ -32,6 +42,7 @@ class WebViewController: UIViewController, WKUIDelegate {
         #if DEBUG
         print("WebViewController 어서오고")
         #endif
+
         view.backgroundColor = UIColor.white
         observePaymentData()
     }
@@ -44,6 +55,7 @@ class WebViewController: UIViewController, WKUIDelegate {
         let eventBus = EventBus.shared
 
         eventBus.closeBus.subscribe { [weak self] in
+            print("closeBus")
             self?.sdkFinish(nil)
         }.disposed(by: disposeBag)
 
@@ -68,6 +80,8 @@ class WebViewController: UIViewController, WKUIDelegate {
                 print("Error not found ImpResponse")
                 return
             }
+
+            print("receive ImpResponse")
             self?.sdkFinish(el.impResponse)
         }.disposed(by: disposeBag)
 
@@ -137,7 +151,7 @@ class WebViewController: UIViewController, WKUIDelegate {
 
         viewModel.requestPayment(payment: it)
     }
-    
+
 
     /*
      모든 결과 처리 및 SDK 종료
@@ -194,25 +208,10 @@ class WebViewController: UIViewController, WKUIDelegate {
         #if DEBUG
         print("openThirdPartyApp \(url)")
         #endif
-        let application = UIApplication.shared
-        if (application.canOpenURL(url)) {
-            if #available(iOS 10.0, *) {
-                application.open(url, options: [:], completionHandler: nil)
-            } else {
-                application.openURL(url)
-            }
-        } else {
-            openURLToAppStore(url)
-        }
-    }
-
-    //MARK : 앱스토어로 이동
-    private func openURLToAppStore(_ url: URL) {
-        if let openUrl = URL(string: Utils.getMarketUrl(url: url.absoluteString, scheme: url.scheme ?? "")) {
-            if #available(iOS 10.0, *) {
-                UIApplication.shared.open(openUrl, options: [:], completionHandler: nil)
-            } else {
-                UIApplication.shared.openURL(openUrl)
+        let result = Utils.openApp(url) // 앱 열기
+        if (!result) {
+            if let scheme = url.scheme, let url = URL(string: Utils.getMarketUrl(scheme: scheme)) {
+                Utils.openApp(url) // 앱스토어로 이동
             }
         }
     }
@@ -223,16 +222,32 @@ class WebViewController: UIViewController, WKUIDelegate {
     private func openWebView() {
         print("오픈! 웹뷰")
 
+        let fileName = "iamportcdn"
+        let fileExtension = "html"
+
+        let myPG = payment?.iamPortRequest.pgEnum
         let bundle = Bundle(for: type(of: self))
-        guard let url = bundle.url(forResource: "iamportcdn", withExtension: "html") else {
-            print("html file url 비정상이요")
-            return
+
+        var urlRequest: URLRequest? = nil // for webView load
+        var htmlContents: String? = nil // for webView loadHtml(smilepay 자동 로그인)
+
+        if (myPG == PG.smilepay) {
+            if let filepath = bundle.path(forResource: fileName, ofType: fileExtension) {
+                htmlContents = try? String(contentsOfFile: filepath, encoding: .utf8)
+            }
+        } else {
+            guard let url = bundle.url(forResource: fileName, withExtension: fileExtension) else {
+                print("html file url 비정상")
+                return
+            }
+
+            #if DEBUG
+            dump(url)
+            #endif
+
+            urlRequest = URLRequest(url: url)
         }
 
-        let request = URLRequest(url: url)
-        #if DEBUG
-        dump(url)
-        #endif
 
         let config = WKWebViewConfiguration.init()
         let userController = WKUserContentController()
@@ -242,27 +257,44 @@ class WebViewController: UIViewController, WKUIDelegate {
         config.userContentController = userController
 
         DispatchQueue.main.async { [weak self] in
+
             if let view = self?.view {
                 self?.webView = WKWebView.init(frame: view.frame, configuration: config)
                 if let wv = self?.webView {
-                    wv.uiDelegate = self
-                    wv.navigationDelegate = self
 
-                    wv.load(request)
+                    if (myPG == PG.smilepay) {
+                        if let base = URL(string: CONST.SMILE_PAY_BASE_URL),
+                           let contents = htmlContents {
+                            wv.loadHTMLString(contents, baseURL: base)
+                        }
+                    } else {
+                        if let request = urlRequest {
+                            wv.load(request)
+                        }
+                    }
+
+                    view.removeFromSuperview()
                     view.addSubview(wv)
                     wv.frame = view.bounds
+
+                    wv.uiDelegate = self
+                    wv.navigationDelegate = self
                 }
             }
         }
     }
 }
 
+
 extension WebViewController: WKNavigationDelegate {
+
 
     @available(iOS 8.0, *)
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         // url 변경 시점
+
         if let url = navigationAction.request.url {
+
             RxBus.shared.post(event: EventBus.WebViewEvents.UpdateUrl(url: url))
 
             let policy = Utils.getActionPolicy(url)
@@ -357,3 +389,39 @@ extension WebViewController: WKScriptMessageHandler {
         }
     }
 }
+
+
+/**
+ 쿠키 처리 필요시..
+             let policy = Utils.getActionPolicy(url)
+            if (!policy) {
+//                let cookies = HTTPCookieStorage.shared.cookies ?? []
+//                for cookie in cookies {
+//                    if #available(iOS 11.0, *) {
+//                        dump(cookie)
+//                        if (cookie.domain.contains(".mysmilepay.com")) {
+//                            webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
+//                        }
+//                    } else {
+//                        // Fallback on earlier versions
+//                    }
+//                }
+
+
+//                if #available(iOS 11.0, *) {
+//                    webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { (cookies) in
+//                        for cookie in cookies {
+//                            print("@@@ cookie ==> \(cookie.name) : \(cookie.value)")
+//                            if cookie.name.contains("sp_") {
+////                                UserDefaults.standard.set(cookie.value, forKey: "PHPSESSID")
+//                                webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
+//                                print("@@@ PHPSESSID 저장하기: \(cookie.value)")
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    // Fallback on earlier versions
+//                }
+
+            }
+ */

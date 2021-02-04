@@ -13,6 +13,11 @@ open class Iamport {
     private var sdk: IamportSdk?
     private var paymentResult: ((IamPortResponse?) -> Void)? // 결제 결과 callback
 
+    init() {
+        // WebView 쿠키 enable 위해 추가
+        HTTPCookieStorage.shared.cookieAcceptPolicy = HTTPCookie.AcceptPolicy.always
+    }
+
     private func clear() {
         sdk = nil
         paymentResult = nil

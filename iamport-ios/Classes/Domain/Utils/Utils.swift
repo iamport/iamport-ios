@@ -179,7 +179,19 @@ class Utils {
             return "https://itunes.apple.com/app/id666237916";
         default:
             return url;
+
+    static func openApp(_ url: URL) -> Bool {
+        let application = UIApplication.shared
+        let result = application.canOpenURL(url)
+
+        if (result) {
+            if #available(iOS 10.0, *) {
+                application.open(url, options: [:], completionHandler: nil)
+            } else {
+                application.openURL(url)
+            }
         }
+        return result
     }
 
     /**
