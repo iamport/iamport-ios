@@ -128,6 +128,20 @@ extension Data {
     }
 }
 
+extension String {
+    func trim() -> String {
+        return self.trimmingCharacters(in: CharacterSet.whitespaces)
+    }
+
+    func NilOrEmpty() -> Bool {
+        if (self.trim().isEmpty) {
+            return true
+        } else {
+            return false
+        }
+    }
+}
+
 class Utils {
     static public func getQueryStringToImpResponse(_ url: URL) -> IamPortResponse? {
         #if DEBUG
@@ -141,44 +155,56 @@ class Utils {
         return nil
     }
 
-    static func getMarketUrl(url: String, scheme: String) -> String {
+    static func getMarketUrl(scheme: String) -> String {
+
+        var code: String
         switch (scheme) {
         case "kftc-bankpay": // 뱅크페이
-            return "https://itunes.apple.com/kr/app/id398456030";
+            code = "id398456030";
         case "ispmobile": // ISP/페이북
-            return "https://itunes.apple.com/kr/app/id369125087";
+            code = "id369125087";
         case "hdcardappcardansimclick": // 현대카드 앱카드
-            return "https://itunes.apple.com/kr/app/id702653088";
+            code = "id702653088";
         case "shinhan-sr-ansimclick": // 신한 앱카드
-            return "https://itunes.apple.com/app/id572462317";
+            code = "id572462317";
         case "kb-acp": // KB국민 앱카드
-            return "https://itunes.apple.com/kr/app/id695436326";
+            code = "id695436326";
         case "mpocket.online.ansimclick": // 삼성앱카드
-            return "https://itunes.apple.com/kr/app/id535125356";
+            code = "id535125356";
         case "lottesmartpay": // 롯데 모바일결제
-            return "https://itunes.apple.com/kr/app/id668497947";
+            code = "id668497947";
         case "lotteappcard": // 롯데 앱카드
-            return "https://itunes.apple.com/kr/app/id688047200";
+            code = "id688047200";
         case "cloudpay": // 하나1Q페이(앱카드)
-            return "https://itunes.apple.com/kr/app/id847268987";
+            code = "id847268987";
         case "citimobileapp": // 시티은행 앱카드
-            return "https://itunes.apple.com/kr/app/id1179759666";
+            code = "id1179759666";
         case "payco": // 페이코
-            return "https://itunes.apple.com/kr/app/id924292102";
+            code = "id924292102";
         case "kakaotalk": // 카카오톡
-            return "https://itunes.apple.com/kr/app/id362057947";
+            code = "id362057947";
         case "lpayapp": // 롯데 L.pay
-            return "https://itunes.apple.com/kr/app/id1036098908";
+            code = "id1036098908";
         case "wooripay": // 우리페이
-            return "https://itunes.apple.com/kr/app/id1201113419";
+            code = "id1201113419";
         case "nhallonepayansimclick": // NH농협카드 올원페이(앱카드)
-            return "https://itunes.apple.com/kr/app/id1177889176";
+            code = "id1177889176";
         case "hanawalletmembers": // 하나카드(하나멤버스 월렛)
-            return "https://itunes.apple.com/kr/app/id1038288833";
+            code = "id1038288833";
         case "shinsegaeeasypayment": // 신세계 SSGPAY
-            return "https://itunes.apple.com/app/id666237916";
+            code = "id666237916";
+        case "shinsegaeeasypayment": // 신세계 SSGPAY
+            code = "id666237916";
+        case CHAI.scheme: // 차이
+            code = "id1459979272";
         default:
-            return url;
+            code = "";
+        }
+
+        let marketUrl = "itms-apps://itunes.apple.com/app/\(code)"
+        return marketUrl
+    }
+
 
     static func openApp(_ url: URL) -> Bool {
         let application = UIApplication.shared
@@ -204,9 +230,9 @@ class Utils {
         return false
     }
 
-    /**
-     * 결제 끝났는지 여부
-     */
+/**
+ * 결제 끝났는지 여부
+ */
     static func isPaymentOver(_ uri: URL) -> Bool {
         uri.absoluteString.contains(CONST.IAMPORT_DUMMY_URL)
     }

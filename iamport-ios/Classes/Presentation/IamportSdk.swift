@@ -24,7 +24,7 @@ public class IamportSdk {
 //        updatePolling(false)
 //        controlForegroundService(false)
 //        viewModel.clearData()
-        EventBus.shared.closeSubject.onNext(())
+        EventBus.shared.closeSubject.onNext(()) // FIXME 어디서 중복됨
         disposeBag = DisposeBag()
     }
 
@@ -71,10 +71,12 @@ public class IamportSdk {
                 return
             }
 
-            if #available(iOS 10.0, *) {
-                UIApplication.shared.open(el.appAddress, options: [:], completionHandler: nil)
-            } else {
-                UIApplication.shared.openURL(el.appAddress)
+            let result = Utils.openApp(el.appAddress)
+            // TODO true 때만 차이 스트레티지 동작 해야 함??
+            if (!result) {
+                if let scheme = el.appAddress.scheme, let url = URL(string: Utils.getMarketUrl(scheme: scheme)) {
+                    Utils.openApp(url)
+                }
             }
 
         }.disposed(by: disposeBag)
