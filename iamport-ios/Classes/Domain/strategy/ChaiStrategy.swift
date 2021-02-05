@@ -12,9 +12,12 @@ class ChaiStrategy: BaseStrategy {
     var prepareData: PrepareData?
     var chaiId: String?
 
+    var timeOutTime: DispatchTime? //= DispatchTime.now()
+
     override func clear() {
         chaiId = nil
         prepareData = nil
+        timeOutTime = nil
         super.clear()
     }
 
@@ -38,13 +41,19 @@ class ChaiStrategy: BaseStrategy {
             "Content-Type": "application/json"
         ]
         let url = CONST.IAMPORT_PROD_URL + "/chai_payments/prepare"
+        #if DEBUG
         print(url)
+        #endif
 
         let prepareRequest = PrepareRequest.makeDictionary(chaiId: pgId, payment: payment)
+        #if DEBUG
         print(prepareRequest)
+        #endif
 
         let doNetwork = Network.alamoFireManager.request(url, method: .post, parameters: prepareRequest, encoding: JSONEncoding.default, headers: headers)
+        #if DEBUG
         print(doNetwork)
+        #endif
         doNetwork.responseJSON { [weak self] response in
             switch response.result {
             case .success(let data):
@@ -57,8 +66,11 @@ class ChaiStrategy: BaseStrategy {
                         return
                     }
 
+                    #if DEBUG
                     print(dataJson)
                     print(getData)
+                    #endif
+
                     self?.processPrepare(getData.data)
 
                 } catch {
@@ -84,7 +96,9 @@ class ChaiStrategy: BaseStrategy {
             "public-API-Key": publicAPIKey
         ]
         let url = CONST.CHAI_SERVICE_URL + "/v1/payment/\(paymentId)"
+        #if DEBUG
         print(url)
+        #endif
 
         let doNetwork = Network.alamoFireManager.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
 
@@ -99,7 +113,9 @@ class ChaiStrategy: BaseStrategy {
                 do {
                     let dataJson = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
                     let getData = try JSONDecoder().decode(ChaiPayment.self, from: dataJson)
+                    #if DEBUG
                     dump(getData)
+                    #endif
 
                     if let status = ChaiPaymentStatus.from(displayStatus: getData.displayStatus) {
                         switch status {
@@ -114,10 +130,7 @@ class ChaiStrategy: BaseStrategy {
                             self?.successFinish(payment: payment, prepareData: prepareData, msg: "부분 취소된 결제 \(status.rawValue)")
 
                         case .waiting, .prepared:
-                            Utils.delay(bySeconds: Double(CONST.POLLING_DELAY), dispatchLevel: .userInteractive) {
-                                print("폴링!!")
-                                self?.pollingChaiStatus()
-                            }
+                            self?.tryPolling()
 
                         case .user_canceled, .canceled, .failed, .timeout:
                             print("결제취소 \(status.rawValue)")
@@ -128,10 +141,41 @@ class ChaiStrategy: BaseStrategy {
                     self?.failureFinish(payment: payment, msg: "success but \(error.localizedDescription)")
                 }
             case .failure(let error):
-                self?.failureFinish(payment: payment, msg: "통신실패 \(error.localizedDescription)")
+//                self?.failureFinish(payment: payment, msgC: "통신실패 \(error.localizedDescription)")
+                print("통신실패로 인한 폴링 시도!!")
+                self?.tryPolling()
             }
         }
     }
+
+    private func tryPolling() {
+        if (isTimeOut()) {
+            guard let payment = payment, let prepareData = prepareData else {
+                print("isTimeOut 이나, payment : \(self.payment), prepareData : \(self.prepareData)")
+                sdkFinish(nil)
+                return
+            }
+
+            failureFinish(payment: payment, prepareData: prepareData, msg: "I'mport : 타임아웃으로 인해 결제를 진행하지 않습니다")
+            return
+        }
+
+        Utils.delay(bySeconds: Double(CONST.POLLING_DELAY), dispatchLevel: .userInteractive) {
+            print("폴링!!")
+            self.pollingChaiStatus()
+        }
+    }
+
+    func isTimeOut() -> Bool {
+        if let timeOut = timeOutTime {
+            #if DEBUG
+            print("now time \(DispatchTime.now()) : timeout \(timeOut)")
+            #endif
+            return DispatchTime.now() >= timeOut
+        }
+        return true
+    }
+
 
     private func confirmMerchant(payment: Payment, prepareData: PrepareData) {
 
@@ -201,9 +245,13 @@ class ChaiStrategy: BaseStrategy {
             case .success(let data):
                 do {
                     let dataJson = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+                    #if DEBUG
                     print(dataJson)
+                    #endif
                     let getData = try JSONDecoder().decode(Approve.self, from: dataJson)
+                    #if DEBUG
                     dump(getData)
+                    #endif
 
                     guard getData.code == 0 else {
                         self?.failureFinish(payment: payment, prepareData: prepareData, msg: "결제실패 \(String(describing: approve.msg))")
@@ -231,12 +279,18 @@ class ChaiStrategy: BaseStrategy {
 
         var openDeepLink = URLComponents(string: "chaipayment://payment")
         openDeepLink?.queryItems = queryItems
+        #if DEBUG
         print(openDeepLink)
+        #endif
 
         if let url = openDeepLink?.url {
             RxBus.shared.post(event: EventBus.MainEvents.ChaiUri(appAddress: url))
         }
 
+        timeOutTime = DispatchTime.now() + Double(CONST.TIME_OUT)
+        #if DEBUG
+        print("set timeOutTime \(timeOutTime)")
+        #endif
         pollingChaiStatus()
     }
 
