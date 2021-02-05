@@ -169,7 +169,7 @@ pod 'iamport-ios'
 
 ## Author
 
-bingbong, akrasias2@naver.com
+bingbong, bingbong@chai.finance
 
 ## License
 
