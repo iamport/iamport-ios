@@ -44,6 +44,7 @@ class WebViewController: UIViewController, WKUIDelegate {
         #endif
 
         view.backgroundColor = UIColor.white
+        setupWebView()
         observePaymentData()
     }
 
@@ -216,6 +217,28 @@ class WebViewController: UIViewController, WKUIDelegate {
         }
     }
 
+    private func setupWebView() {
+
+        let config = WKWebViewConfiguration.init()
+        let userController = WKUserContentController()
+        userController.add(self, name: JsInterface.RECEIVED.rawValue)
+        userController.add(self, name: JsInterface.START_REQUEST_PAY.rawValue)
+        userController.add(self, name: JsInterface.CUSTOM_CALL_BACK.rawValue)
+        config.userContentController = userController
+        webView = WKWebView.init(frame: view.frame, configuration: config)
+
+        if let wv = webView {
+            wv.backgroundColor = UIColor.white
+            wv.frame = view.bounds
+
+            view.removeFromSuperview()
+            view.addSubview(wv)
+
+            wv.uiDelegate = self
+            wv.navigationDelegate = self
+        }
+    }
+
     /**
      * 결제 요청 실행
      */
@@ -248,38 +271,19 @@ class WebViewController: UIViewController, WKUIDelegate {
             urlRequest = URLRequest(url: url)
         }
 
-
-        let config = WKWebViewConfiguration.init()
-        let userController = WKUserContentController()
-        userController.add(self, name: JsInterface.RECEIVED.rawValue)
-        userController.add(self, name: JsInterface.START_REQUEST_PAY.rawValue)
-        userController.add(self, name: JsInterface.CUSTOM_CALL_BACK.rawValue)
-        config.userContentController = userController
-
         DispatchQueue.main.async { [weak self] in
-
-            if let view = self?.view {
-                self?.webView = WKWebView.init(frame: view.frame, configuration: config)
-                if let wv = self?.webView {
-
-                    if (myPG == PG.smilepay) {
-                        if let base = URL(string: CONST.SMILE_PAY_BASE_URL),
-                           let contents = htmlContents {
-                            wv.loadHTMLString(contents, baseURL: base)
-                        }
-                    } else {
-                        if let request = urlRequest {
-                            wv.load(request)
-                        }
+            if let wv = self?.webView {
+                if (myPG == PG.smilepay) {
+                    if let base = URL(string: CONST.SMILE_PAY_BASE_URL),
+                       let contents = htmlContents {
+                        wv.loadHTMLString(contents, baseURL: base)
                     }
-
-                    view.removeFromSuperview()
-                    view.addSubview(wv)
-                    wv.frame = view.bounds
-
-                    wv.uiDelegate = self
-                    wv.navigationDelegate = self
+                } else {
+                    if let request = urlRequest {
+                        wv.load(request)
+                    }
                 }
+
             }
         }
     }
