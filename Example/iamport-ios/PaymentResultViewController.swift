@@ -18,7 +18,7 @@ import RxViewController
 class PaymentResultViewController: UIViewController, UIGestureRecognizerDelegate {
 
     // 결과 전달 받을 RxSubject
-    let impResponseSubject = BehaviorSubject<IamPortResponse?>(value: nil)
+    let impResponseRelay = BehaviorRelay<IamPortResponse?>(value: nil)
     var disposeBag = DisposeBag()
 
     override func viewDidLoad() {
@@ -29,7 +29,7 @@ class PaymentResultViewController: UIViewController, UIGestureRecognizerDelegate
 
         let successColor = UIColor.green
         let failColor = UIColor.orange
-        impResponseSubject.asObservable().subscribe { iamportResponseEvent in
+        impResponseRelay.asObservable().subscribe { iamportResponseEvent in
             var color: UIColor = failColor
             // 성공 케이스
             if let iamportResponse = iamportResponseEvent.element, let response = iamportResponse {
@@ -46,8 +46,8 @@ class PaymentResultViewController: UIViewController, UIGestureRecognizerDelegate
         iamportResponse.imp_success ?? false || iamportResponse.success ?? false
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         disposeBag = DisposeBag()
     }
 

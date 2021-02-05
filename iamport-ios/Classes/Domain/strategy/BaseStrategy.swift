@@ -33,13 +33,14 @@ public class BaseStrategy: IStrategy {
     func sdkFinish(_ response: IamPortResponse?) {
         clear()
 //        RxBus.shared.post(event: EventBus.WebViewEvents.ImpResponse(impResponse: response))
+        EventBus.shared.impResponseRelay.accept(response)
     }
 
     func doWork(_ payment: Payment) {
         clear()
         self.payment = payment
 
-        EventBus.shared.closeSubject.subscribe { [weak self] event in
+        EventBus.shared.closeRelay.subscribe { [weak self] event in
             self?.clear()
         }.disposed(by: disposeBag)
 

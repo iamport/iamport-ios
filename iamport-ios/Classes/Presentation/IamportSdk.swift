@@ -24,7 +24,7 @@ public class IamportSdk {
 //        updatePolling(false)
 //        controlForegroundService(false)
 //        viewModel.clearData()
-        EventBus.shared.closeSubject.onNext(()) // FIXME 어디서 중복됨
+        EventBus.shared.closeRelay.accept(()) // FIXME 어디서 중복됨
         disposeBag = DisposeBag()
     }
 
@@ -100,7 +100,7 @@ public class IamportSdk {
     // 웹뷰 컨트롤러 열기 및 데이터 전달
     private func openWebViewController(_ payment: Payment) {
         DispatchQueue.main.async { [weak self] in
-            EventBus.shared.paymentSubject.onNext(payment)
+            EventBus.shared.paymentRelay.accept(payment)
             self?.naviController.pushViewController(WebViewController(), animated: true)
 //            self?.naviController.present(WebViewController(), animated: true)
             #if DEBUG

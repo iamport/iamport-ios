@@ -21,7 +21,7 @@ class StrategyRepository {
     private let inisisTransWebViewStrategy = InisisTransWebViewStrategy()
 
     func clear() {
-        EventBus.shared.closeSubject.onNext(())
+        EventBus.shared.closeRelay.accept(())
     }
 
 

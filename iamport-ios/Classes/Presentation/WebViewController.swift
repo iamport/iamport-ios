@@ -165,7 +165,7 @@ class WebViewController: UIViewController, WKUIDelegate {
 //        clear()
         navigationController?.popViewController(animated: false)
         dismiss(animated: true) {
-            EventBus.shared.impResponseSubject.onNext(iamPortResponse)
+            EventBus.shared.impResponseRelay.accept(iamPortResponse)
         }
     }
 

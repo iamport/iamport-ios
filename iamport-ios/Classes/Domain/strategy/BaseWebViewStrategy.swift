@@ -39,7 +39,7 @@ public class BaseWebViewStrategy: IStrategy {
         clear()
         self.payment = payment
 
-        EventBus.shared.closeSubject.subscribe { [weak self] event in
+        EventBus.shared.closeRelay.subscribe { [weak self] event in
             self?.clear()
         }.disposed(by: disposeBag)
 

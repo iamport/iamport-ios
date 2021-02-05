@@ -70,8 +70,9 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     func paymentCallback(_ response: IamPortResponse?) {
         print("결과 왔습니다~~")
         let resultVC = PaymentResultViewController()
-        resultVC.impResponseSubject.onNext(response)
+        resultVC.impResponseRelay.accept(response)
         navigationController?.present(resultVC, animated: true)
+//        navigationController?.pushViewController(resultVC, animated: true)
     }
 
 
