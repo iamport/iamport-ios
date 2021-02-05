@@ -18,7 +18,7 @@ import RxViewController
 class PaymentResultViewController: UIViewController, UIGestureRecognizerDelegate {
 
     // 결과 전달 받을 RxSubject
-    let impResponseSubject = BehaviorSubject<IamPortResponse?>(value: nil)
+    let impResponseRelay = BehaviorRelay<IamPortResponse?>(value: nil)
     var disposeBag = DisposeBag()
 
     override func viewDidLoad() {
@@ -29,7 +29,7 @@ class PaymentResultViewController: UIViewController, UIGestureRecognizerDelegate
 
         let successColor = UIColor.green
         let failColor = UIColor.orange
-        impResponseSubject.asObservable().subscribe { iamportResponseEvent in
+        impResponseRelay.asObservable().subscribe { iamportResponseEvent in
             var color: UIColor = failColor
             // 성공 케이스
             if let iamportResponse = iamportResponseEvent.element, let response = iamportResponse {
@@ -42,12 +42,15 @@ class PaymentResultViewController: UIViewController, UIGestureRecognizerDelegate
         }.disposed(by: disposeBag)
     }
 
+    // imp_success, success 해당 값을 맹신할 수 없습니다.
+    // 뱅크페이 실시간 계좌이체의 경우 해당 값이 전달되지 않는 케이스가 있습니다.
+    // 결과 콜백을 받으면 Iamport REST API 등을 통해 실제 결제 여부를 체크하셔야 합니다.
     private func isSuccess(_ iamportResponse: IamPortResponse) -> Bool {
         iamportResponse.imp_success ?? false || iamportResponse.success ?? false
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         disposeBag = DisposeBag()
     }
 

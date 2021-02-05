@@ -5,27 +5,46 @@
 import Foundation
 import RxBus
 import RxSwift
+import RxRelay
 
 class EventBus {
 
     public static let shared = EventBus()
 
-    let paymentSubject = BehaviorSubject<Payment?>(value: nil)
+    let paymentRelay = BehaviorRelay<Payment?>(value: nil)
 
     var paymentBus: Observable<Payment?> {
-        paymentSubject.asObservable()
+        paymentRelay.asObservable()
     }
 
-    let impResponseSubject = PublishSubject<IamPortResponse?>()
+    let impResponseRelay = PublishRelay<IamPortResponse?>()
 
     public var impResponseBus: Observable<IamPortResponse?> {
-        impResponseSubject.asObservable()
+        impResponseRelay.asObservable()
     }
 
-    let closeSubject = PublishSubject<Void>()
+    let closeRelay = PublishRelay<Void>()
 
     public var closeBus: Observable<Void> {
-        closeSubject.asObservable()
+        closeRelay.asObservable()
+    }
+
+    let clearRelay = PublishRelay<Void>()
+
+    public var clearBus: Observable<Void> {
+        clearRelay.asObservable()
+    }
+
+    struct MainEvents {
+
+        struct JudgeEvent: BusEvent {
+            let judge: (JudgeStrategy.JudgeKinds, UserData?, Payment)
+        }
+
+        struct ChaiUri: BusEvent {
+            let appAddress: URL
+        }
+
     }
 
     struct WebViewEvents {

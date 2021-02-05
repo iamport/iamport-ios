@@ -9,7 +9,7 @@ import RxSwift
 
 public class IamportSdk {
 
-//    let viewModel = ViewModel()
+    let viewModel = MainViewModel()
     let naviController: UINavigationController
     var paymentResult: ((IamPortResponse?) -> Void)?
     var disposeBag = DisposeBag()
@@ -24,7 +24,7 @@ public class IamportSdk {
 //        updatePolling(false)
 //        controlForegroundService(false)
 //        viewModel.clearData()
-        EventBus.shared.closeSubject.onNext(())
+        EventBus.shared.closeRelay.accept(()) // FIXME 어디서 중복됨
         disposeBag = DisposeBag()
     }
 
@@ -53,16 +53,54 @@ public class IamportSdk {
             self?.sdkFinish(iamportResponse)
         }.disposed(by: disposeBag)
 
-        // TODO for observe CHAI
-        // ...
+        // TODO subscribe 결제결과
+        // subscribe 웹뷰열기
+        RxBus.shared.asObservable(event: EventBus.WebViewEvents.PaymentEvent.self).subscribe { [weak self] event in
+            guard let el = event.element else {
+                print("Error not found PaymentEvent")
+                return
+            }
 
-        openWebViewController(payment)
+            self?.openWebViewController(el.webViewPayment)
+        }.disposed(by: disposeBag)
+
+        // subscribe 차이앱열기
+        RxBus.shared.asObservable(event: EventBus.MainEvents.ChaiUri.self).subscribe { [weak self] event in
+            guard let el = event.element else {
+                print("Error not found PaymentEvent")
+                return
+            }
+
+            let result = Utils.openApp(el.appAddress)
+            // TODO true 때만 차이 스트레티지 동작 해야 함??
+            if (!result) {
+                if let scheme = el.appAddress.scheme, let url = URL(string: Utils.getMarketUrl(scheme: scheme)) {
+                    Utils.openApp(url)
+                }
+            }
+
+        }.disposed(by: disposeBag)
+
+        // TODO subscribe 폴링여부
+        // TODO 차이 결제 상태 approve 처리
+
+        requestPayment(payment)
+
+    }
+
+    private func requestPayment(_ payment: Payment) {
+
+        // TODO Payment data validator
+
+        // TODO 네트워크 상태 체크
+
+        viewModel.judgePayment(payment)
     }
 
     // 웹뷰 컨트롤러 열기 및 데이터 전달
     private func openWebViewController(_ payment: Payment) {
         DispatchQueue.main.async { [weak self] in
-            EventBus.shared.paymentSubject.onNext(payment)
+            EventBus.shared.paymentRelay.accept(payment)
             self?.naviController.pushViewController(WebViewController(), animated: true)
 //            self?.naviController.present(WebViewController(), animated: true)
             #if DEBUG

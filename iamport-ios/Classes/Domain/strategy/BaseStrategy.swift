@@ -1,13 +1,13 @@
 //
-// Created by BingBong on 2021/01/08.
+// Created by BingBong on 2021/01/22.
 //
 
 import Foundation
-import WebKit
 import RxBus
 import RxSwift
 
-public class BaseWebViewStrategy: IStrategy {
+public class BaseStrategy: IStrategy {
+
     var disposeBag = DisposeBag()
     var payment: Payment?
 
@@ -32,7 +32,8 @@ public class BaseWebViewStrategy: IStrategy {
 
     func sdkFinish(_ response: IamPortResponse?) {
         clear()
-        RxBus.shared.post(event: EventBus.WebViewEvents.ImpResponse(impResponse: response))
+//        RxBus.shared.post(event: EventBus.WebViewEvents.ImpResponse(impResponse: response))
+        EventBus.shared.impResponseRelay.accept(response)
     }
 
     func doWork(_ payment: Payment) {
@@ -43,21 +44,8 @@ public class BaseWebViewStrategy: IStrategy {
             self?.clear()
         }.disposed(by: disposeBag)
 
-        RxBus.shared.asObservable(event: EventBus.WebViewEvents.UpdateUrl.self)
-                .subscribe { [weak self] event in
-                    guard let el = event.element else {
-                        print("Error not found WebViewEvents")
-                        return
-                    }
-                    #if DEBUG
-                    print("onUpdatedUrl \(el.url)")
-                    #endif
-                    self?.onUpdatedUrl(url: el.url)
-                }.disposed(by: disposeBag)
     }
 
-    func onUpdatedUrl(url: URL) {
-    }
 
     /**
      * 성공해서 SDK 종료

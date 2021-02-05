@@ -55,6 +55,7 @@
 		<string>citimobileapp</string>
 		<string>kakaotalk</string>
 		<string>payco</string>
+		<string>chaipayment</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
