@@ -56,13 +56,13 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     // 아임포트 결제 데이터 생성
     func createPaymentData() -> IamPortRequest {
         IamPortRequest(
-                pg: PG.html5_inicis.getPgSting(storeId: ""),
+                pg: PG.chai.getPgSting(storeId: ""),
                 merchant_uid: "muid_ios_\(Int(Date().timeIntervalSince1970))",
                 amount: "1000").then {
-            $0.pay_method = PayMethod.card
+            $0.pay_method = PayMethod.trans
             $0.name = "배달의 민족 주문~"
             $0.buyer_name = "남궁안녕"
-            $0.app_scheme = "iamport://"
+            $0.app_scheme = "iamport"
         }
     }
 
