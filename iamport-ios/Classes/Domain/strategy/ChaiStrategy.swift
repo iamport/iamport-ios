@@ -12,6 +12,12 @@ class ChaiStrategy: BaseStrategy {
     var prepareData: PrepareData?
     var chaiId: String?
 
+    override func clear() {
+        chaiId = nil
+        prepareData = nil
+        super.clear()
+    }
+
     /**
      * 간략한 시퀀스 설명
      * 1. IMP 서버에 유저 정보 요청해서 chai id 얻음 -> 결제 시퀀스 전 체크하는 것으로 수정함
@@ -26,7 +32,7 @@ class ChaiStrategy: BaseStrategy {
         chaiId = pgId
         print("doWork! \(payment)")
 
-        //TODO * 2. IMP 서버에 결제시작 요청 (+ chai id)
+        //* 2. IMP 서버에 결제시작 요청 (+ chai id)
 
         let headers: HTTPHeaders = [
             "Content-Type": "application/json"
@@ -36,7 +42,8 @@ class ChaiStrategy: BaseStrategy {
 
         let prepareRequest = PrepareRequest.makeDictionary(chaiId: pgId, payment: payment)
         print(prepareRequest)
-        let doNetwork = Alamofire.request(url, method: .post, parameters: prepareRequest, encoding: JSONEncoding.default, headers: headers)
+
+        let doNetwork = Network.alamoFireManager.request(url, method: .post, parameters: prepareRequest, encoding: JSONEncoding.default, headers: headers)
         print(doNetwork)
         doNetwork.responseJSON { [weak self] response in
             switch response.result {
@@ -63,6 +70,7 @@ class ChaiStrategy: BaseStrategy {
         }
     }
 
+
     func pollingChaiStatus() {
         guard let prepare = prepareData, let idempotencyKey = prepare.idempotencyKey,
               let publicAPIKey = prepareData?.publicAPIKey, let paymentId = prepareData?.paymentId else {
@@ -78,7 +86,7 @@ class ChaiStrategy: BaseStrategy {
         let url = CONST.CHAI_SERVICE_URL + "/v1/payment/\(paymentId)"
         print(url)
 
-        let doNetwork = Alamofire.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
+        let doNetwork = Network.alamoFireManager.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
 
         doNetwork.responseJSON { [weak self] response in
 
@@ -96,7 +104,7 @@ class ChaiStrategy: BaseStrategy {
                     if let status = ChaiPaymentStatus.from(displayStatus: getData.displayStatus) {
                         switch status {
                         case .approved:
-                            print("결제성공! \(status.rawValue)")
+                            print("결제승인! \(status.rawValue)")
                             self?.confirmMerchant(payment: payment, prepareData: prepareData)
 
                         case .confirmed:
@@ -106,12 +114,14 @@ class ChaiStrategy: BaseStrategy {
                             self?.successFinish(payment: payment, prepareData: prepareData, msg: "부분 취소된 결제 \(status.rawValue)")
 
                         case .waiting, .prepared:
-                            Utils.delay(bySeconds: 3, dispatchLevel: .userInteractive) {
+                            Utils.delay(bySeconds: Double(CONST.POLLING_DELAY), dispatchLevel: .userInteractive) {
                                 print("폴링!!")
                                 self?.pollingChaiStatus()
                             }
+
                         case .user_canceled, .canceled, .failed, .timeout:
                             print("결제취소 \(status.rawValue)")
+                            self?.failureFinish(payment: payment, prepareData: prepareData, msg: "결제취소 \(status.rawValue)")
                         }
                     }
                 } catch {
@@ -141,7 +151,7 @@ class ChaiStrategy: BaseStrategy {
 //        let url = CONST.CHAI_SERVICE_URL + "/v1/payment/\(paymentId)"
 //        print(url)
 //
-//        let doNetwork = Alamofire.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
+//        let doNetwork = Network.alamoFireManager.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
 //
 //        doNetwork.responseJSON { [weak self] response in
 //
@@ -166,23 +176,24 @@ class ChaiStrategy: BaseStrategy {
             URLQueryItem(name: CHAI.PAYMENT_ID, value: approve.paymentId),
             URLQueryItem(name: CHAI.IDEMPOENCY_KEY, value: idempotencyKey),
             URLQueryItem(name: CHAI.STATUS, value: ChaiPaymentStatus.approved.rawValue),
-            URLQueryItem(name: CHAI.NATIVE, value: OS.aos.rawValue), ]
+            URLQueryItem(name: CHAI.NATIVE, value: OS.ios.rawValue), ]
 
         var urlComponents = URLComponents(string: getUrl)
         urlComponents?.queryItems = queryItems
 
         guard let url = urlComponents?.url else {
-            print("url 없는디..?")
+            print("urlComponents 에서 url 을 찾을 수 없음")
             return
         }
 
         print(urlComponents?.url)
 
-        let doNetwork = Alamofire.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
+        let doNetwork = Network.alamoFireManager.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
         print(doNetwork)
 
         doNetwork.responseJSON { [weak self] response in
             guard let payment = self?.payment, let prepareData = self?.prepareData else {
+                print("payment :: \(self?.payment), prepareData :: \(self?.prepareData)")
                 return
             }
 
