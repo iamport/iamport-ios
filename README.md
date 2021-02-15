@@ -13,6 +13,8 @@
 
 iOS 네이티브 앱에서 결제 개발을 간편하게 도와주는 아임포트 SDK 입니다.
 
+- CHAI 간편결제는 Native 연동되어 있습니다.
+
 - 여러 PG 들을 WebView 기반으로 결제 할 수 있습니다.
 
 - 추후 순차적으로 타 간편결제들도 네이티브 연동 예정입니다. 
@@ -32,14 +34,14 @@ iOS 네이티브 앱에서 결제 개발을 간편하게 도와주는 아임포�
 
 ---
 
-- iOS 설정방법
+## iOS plist 설정방법
 
 <details>
 <summary>iOS 설정 펼쳐보기</summary>
 
-# IOS 설정하기
+# iOS 설정하기
 
-아임포트 리액트 네이티브 모듈 설정 안내입니다. IOS에서 아임포트 결제연동 모듈을 사용하기 위해서는 아래 3가지 항목을 설정해주셔야 합니다.
+iOS에서 아임포트 결제연동 모듈을 사용하기 위해서는 아래 3가지 항목을 설정해주셔야 합니다.
 
 #### 1. App Scheme 등록
 외부 결제 앱(예) 페이코, 신한 판 페이)에서 결제 후 돌아올 때 사용할 URL identifier를 설정해야합니다.
@@ -166,6 +168,21 @@ pod 'iamport-ios'
       return true
   }
 ```
+
+## 💡 샘플앱
+
+
+[앱 소스 확인 경로](./Example/iamport-ios)
+
+
+실행방법 
+
+1. git clone 
+2. Xcode project open
+3. connect iPhone via USB Cable(or use Simulator)
+4. build [Example app](./Example)
+
+
 
 ## Author
 
