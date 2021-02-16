@@ -11,28 +11,32 @@ class EventBus {
 
     public static let shared = EventBus()
 
-    let paymentRelay = BehaviorRelay<Payment?>(value: nil)
+    // SDK 에 결제요청
+    let paymentRelay = PublishRelay<Payment?>()
 
     var paymentBus: Observable<Payment?> {
         paymentRelay.asObservable()
     }
 
+    // 실제 종료 시그널 IamportSdk 에서 사용
     let impResponseRelay = PublishRelay<IamPortResponse?>()
 
     public var impResponseBus: Observable<IamPortResponse?> {
         impResponseRelay.asObservable()
     }
 
-    let closeRelay = PublishRelay<Void>()
-
-    public var closeBus: Observable<Void> {
-        closeRelay.asObservable()
-    }
-
+    // 각종 데이터 초기화
     let clearRelay = PublishRelay<Void>()
 
     public var clearBus: Observable<Void> {
         clearRelay.asObservable()
+    }
+
+    // WebViewController 에 결제요청
+    let webViewPaymentRelay = BehaviorRelay<Payment?>(value: nil)
+
+    var webViewPaymentBus: Observable<Payment?> {
+        webViewPaymentRelay.asObservable()
     }
 
     struct MainEvents {
@@ -50,14 +54,15 @@ class EventBus {
     struct WebViewEvents {
 
         /**
-         * 결제 데이터
+         * WebViewController, WebViewStrategy 에서만 사용
+         * 결제 결과 콜백 및 종료
          */
-        struct PaymentEvent: BusEvent {
-            let webViewPayment: Payment
+        struct ImpResponse: BusEvent {
+            let impResponse: IamPortResponse?
         }
 
         /**
-         * 오픈 웹뷰
+         * 오픈 웹뷰 이벤트
          */
         struct OpenWebView: BusEvent {
         }
@@ -91,12 +96,6 @@ class EventBus {
             let thirdPartyUri: URL
         }
 
-        /**
-         * 결제 결과 콜백 및 종료
-         */
-        struct ImpResponse: BusEvent {
-            let impResponse: IamPortResponse?
-        }
     }
 
 }

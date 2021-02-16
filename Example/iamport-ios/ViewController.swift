@@ -22,7 +22,6 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         print("Merchant viewDidLoad")
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         view.backgroundColor = UIColor.white
-        Iamport.shared.close() // sdk 종료 원할시 호출
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -56,7 +55,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     // 아임포트 결제 데이터 생성
     func createPaymentData() -> IamPortRequest {
         IamPortRequest(
-                pg: PG.chai.getPgSting(storeId: ""),
+                pg: PG.chai.makePgRawName(storeId: ""),
                 merchant_uid: "muid_ios_\(Int(Date().timeIntervalSince1970))",
                 amount: "1000").then {
             $0.pay_method = PayMethod.trans
@@ -74,7 +73,6 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         navigationController?.present(resultVC, animated: true)
 //        navigationController?.pushViewController(resultVC, animated: true)
     }
-
 
     @IBOutlet var paymentButton: UIButton?
 }

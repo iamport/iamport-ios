@@ -29,7 +29,7 @@ class MainViewModel {
         DispatchQueue.main.async { [weak self] in
             //  TODO Payment Validator
 
-            // TODO judge
+            // judge
             self?.repository.judgeStrategy.doWork(payment)
         }
     }
@@ -42,7 +42,8 @@ class MainViewModel {
                 repository.chaiStrategy.doWork(userData.pg_id, judge.2)
             }
         case .WEB:
-            RxBus.shared.post(event: EventBus.WebViewEvents.PaymentEvent(webViewPayment: judge.2))
+//            RxBus.shared.post(event: EventBus.WebViewEvents.PaymentEvent(webViewPayment: judge.2))
+            EventBus.shared.paymentRelay.accept(judge.2)
         case .EMPTY:
             print("판단불가 \(judge)")
         }

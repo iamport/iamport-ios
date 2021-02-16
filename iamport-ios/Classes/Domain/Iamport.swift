@@ -19,6 +19,7 @@ open class Iamport {
     }
 
     private func clear() {
+        sdk?.clearData()
         sdk = nil
         paymentResult = nil
     }
@@ -32,7 +33,9 @@ open class Iamport {
        - paymentResultCallback: 결제 후 콜백 함수
      */
     public func payment(navController: UINavigationController?, userCode: String, iamPortRequest: IamPortRequest, _ paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
+        print("IamPort SDK payment")
         clear()
+
 //        preventOverlapRun?.launch {
 //            corePayment(userCode, iamPortRequest, approveCallback, paymentResultCallback)
 //        }
@@ -49,10 +52,12 @@ open class Iamport {
 
     // 외부 앱 종료후 AppDelegate 에서 받은 URL
     public func receivedURL(_ url: URL) {
+        print("IamPort SDK receivedURL")
         sdk?.postReceivedURL(url)
     }
 
     public func close() {
-        sdk?.clearData()
+        print("IamPort SDK close")
+        clear()
     }
 }

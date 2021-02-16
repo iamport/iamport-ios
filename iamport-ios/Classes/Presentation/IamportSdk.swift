@@ -20,11 +20,11 @@ public class IamportSdk {
 
     // 뷰모델 데이터 클리어
     func clearData() {
-//        d("clearData!")
+        print("clearData!")
 //        updatePolling(false)
 //        controlForegroundService(false)
 //        viewModel.clearData()
-        EventBus.shared.closeRelay.accept(()) // FIXME 어디서 중복됨
+        EventBus.shared.clearRelay.accept(())
         disposeBag = DisposeBag()
     }
 
@@ -37,7 +37,7 @@ public class IamportSdk {
     internal func initStart(payment: Payment, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
         clearData()
         paymentResult = paymentResultCallback
-        observe(payment) // 관찰할 옵저버블
+        subscribe(payment) // 관찰할 옵저버블
     }
 
     func postReceivedURL(_ url: URL) {
@@ -47,7 +47,7 @@ public class IamportSdk {
         RxBus.shared.post(event: EventBus.WebViewEvents.ReceivedAppDelegateURL(url: url))
     }
 
-    private func observe(_ payment: Payment) {
+    private func subscribe(_ payment: Payment) {
         // 결제결과 옵저빙
         EventBus.shared.impResponseBus.subscribe { [weak self] iamportResponse in
             self?.sdkFinish(iamportResponse)
@@ -55,13 +55,13 @@ public class IamportSdk {
 
         // TODO subscribe 결제결과
         // subscribe 웹뷰열기
-        RxBus.shared.asObservable(event: EventBus.WebViewEvents.PaymentEvent.self).subscribe { [weak self] event in
-            guard let el = event.element else {
-                print("Error not found PaymentEvent")
+        EventBus.shared.paymentBus.subscribe { [weak self] event in
+            guard let el = event.element, let pay = el else {
+                print("Error paymentBus is nil")
                 return
             }
 
-            self?.openWebViewController(el.webViewPayment)
+            self?.openWebViewController(pay)
         }.disposed(by: disposeBag)
 
         // subscribe 차이앱열기
@@ -100,7 +100,7 @@ public class IamportSdk {
     // 웹뷰 컨트롤러 열기 및 데이터 전달
     private func openWebViewController(_ payment: Payment) {
         DispatchQueue.main.async { [weak self] in
-            EventBus.shared.paymentRelay.accept(payment)
+            EventBus.shared.webViewPaymentRelay.accept(payment)
             self?.naviController.pushViewController(WebViewController(), animated: true)
 //            self?.naviController.present(WebViewController(), animated: true)
             #if DEBUG

@@ -77,7 +77,7 @@ class ChaiStrategy: BaseStrategy {
                     self?.failureFinish(payment: payment, msg: "success but \(error.localizedDescription)")
                 }
             case .failure(let error):
-                self?.failureFinish(payment: payment, msg: "통신실패 \(error.localizedDescription)")
+                self?.failureFinish(payment: payment, msg: "네트워크 연결실패 \(error.localizedDescription)")
             }
         }
     }
@@ -142,7 +142,7 @@ class ChaiStrategy: BaseStrategy {
                 }
             case .failure(let error):
 //                self?.failureFinish(payment: payment, msgC: "통신실패 \(error.localizedDescription)")
-                print("통신실패로 인한 폴링 시도!!")
+                print("네트워크 통신실패로 인한 폴링 시도!!")
                 self?.tryPolling()
             }
         }
