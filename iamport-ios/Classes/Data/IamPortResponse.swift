@@ -5,7 +5,7 @@
 import Foundation
 import Then
 
-public class IamPortResponse: Then {
+public class IamPortResponse: Encodable, Then {
     public var imp_success: Bool? = false
     public var success: Bool? = false
     public var imp_uid: String?
@@ -45,6 +45,27 @@ public class IamPortResponse: Then {
     }
 }
 
+extension IamPortResponse: CustomStringConvertible {
+    public var description: String {
+
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        let jsonData = try? encoder.encode(self)
+        if let json = jsonData, let responseJson = String(data: json, encoding: .utf8) {
+            return responseJson
+        } else {
+            return """
+                   IamPortResponse ::
+                       imp_success: \(String(describing: imp_success))
+                       success: \(String(describing: success))
+                       imp_uid: \(String(describing: imp_uid))
+                       merchant_uid : \(String(describing: merchant_uid))
+                       error_msg: \(String(describing: error_msg))
+                       error_code: \(String(describing: error_code)))
+                   """
+        }
+    }
+}
 
 public struct IamPortResponseStruct {
     var imp_success: Bool? = false
@@ -70,7 +91,7 @@ extension IamPortResponseStruct: Decodable {
                 fatalError("The imp_success is not an Bool")
             }
             imp_success = imp_successBool
-        }else {
+        } else {
             imp_success = try? values.decode(Bool.self, forKey: .imp_success)
         }
 
