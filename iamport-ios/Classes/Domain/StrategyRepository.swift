@@ -27,36 +27,43 @@ class StrategyRepository {
 
     /**
      * PG 와 PayMethod 로 결제 타입하여 가져옴
-     * @return PaymenyKinds
+     * @return PaymentKinds
      */
     private func getPaymentKinds(payment: Payment) -> PaymentKinds {
 
-        func isChaiPayment(pgPair: Pair<PG, PayMethod>) -> Bool {
-            pgPair.first == PG.chai
+        func isChaiPayment(pgPair: (PG, PayMethod)) -> Bool {
+            pgPair.0 == PG.chai
         }
 
-        func isNiceTransPayment(pgPair: Pair<PG, PayMethod>) -> Bool {
-            pgPair.first == PG.nice && pgPair.second == PayMethod.trans
+        func isNiceTransPayment(pgPair: (PG, PayMethod)) -> Bool {
+            pgPair.0 == PG.nice && pgPair.1 == PayMethod.trans
         }
 
-        func isInisisTransPayment(pgPair: Pair<PG, PayMethod>) -> Bool {
-            pgPair.first == PG.html5_inicis && pgPair.second == PayMethod.trans
+        func isInisisTransPayment(pgPair: (PG, PayMethod)) -> Bool {
+            pgPair.0 == PG.html5_inicis && pgPair.1 == PayMethod.trans
         }
 
         let request = payment.iamPortRequest
         print(request.pgEnum)
+
         if let it = request.pgEnum {
-            let pair = Pair(first: it, second: request.pay_method)
+            let pair = (it, request.pay_method)
+
             if (isChaiPayment(pgPair: pair)) {
                 return PaymentKinds.CHAI
+
             } else if (isNiceTransPayment(pgPair: pair)) {
                 return PaymentKinds.NICE
+
             } else if (isInisisTransPayment(pgPair: pair)) {
                 return PaymentKinds.INISIS
+
             } else {
+
                 return PaymentKinds.WEB
             }
         } else {
+
             return PaymentKinds.WEB // default WEB
         }
     }
@@ -65,10 +72,13 @@ class StrategyRepository {
         switch getPaymentKinds(payment: payment) {
         case .NICE:
             return niceTransWebViewStrategy
+
         case .INISIS:
             return inisisTransWebViewStrategy
+
         case .WEB:
             return webViewStrategy
+
         default:
             return webViewStrategy
         }
