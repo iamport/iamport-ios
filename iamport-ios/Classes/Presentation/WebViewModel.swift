@@ -8,11 +8,11 @@ import Foundation
 
 internal class WebViewModel {
 
-    let repository = StrategyRepository() // sTODO dependency inject
+    let repository = StrategyRepository() // TODO dependency inject
 
-    func clear() {
-        repository.clear()
-    }
+//    func clear() {
+//        repository.clear()
+//    }
 
     /**
      * 뱅크페이 결과 처리

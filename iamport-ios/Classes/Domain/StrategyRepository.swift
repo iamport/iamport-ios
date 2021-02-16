@@ -20,9 +20,9 @@ class StrategyRepository {
     private let niceTransWebViewStrategy = NiceTransWebViewStrategy()
     private let inisisTransWebViewStrategy = InisisTransWebViewStrategy()
 
-    func clear() {
-        EventBus.shared.closeRelay.accept(())
-    }
+//    func clear() {
+//        EventBus.shared.clearRelay.accept(())
+//    }
 
 
     /**

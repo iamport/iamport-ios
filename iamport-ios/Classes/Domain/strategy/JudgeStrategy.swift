@@ -43,7 +43,7 @@ public class JudgeStrategy: BaseStrategy {
                     self?.failureFinish(payment: payment, msg: "success but \(error.localizedDescription)")
                 }
             case .failure(let error):
-                self?.failureFinish(payment: payment, msg: "통신실패 \(error.localizedDescription)")
+                self?.failureFinish(payment: payment, msg: "네트워크 연결실패 \(error.localizedDescription)")
             }
         }
     }
@@ -60,12 +60,6 @@ public class JudgeStrategy: BaseStrategy {
             return (JudgeKinds.EMPTY, nil, payment)
         }
 
-        func find(data: UserData, myPg: String, myPgId: String) -> Bool {
-            dump(data.pg_provider?.getPgSting())
-            dump(data.pg_id)
-            return data.pg_provider?.getPgSting() == myPg && data.pg_id == myPgId
-        }
-
         print("userDataList :: \(userDataList)")
         let split = payment.iamPortRequest.pg.split(separator: ".")
         let myPg = String(split[0])
@@ -74,11 +68,11 @@ public class JudgeStrategy: BaseStrategy {
         if (split.count > 1) {
             let pgId = String(split[1])
             findPg = userDataList.first { data in
-                data.pg_provider?.getPgSting() == myPg && data.pg_id == pgId
+                data.pg_provider?.makePgRawName() == myPg && data.pg_id == pgId
             }
         } else {
             findPg = userDataList.first { data in
-                data.pg_provider?.getPgSting() == myPg
+                data.pg_provider?.makePgRawName() == myPg
             }
         }
 
@@ -123,7 +117,7 @@ public class JudgeStrategy: BaseStrategy {
      */
     private func replacePG(pg: PG, payment: Payment) -> Payment {
         let iamPortRequest = payment.iamPortRequest.with {
-            $0.pg = pg.getPgSting()
+            $0.pg = pg.makePgRawName()
         }
         return payment.with {
             $0.iamPortRequest = iamPortRequest

@@ -147,14 +147,14 @@ class Utils {
         #if DEBUG
         print(url.queryParams().toJsonString())
         #endif
-        let decoder = JSONDecoder()
         let data = url.queryParams().toJsonData()
-        if let impStruct = try? decoder.decode(IamPortResponseStruct.self, from: data) {
+        if let impStruct = try? JSONDecoder().decode(IamPortResponseStruct.self, from: data) {
             return IamPortResponse.structToClass(impStruct)
         }
         return nil
     }
 
+    // TODO code 를 api 에서 받아왔으면 좋겠다..
     static func getMarketUrl(scheme: String) -> String {
 
         var code: String

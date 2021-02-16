@@ -39,8 +39,8 @@ public class BaseWebViewStrategy: IStrategy {
         clear()
         self.payment = payment
 
-        EventBus.shared.closeBus.subscribe { [weak self] event in
-            self?.clear()
+        EventBus.shared.clearBus.subscribe { [weak self] event in
+            self?.clear() // 종료 없이 only clear
         }.disposed(by: disposeBag)
 
         RxBus.shared.asObservable(event: EventBus.WebViewEvents.UpdateUrl.self)
