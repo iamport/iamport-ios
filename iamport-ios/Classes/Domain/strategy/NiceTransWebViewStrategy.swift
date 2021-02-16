@@ -48,14 +48,14 @@ class NiceTransWebViewStrategy: WebViewStrategy {
         let bankpayCode: String = (queryItems?.filter({ $0.name == "bankpaycode" }).first!.value)!
         let bankpayValue: String = (queryItems?.filter({ $0.name == "bankpayvalue" }).first!.value)!
 
-        let resPair = Pair(first: bankpayCode, second: bankpayValue)
+        let resPair = (bankpayCode, bankpayValue)
 
-        func makeNiceTransPaymentsQuery(res: Pair<String, String>) -> String {
+        func makeNiceTransPaymentsQuery(res: (String, String)) -> String {
             if let niceUrl = niceTransUrl, let tid = bankTid {
                 let result = "\(niceUrl)" +
                         "?\(NiceBankpay.CALLBACKPARAM2)=\(tid)" +
-                        "&\(NiceBankpay.CODE)=\(res.first)" +
-                        "&\(NiceBankpay.VALUE)=\(res.second)"
+                        "&\(NiceBankpay.CODE)=\(res.0)" +
+                        "&\(NiceBankpay.VALUE)=\(res.1)"
                 #if DEBUG
                 print("makeNiceTransPaymentsQuery \(result)")
                 #endif
@@ -64,7 +64,7 @@ class NiceTransWebViewStrategy: WebViewStrategy {
             return ""
         }
 
-        if let code = BankPayResultCode.from(resPair.first) {
+        if let code = BankPayResultCode.from(resPair.0) {
             switch code {
             case .OK:
                 print("BankPayResultCode :: OK")
@@ -83,7 +83,7 @@ class NiceTransWebViewStrategy: WebViewStrategy {
                 }
             }
         } else {
-            print("알 수 없는 에러 code : \(resPair.first)")
+            print("알 수 없는 에러 code : \(resPair.0)")
         }
 
     }
