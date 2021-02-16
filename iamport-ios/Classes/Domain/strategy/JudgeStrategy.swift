@@ -23,8 +23,7 @@ public class JudgeStrategy: BaseStrategy {
         let url = CONST.IAMPORT_PROD_URL + "/users/pg/\(payment.userCode)"
         print(url)
 
-        let doNetwork = Alamofire.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
-
+        let doNetwork = Network.alamoFireManagerShortTimeOut.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
         doNetwork.responseJSON { [weak self] response in
             switch response.result {
             case .success(let data):

@@ -45,6 +45,7 @@ class CONST {
     static let BUNDLE_PAYMENT = "payment"
 
     static let NETWORK_TIMEOUT_SEC = 20
+    static let NETWORK_SHORT_TIMEOUT_SEC = 5
     static let POLLING_DELAY = 1
 //
     private static let TIME_OUT_ONE_MIN = 60
