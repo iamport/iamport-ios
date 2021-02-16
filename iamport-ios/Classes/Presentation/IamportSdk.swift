@@ -29,7 +29,7 @@ public class IamportSdk {
     }
 
     private func sdkFinish(_ iamportResponse: IamPortResponse?) {
-        print("Iamport SDK 에서 종료입니다")
+        print("I'mport SDK 에서 종료입니다")
         clearData()
         paymentResult?(iamportResponse)
     }
