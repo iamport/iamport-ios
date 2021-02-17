@@ -75,7 +75,7 @@ public class IamportSdk {
             // TODO true 때만 차이 스트레티지 동작 해야 함??
             if (!result) {
                 if let scheme = el.appAddress.scheme,
-                   let urlString = AppScheme.getMarketUrl(scheme: scheme),
+                   let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
                    let url = URL(string: urlString) {
                     Utils.openApp(url)
                 } else {

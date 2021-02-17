@@ -255,7 +255,7 @@ class WebViewController: UIViewController, WKUIDelegate {
         let result = Utils.openApp(url) // 앱 열기
         if (!result) {
             if let scheme = url.scheme,
-               let urlString = AppScheme.getMarketUrl(scheme: scheme),
+               let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
                let url = URL(string: urlString) {
                 Utils.openApp(url) // 앱스토어로 이동
             } else {

@@ -120,13 +120,13 @@ enum AppScheme: CaseIterable {
         return nil
     }
 
-    // TODO code 를 api 에서 받아왔으면 좋겠다..
-    static func getMarketUrl(scheme: String) -> String? {
+    // TODO appId 를 api 에서 받아왔으면 좋겠다..
+    static func getAppStoreUrl(scheme: String) -> String? {
         let appScheme = findAppScheme(scheme)
 
         guard let appId = appScheme?.appID else {
             print("지원하지 않는 AppScheme 입니다.")
-            return CONST.EMPTY_STR
+            return nil
         }
 
         let marketUrl = "itms-apps://itunes.apple.com/app/\(appId)"
