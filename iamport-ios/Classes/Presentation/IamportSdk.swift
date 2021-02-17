@@ -74,8 +74,13 @@ public class IamportSdk {
             let result = Utils.openApp(el.appAddress)
             // TODO true 때만 차이 스트레티지 동작 해야 함??
             if (!result) {
-                if let scheme = el.appAddress.scheme, let url = URL(string: Utils.getMarketUrl(scheme: scheme)) {
+                if let scheme = el.appAddress.scheme,
+                   let urlString = AppScheme.getMarketUrl(scheme: scheme),
+                   let url = URL(string: urlString) {
                     Utils.openApp(url)
+                } else {
+                    let response = IamPortResponse.makeFail(payment: payment, msg: "지원하지 않는 App Scheme\(el.appAddress.scheme) 입니다")
+                    self?.sdkFinish(response)
                 }
             }
 

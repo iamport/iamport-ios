@@ -254,8 +254,18 @@ class WebViewController: UIViewController, WKUIDelegate {
         #endif
         let result = Utils.openApp(url) // 앱 열기
         if (!result) {
-            if let scheme = url.scheme, let url = URL(string: Utils.getMarketUrl(scheme: scheme)) {
+            if let scheme = url.scheme,
+               let urlString = AppScheme.getMarketUrl(scheme: scheme),
+               let url = URL(string: urlString) {
                 Utils.openApp(url) // 앱스토어로 이동
+            } else {
+                guard let pay = payment else {
+                    sdkFinish(nil)
+                    return
+                }
+
+                let response = IamPortResponse.makeFail(payment: pay, msg: "지원하지 않는 App Scheme\(url.scheme) 입니다")
+                sdkFinish(response)
             }
         }
     }

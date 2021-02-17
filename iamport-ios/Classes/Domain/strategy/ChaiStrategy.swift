@@ -273,11 +273,11 @@ class ChaiStrategy: BaseStrategy {
         self.prepareData = prepareData
 
         let queryItems = [
-            URLQueryItem(name: "publicAPIKey", value: prepareData.publicAPIKey),
-            URLQueryItem(name: "paymentId", value: prepareData.paymentId),
-            URLQueryItem(name: "idempotencyKey", value: prepareData.idempotencyKey)]
+            URLQueryItem(name: CHAI.PUBLIC_API_KEY, value: prepareData.publicAPIKey),
+            URLQueryItem(name: CHAI.PAYMENT_ID, value: prepareData.paymentId),
+            URLQueryItem(name: CHAI.IDEMPOENCY_KEY, value: prepareData.idempotencyKey)]
 
-        var openDeepLink = URLComponents(string: "chaipayment://payment")
+        var openDeepLink = URLComponents(string: CHAI.SCHEME_HOST)
         openDeepLink?.queryItems = queryItems
         #if DEBUG
         print(openDeepLink)

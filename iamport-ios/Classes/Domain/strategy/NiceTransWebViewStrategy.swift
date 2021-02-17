@@ -45,17 +45,28 @@ class NiceTransWebViewStrategy: WebViewStrategy {
 
         // bankpaycode값과 bankpayvalue값을 추출해 각각 bankpay_code와 bankpay_value값으로 전달
         let queryItems = URLComponents(string: url.absoluteString)?.queryItems
-        let bankpayCode: String = (queryItems?.filter({ $0.name == "bankpaycode" }).first!.value)!
-        let bankpayValue: String = (queryItems?.filter({ $0.name == "bankpayvalue" }).first!.value)!
+
+        guard let bankpayCode = (queryItems?.filter({ $0.name == NiceBankpay.CODE }).first?.value) else {
+            print("bankpayCode 를 찾을 수 없음")
+            dump(queryItems)
+            return
+        }
+
+        guard let bankpayValue = (queryItems?.filter({ $0.name == NiceBankpay.VALUE }).first?.value) else {
+            print("bankpayValue 를 찾을 수 없음")
+            dump(queryItems)
+            return
+        }
 
         let resPair = (bankpayCode, bankpayValue)
 
         func makeNiceTransPaymentsQuery(res: (String, String)) -> String {
             if let niceUrl = niceTransUrl, let tid = bankTid {
+
                 let result = "\(niceUrl)" +
                         "?\(NiceBankpay.CALLBACKPARAM2)=\(tid)" +
-                        "&\(NiceBankpay.CODE)=\(res.0)" +
-                        "&\(NiceBankpay.VALUE)=\(res.1)"
+                        "&\(NiceBankpay.CODEPARAM)=\(res.0)" +
+                        "&\(NiceBankpay.VALUEPARAM)=\(res.1)"
                 #if DEBUG
                 print("makeNiceTransPaymentsQuery \(result)")
                 #endif
