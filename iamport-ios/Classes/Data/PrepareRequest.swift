@@ -25,7 +25,7 @@ class PrepareRequest: DictionaryEncodable, Then {
     var buyer_postcode: String? // 구매자 우편번호
     var app_scheme: String? // 결제 후 돌아갈 app scheme
     var custom_data: String? // 결제 건에 연결해 저장할 meta data
-    var notice_url: String? // Webhook Url
+    var notice_url: Array<String>? // Webhook Url
     var confirm_url: String? // Confirm process Url
     var _extra: Extra // 차이 마케팅 팀과 사전협의된 파라메터
 
@@ -59,7 +59,7 @@ class PrepareRequest: DictionaryEncodable, Then {
             $0.buyer_postcode = request.buyer_postcode
             $0.app_scheme = request.app_scheme
             $0.custom_data = request.custom_data
-            $0.notice_url = request.m_redirect_url
+            $0.notice_url = request.notice_url
             $0.confirm_url = nil
         }
     }

@@ -182,7 +182,7 @@ class Utils {
  * 결제 끝났는지 여부
  */
     static func isPaymentOver(_ uri: URL) -> Bool {
-        uri.absoluteString.contains(CONST.IAMPORT_DUMMY_URL)
+        return uri.absoluteString.contains(CONST.IAMPORT_DETECT_URL)
     }
 
     static func getActionPolicy(_ uri: URL) -> Bool {
