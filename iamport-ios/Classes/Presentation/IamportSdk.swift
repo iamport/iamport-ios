@@ -72,16 +72,17 @@ public class IamportSdk {
                 return
             }
 
-            let result = Utils.openApp(el.appAddress)
-            // TODO true 때만 차이 스트레티지 동작 해야 함??
+            let result = Utils.openApp(el.appAddress) // 앱 열기
+            // TODO openApp result = false 일 떄, 이미 chai strategy 가 동작할 시나리오
+            // 취소? 타임아웃 연장? 그대로 진행? ... 등
+            // 어차피 앱 재설치시, 다시 차이 결제 페이지로 진입할 방법이 없음
             if (!result) {
                 if let scheme = el.appAddress.scheme,
                    let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
                    let url = URL(string: urlString) {
-                    Utils.openApp(url)
+                    Utils.openApp(url) // 앱스토어 이동
                 } else {
-                    let response = IamPortResponse.makeFail(payment: payment, msg: "지원하지 않는 App Scheme\(el.appAddress.scheme) 입니다")
-                    self?.sdkFinish(response)
+                    self?.sdkFinish(IamPortResponse.makeFail(payment: payment, msg: "지원하지 않는 App Scheme\(String(describing: el.appAddress.scheme)) 입니다"))
                 }
             }
 
@@ -94,6 +95,7 @@ public class IamportSdk {
 
     }
 
+
     private func requestPayment(_ payment: Payment) {
 
         Payment.validator(payment) { valid, desc in
@@ -104,7 +106,10 @@ public class IamportSdk {
             }
         }
 
-        // TODO 네트워크 상태 체크
+        if (!Utils.isInternetAvailable()) {
+            sdkFinish(IamPortResponse.makeFail(payment: payment, msg: "네트워크 연결 안됨"))
+            return
+        }
 
         viewModel.judgePayment(payment)
     }
@@ -116,7 +121,7 @@ public class IamportSdk {
             self?.naviController.pushViewController(WebViewController(), animated: true)
 //            self?.naviController.present(WebViewController(), animated: true)
             #if DEBUG
-            print("check navigationController :: \(self?.naviController)")
+            print("check navigationController :: \(String(describing: self?.naviController))")
             #endif
         }
     }

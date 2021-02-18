@@ -57,7 +57,7 @@ class MainViewModel {
         case .WEB:
 //            RxBus.shared.post(event: EventBus.WebViewEvents.PaymentEvent(webViewPayment: judge.2))
             EventBus.shared.paymentRelay.accept(judge.2)
-        case .EMPTY:
+        case .ERROR:
             print("판단불가 \(judge)")
         }
     }

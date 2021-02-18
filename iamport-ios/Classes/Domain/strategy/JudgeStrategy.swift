@@ -11,7 +11,7 @@ public class JudgeStrategy: BaseStrategy {
 
     // 유저 정보 판단 결과 타입
     enum JudgeKinds {
-        case CHAI, WEB, EMPTY
+        case CHAI, WEB, ERROR
     }
 
     override func doWork(_ payment: Payment) {
@@ -52,12 +52,12 @@ public class JudgeStrategy: BaseStrategy {
 
         guard !userDataList.isEmpty else {
             failureFinish(payment: payment, msg: "Not found PF [ \(payment.iamPortRequest.pg) ] and any PG in your info.")
-            return (JudgeKinds.EMPTY, nil, payment)
+            return (JudgeKinds.ERROR, nil, payment)
         }
 
         guard let defUser = findDefaultUserData(userDataList) else {
             failureFinish(payment: payment, msg: "Not found Default PG. All PG empty.")
-            return (JudgeKinds.EMPTY, nil, payment)
+            return (JudgeKinds.ERROR, nil, payment)
         }
 
         print("userDataList :: \(userDataList)")
