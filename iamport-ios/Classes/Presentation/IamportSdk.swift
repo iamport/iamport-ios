@@ -95,7 +95,13 @@ public class IamportSdk {
 
     private func requestPayment(_ payment: Payment) {
 
-        // TODO Payment data validator
+        Payment.validator(payment) { valid, desc in
+            print("Payment validator valid :: \(valid), valid :: \(desc)")
+            if (!valid) {
+                self.sdkFinish(IamPortResponse.makeFail(payment: payment, msg: desc))
+                return
+            }
+        }
 
         // TODO 네트워크 상태 체크
 

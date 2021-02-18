@@ -132,13 +132,17 @@ extension String {
     func trim() -> String {
         return self.trimmingCharacters(in: CharacterSet.whitespaces)
     }
+}
 
-    func NilOrEmpty() -> Bool {
-        if (self.trim().isEmpty) {
+extension Optional where Wrapped == String {
+
+    var nilOrEmpty: Bool {
+
+        guard let strongSelf = self else {
             return true
-        } else {
-            return false
         }
+
+        return strongSelf.trim().isEmpty ? true : false
     }
 }
 

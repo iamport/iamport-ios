@@ -27,7 +27,16 @@ class MainViewModel {
 
     func judgePayment(_ payment: Payment) {
         DispatchQueue.main.async { [weak self] in
-            //  TODO Payment Validator
+
+            Payment.validator(payment) { valid, desc in
+                print("Payment validator valid :: \(valid), valid :: \(desc)")
+                if (!valid) {
+                    IamPortResponse.makeFail(payment: payment, msg: desc).do { it in
+                        self?.clear()
+                        EventBus.shared.impResponseRelay.accept(it)
+                    }
+                }
+            }
 
             // judge
             self?.repository.judgeStrategy.doWork(payment)
