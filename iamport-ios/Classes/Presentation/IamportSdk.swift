@@ -20,10 +20,11 @@ public class IamportSdk {
 
     // 뷰모델 데이터 클리어
     func clearData() {
-        print("clearData!")
+        print("IamportSdk clearData!")
 //        updatePolling(false)
 //        controlForegroundService(false)
-//        viewModel.clearData()
+
+        viewModel.clear()
         EventBus.shared.clearRelay.accept(())
         disposeBag = DisposeBag()
     }

@@ -15,7 +15,8 @@ class MainViewModel {
         disposeBag = DisposeBag()
     }
 
-    init() {
+    func subscribe() {
+        clear()
         RxBus.shared.asObservable(event: EventBus.MainEvents.JudgeEvent.self).subscribe { [weak self] event in
             guard let el = event.element else {
                 print("Error not found JudgeEvent")
@@ -26,6 +27,9 @@ class MainViewModel {
     }
 
     func judgePayment(_ payment: Payment) {
+
+        subscribe()
+
         DispatchQueue.main.async { [weak self] in
 
             Payment.validator(payment) { valid, desc in
