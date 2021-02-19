@@ -6,6 +6,18 @@ import Foundation
 import RxSwift
 import SystemConfiguration
 
+func dlog(_ log: Any...) {
+    #if DEBUG
+    debugPrint(log)
+    #endif
+}
+
+func ddump<T>(_ value: T) {
+    #if DEBUG
+    dump(value)
+    #endif
+}
+
 enum BusThread {
     //- utility: 유저의 프로세스에 필요한 연산작업에 사용한다. 프로그래스바, I/O, Networking 등
     //- background: 유저에게 직접적으로 필요하지 않은 작업들. logging 등
@@ -146,10 +158,11 @@ extension Optional where Wrapped == String {
     }
 }
 
+
 class Utils {
     static public func getQueryStringToImpResponse(_ url: URL) -> IamPortResponse? {
         #if DEBUG
-        print(url.queryParams().toJsonString())
+        dlog(url.queryParams().toJsonString())
         #endif
         let data = url.queryParams().toJsonData()
         if let impStruct = try? JSONDecoder().decode(IamPortResponseStruct.self, from: data) {

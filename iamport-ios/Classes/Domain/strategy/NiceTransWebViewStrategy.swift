@@ -18,9 +18,7 @@ class NiceTransWebViewStrategy: WebViewStrategy {
     }
 
     override func onUpdatedUrl(url: URL) {
-        #if DEBUG
-        print("아주 나이스~ \(url)")
-        #endif
+        dlog("아주 나이스~ \(url)")
         if (isNiceTransScheme(url)) {
             let queryParams = url.queryParams()
             bankTid = (queryParams[NiceBankpay.USER_KEY] as? String)
@@ -69,9 +67,7 @@ class NiceTransWebViewStrategy: WebViewStrategy {
                         "?\(NiceBankpay.CALLBACKPARAM2)=\(tid)" +
                         "&\(NiceBankpay.CODEPARAM)=\(res.0)" +
                         "&\(NiceBankpay.VALUEPARAM)=\(res.1)"
-                #if DEBUG
-                print("makeNiceTransPaymentsQuery \(result)")
-                #endif
+                dlog("makeNiceTransPaymentsQuery \(result)")
                 return result
             }
             return ""
@@ -82,15 +78,11 @@ class NiceTransWebViewStrategy: WebViewStrategy {
             case .OK:
                 print("BankPayResultCode :: OK")
                 if let url = URL(string: makeNiceTransPaymentsQuery(res: resPair)) {
-                    #if DEBUG
-                    print("url :: \(url)")
-                    #endif
+                    dlog("url :: \(url)")
                     RxBus.shared.post(event: EventBus.WebViewEvents.FinalBankPayProcess(url: url))
                 }
             case .CANCEL, .TIME_OUT, .FAIL_SIGN, .FAIL_OTP, .FAIL_CERT_MODULE_INIT:
-                #if DEBUG
-                print(code.desc)
-                #endif
+                dlog(code.desc)
                 if let it = payment {
                     failureFinish(payment: it, msg: code.desc)
                 }

@@ -31,18 +31,14 @@ class WebViewController: UIViewController, WKUIDelegate {
     // Disappear
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        #if DEBUG
-        print("viewWillDisappear")
-        #endif
+        dlog("viewWillDisappear")
         clearAll()
     }
 
     // loaded
     override func viewDidLoad() {
         super.viewDidLoad()
-        #if DEBUG
-        print("WebViewController 어서오고")
-        #endif
+        dlog("WebViewController 어서오고")
 
         view.backgroundColor = UIColor.white
         setupWebView()
@@ -202,9 +198,7 @@ class WebViewController: UIViewController, WKUIDelegate {
      */
     func sdkFinish(_ iamPortResponse: IamPortResponse?) {
         print("명시적 sdkFinish")
-        #if DEBUG
-        dump(iamPortResponse)
-        #endif
+        ddump(iamPortResponse)
 
 //        clear() // viewWillDisappear 에서 처리
         navigationController?.popViewController(animated: false)
@@ -228,9 +222,7 @@ class WebViewController: UIViewController, WKUIDelegate {
      * 나이스 뱅크페이 결과 처리 viewModel 에 요청
      */
     func finalProcessBankPayPayment(_ url: URL) {
-        #if DEBUG
-        print("finalProcessBankPayPayment :: \(url)")
-        #endif
+        dlog("finalProcessBankPayPayment :: \(url)")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         DispatchQueue.main.async { [weak self] in
@@ -249,9 +241,7 @@ class WebViewController: UIViewController, WKUIDelegate {
 
 
     func openThirdPartyApp(_ url: URL) {
-        #if DEBUG
-        print("openThirdPartyApp \(url)")
-        #endif
+        dlog("openThirdPartyApp \(url)")
         let result = Utils.openApp(url) // 앱 열기
         if (!result) {
 
@@ -298,9 +288,7 @@ class WebViewController: UIViewController, WKUIDelegate {
                 return
             }
 
-            #if DEBUG
-            dump(url)
-            #endif
+            ddump(url)
 
             urlRequest = URLRequest(url: url)
         }
@@ -397,9 +385,7 @@ extension WebViewController: WKNavigationDelegate {
 
 extension WebViewController: WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        #if DEBUG
-        print("body \(message.body)")
-        #endif
+        dlog("body \(message.body)")
 
         if let jsMethod = JsInterface.convertJsInterface(s: message.name) {
             switch jsMethod {
@@ -410,9 +396,7 @@ extension WebViewController: WKScriptMessageHandler {
                 let jsonData = try? encoder.encode(payment?.iamPortRequest)
 //            dump(payment)
                 if let json = jsonData, let code = payment?.userCode, let request = String(data: json, encoding: .utf8) {
-                    #if DEBUG
-                    print("'\(code)', '\(request)'")
-                    #endif
+                    dlog("'\(code)', '\(request)'")
                     webView?.evaluateJavaScript("requestPay('\(code)', '\(request)');")
                 }
 

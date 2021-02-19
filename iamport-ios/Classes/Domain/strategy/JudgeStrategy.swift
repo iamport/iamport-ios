@@ -17,9 +17,7 @@ public class JudgeStrategy: BaseStrategy {
     override func doWork(_ payment: Payment) {
         super.doWork(payment)
 
-        let headers: HTTPHeaders = [
-            "Content-Type": "application/json"
-        ]
+        let headers: HTTPHeaders = ["Content-Type": "application/json"]
         let url = CONST.IAMPORT_PROD_URL + "/users/pg/\(payment.userCode)"
         print(url)
 
