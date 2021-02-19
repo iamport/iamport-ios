@@ -26,11 +26,13 @@ class NiceTransWebViewStrategy: WebViewStrategy {
             bankTid = (queryParams[NiceBankpay.USER_KEY] as? String)
             niceTransUrl = (queryParams[NiceBankpay.CALLBACKPARAM] as? String)
 
-            if let bankPayData = makeBankPayData(url) {
-                // 뱅크페이 앱 열기
+//            if let bankPayData = makeBankPayData(url) {
+//                 뱅크페이 앱 열기
 //                RxBus.shared.post(event: EventBus.WebViewEvents.NiceTransRequestParam(niceTransRequestParam: bankPayData))
-                RxBus.shared.post(event: EventBus.WebViewEvents.NiceTransRequestParam(niceTransRequestParam: url.absoluteString))
-            }
+//            }
+
+            // 이미 스킴과 같이 url 이 내려오므로 url 을 따로 구성할 필요 없음
+            RxBus.shared.post(event: EventBus.WebViewEvents.NiceTransRequestParam(niceTransRequestParam: url.absoluteString))
             return
         }
 
@@ -99,15 +101,13 @@ class NiceTransWebViewStrategy: WebViewStrategy {
 
     }
 
-    private func makeBankPayData(_ uri: URL) -> String? {
-        let prefix = ProvidePgScheme.BANKPAY.getNiceBankPayPrefix()
-        let index = prefix.index(prefix.startIndex, offsetBy: prefix.count)
-        let returnString = uri.absoluteString.substring(from: index).removingPercentEncoding
-        #if DEBUG
-        print("makeBankPayData :: \(returnString)")
-        #endif
-        return returnString
-    }
+//    private func makeBankPayData(_ uri: URL) -> String? {
+//        let prefix = ProvidePgScheme.BANKPAY.getNiceBankPayPrefix()
+//        let index = prefix.index(prefix.startIndex, offsetBy: prefix.count)
+//        let returnString = uri.absoluteString.substring(from: index).removingPercentEncoding
+//        dlog("makeBankPayData :: \(String(describing: returnString))")
+//        return returnString
+//    }
 
     private func isNiceTransScheme(_ uri: URL) -> Bool {
         uri.scheme == ProvidePgScheme.BANKPAY.rawValue
