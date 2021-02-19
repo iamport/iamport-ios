@@ -32,7 +32,7 @@ open class Iamport {
        - iamPortRequest: 결제요청 데이터
        - paymentResultCallback: 결제 후 콜백 함수
      */
-    public func payment(navController: UINavigationController?, userCode: String, iamPortRequest: IamPortRequest, _ paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
+    public func payment(navController: UINavigationController?, userCode: String, iamPortRequest: IamPortRequest, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
         print("IamPort SDK payment")
         clear()
 
@@ -47,13 +47,20 @@ open class Iamport {
 
         paymentResult = paymentResultCallback
         sdk = IamportSdk(nc)
-        sdk?.initStart(payment: Payment(userCode: userCode, iamPortRequest: iamPortRequest), paymentResultCallback: paymentResultCallback)
+        sdk?.initStart(payment: Payment(userCode: userCode, iamPortRequest: iamPortRequest), approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
     }
 
     // 외부 앱 종료후 AppDelegate 에서 받은 URL
     public func receivedURL(_ url: URL) {
         print("IamPort SDK receivedURL")
         sdk?.postReceivedURL(url)
+    }
+
+    /**
+     * 외부에서 차이 최종결제 요청
+     */
+    public func approvePayment(approve: IamPortApprove) {
+        sdk?.requestApprovePayments(approve: approve)
     }
 
     public func close() {

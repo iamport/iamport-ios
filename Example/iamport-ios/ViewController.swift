@@ -47,7 +47,20 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         let userCode = "imp96304110"
         let request = createPaymentData()
         dump(request)
-        Iamport.shared.payment(navController: navigationController, userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+
+        // case 1
+//        Iamport.shared.payment(navController: navigationController,
+//                userCode: userCode, iamPortRequest: request,
+//                approveCallback: { approve in
+//                    self.approveCallback(iamPortApprove: approve)
+//                },
+//                paymentResultCallback: { [weak self] iamPortResponse in
+//                    self?.paymentCallback(iamPortResponse)
+//                })
+
+        // 결제요청 case 2
+        Iamport.shared.payment(navController: navigationController,
+                userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
             self?.paymentCallback(iamPortResponse)
         }
     }
@@ -73,6 +86,24 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         navigationController?.present(resultVC, animated: true)
 //        navigationController?.pushViewController(resultVC, animated: true)
     }
+
+
+    /**
+     *  TODO 재고확인 등 최종결제를 위한 처리를 해주세요
+     *  CONST.CHAI_FINAL_PAYMENT_TIME_OUT_SEC 만큼 타임아웃 후 결제 데이터가
+     *  초기화 되기 때문에 타임아웃 시간 안에 Iamport.chaiPayment 함수를 호출해주셔야 합니다.
+     */
+    private func approveCallback(iamPortApprove: IamPortApprove) {
+        print("재고확인 합니다~~")
+
+        let delaySec = Double(1)
+        // delaySec 초 동안 머천트의 재고상황을 체크하는 것으로 "가정" 합니다
+        DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: DispatchTime.now() + delaySec) {
+            // delaySec 초 후 최종 결제 요청
+            Iamport.shared.approvePayment(approve: iamPortApprove) // 최종 결제 요청
+        }
+    }
+
 
     @IBOutlet var paymentButton: UIButton?
 }

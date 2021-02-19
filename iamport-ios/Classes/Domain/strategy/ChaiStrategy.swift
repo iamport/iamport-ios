@@ -179,30 +179,71 @@ class ChaiStrategy: BaseStrategy {
 
     private func confirmMerchant(payment: Payment, prepareData: PrepareData) {
 
-        let approve = IamPortApprove.make(payment: payment, prepareData: prepareData)
-        // TODO 머천트의 approve 체크
+        IamPortApprove.make(payment: payment, prepareData: prepareData).do {
+            RxBus.shared.post(event: EventBus.MainEvents.AskApproveFromChai(approve: $0))
+        }
 
-        requestApprovePayments(approve: approve)
+        Utils.delay(bySeconds: Double(CONST.CHAI_FINAL_PAYMENT_TIME_OUT_SEC), dispatchLevel: .userInteractive) {
+            print("최종 결제 타임아웃! over \(CONST.CHAI_FINAL_PAYMENT_TIME_OUT_SEC) sec")
+            self.clear()
+        }
     }
 
-    private func requestApprovePayments(approve: IamPortApprove) {
 
-//        let headers: HTTPHeaders = [
-//            "Content-Type": "application/json",
-//            "Idempotency-Key": idempotencyKey,
-//            "public-API-Key": publicAPIKey
-//        ]
-//        let url = CONST.CHAI_SERVICE_URL + "/v1/payment/\(paymentId)"
-//        print(url)
-//
-//        let doNetwork = Network.alamoFireManager.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
-//
-//        doNetwork.responseJSON { [weak self] response in
-//
-//        }
+    func requestApprovePayments(approve: IamPortApprove) {
 
-        // TODO 최종결제 승인요청
-        processApprovePayments(approve: approve)
+        guard let idempotencyKey = approve.idempotencyKey,
+              let publicAPIKey = approve.publicAPIKey, let paymentId = approve.paymentId else {
+            print("requestApprovePayments approve 정보 찾을 수 없습니다")
+            return
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "Idempotency-Key": idempotencyKey,
+            "public-API-Key": publicAPIKey
+        ]
+        let url = CONST.CHAI_SERVICE_URL + "/v1/payment/\(paymentId)"
+        #if DEBUG
+        print(url)
+        #endif
+
+        // 최종 결제 요청 전, 실제로 chai approve 상태인지 체크
+        let doNetwork = Network.alamoFireManager.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
+        doNetwork.responseJSON { [weak self] response in
+
+            guard let payment = self?.payment else {
+                print("requestApprovePayments payment 정보가 없습니다")
+                return
+            }
+
+            switch response.result {
+            case .success(let data):
+                do {
+                    let dataJson = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+                    let getData = try JSONDecoder().decode(ChaiPayment.self, from: dataJson)
+                    #if DEBUG
+                    dump(getData)
+                    #endif
+
+                    if let status = ChaiPaymentStatus.from(displayStatus: getData.displayStatus) {
+
+                        if (status == .approved) {
+                            self?.processApprovePayments(approve: approve)
+                        } else {
+                            print("최종결제 진행하지 않습니다. \(status)")
+                            #if DEBUG
+                            print("상세정보 \(String(describing: response.value))")
+                            #endif
+                        }
+                    }
+                } catch {
+                    self?.failureFinish(payment: payment, msg: "success but \(error.localizedDescription)")
+                }
+            case .failure(let error):
+                self?.failureFinish(payment: payment, msg: "네트워크 통신실패로 인한 최종결제 실패!! \(error.localizedDescription)")
+            }
+        }
     }
 
     private func processApprovePayments(approve: IamPortApprove) {
@@ -237,7 +278,7 @@ class ChaiStrategy: BaseStrategy {
 
         doNetwork.responseJSON { [weak self] response in
             guard let payment = self?.payment, let prepareData = self?.prepareData else {
-                print("payment :: \(self?.payment), prepareData :: \(self?.prepareData)")
+                print("payment :: \(String(describing: self?.payment)), prepareData :: \(String(describing: self?.prepareData))")
                 return
             }
 
@@ -289,7 +330,7 @@ class ChaiStrategy: BaseStrategy {
 
         timeOutTime = DispatchTime.now() + Double(CONST.TIME_OUT)
         #if DEBUG
-        print("set timeOutTime \(timeOutTime)")
+        print("set timeOutTime \(String(describing: timeOutTime))")
         #endif
         pollingChaiStatus()
     }

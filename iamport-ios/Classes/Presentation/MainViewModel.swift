@@ -61,4 +61,13 @@ class MainViewModel {
             print("판단불가 \(judge)")
         }
     }
+
+
+    /**
+     * 차이 최종 결제 요청
+     */
+    func requestApprovePayments(approve: IamPortApprove) {
+        print("차이 최종 결제 요청")
+        repository.chaiStrategy.requestApprovePayments(approve: approve)
+    }
 }

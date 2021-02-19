@@ -41,14 +41,20 @@ class EventBus {
 
     struct MainEvents {
 
+        // 현재 결제 종류 판별
         struct JudgeEvent: BusEvent {
             let judge: (JudgeStrategy.JudgeKinds, UserData?, Payment)
         }
 
+        // 차이앱 열기 위한 url
         struct ChaiUri: BusEvent {
             let appAddress: URL
         }
 
+        // 머천트에게 최종 컨펌 받기 위한 요청
+        struct AskApproveFromChai: BusEvent {
+            let approve: IamPortApprove
+        }
     }
 
     struct WebViewEvents {
@@ -67,6 +73,7 @@ class EventBus {
         struct OpenWebView: BusEvent {
         }
 
+        // webview 에 업데이트 되는 현재 url
         struct UpdateUrl: BusEvent {
             let url: URL
         }

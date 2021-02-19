@@ -3,8 +3,9 @@
 //
 
 import Foundation
+import Then
 
-class IamPortApprove {
+public class IamPortApprove: Then {
     var userCode: String
     var merchantUid: String
     var paymentId: String?

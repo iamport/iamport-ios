@@ -55,7 +55,7 @@ class CONST {
     static let TIME_OUT = TIME_OUT_ONE_MIN * TIME_OUT_MIN // 차이 폴링 타임아웃
 ////    static let TRY_OUT_COUNT = 15
 
-//    static let CHAI_FINAL_PAYMENT_TIME_OUT_SEC = 6 * POLLING_DELAY // 차이 최종결제 위한 머천트 컨펌 타임아웃
+    static let CHAI_FINAL_PAYMENT_TIME_OUT_SEC = 6 * POLLING_DELAY // 차이 최종결제 위한 머천트 컨펌 타임아웃
 //
 
     static let PASS = "성공"
