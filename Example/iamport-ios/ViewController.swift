@@ -68,7 +68,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     // 아임포트 결제 데이터 생성
     func createPaymentData() -> IamPortRequest {
         IamPortRequest(
-                pg: PG.chai.makePgRawName(storeId: ""),
+                pg: PG.chai.makePgRawName(pgId: ""),
                 merchant_uid: "muid_ios_\(Int(Date().timeIntervalSince1970))",
                 amount: "1000").then {
             $0.pay_method = PayMethod.trans
