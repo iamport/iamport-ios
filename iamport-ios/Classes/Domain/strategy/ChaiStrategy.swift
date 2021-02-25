@@ -295,16 +295,8 @@ class ChaiStrategy: BaseStrategy {
     private func processPrepare(_ prepareData: PrepareData) {
         self.prepareData = prepareData
 
-        let queryItems = [
-            URLQueryItem(name: CHAI.PUBLIC_API_KEY, value: prepareData.publicAPIKey),
-            URLQueryItem(name: CHAI.PAYMENT_ID, value: prepareData.paymentId),
-            URLQueryItem(name: CHAI.IDEMPOENCY_KEY, value: prepareData.idempotencyKey)]
-
-        var openDeepLink = URLComponents(string: CHAI.SCHEME_HOST)
-        openDeepLink?.queryItems = queryItems
-        dlog(openDeepLink)
-
-        if let url = openDeepLink?.url {
+        if let returnUrl = prepareData.returnUrl, let url = URL(string: returnUrl) {
+            dlog(returnUrl)
             RxBus.shared.post(event: EventBus.MainEvents.ChaiUri(appAddress: url))
         }
 
