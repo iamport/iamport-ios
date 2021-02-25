@@ -2,14 +2,24 @@ import UIKit
 import WebKit
 import RxBus
 import RxSwift
+import RxRelay
 
 class WebViewController: UIViewController, WKUIDelegate {
 
     // for communicate WebView
-    enum JsInterface: String {
+    enum JsInterface: String, CaseIterable {
         case RECEIVED = "received"
         case START_REQUEST_PAY = "startRequestPay"
         case CUSTOM_CALL_BACK = "customCallback"
+
+        static func convertJsInterface(s: String) -> JsInterface? {
+            for value in self.allCases {
+                if (s == value.rawValue) {
+                    return value
+                }
+            }
+            return nil
+        }
     }
 
     var disposeBag = DisposeBag()
@@ -18,12 +28,24 @@ class WebViewController: UIViewController, WKUIDelegate {
     var webView: WKWebView?
     var payment: Payment?
 
+    // Disappear
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        #if DEBUG
-        print("viewWillDisappear")
-        #endif
+        dlog("viewWillDisappear")
+        clearAll()
+    }
 
+    // loaded
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        dlog("WebViewController 어서오고")
+
+        view.backgroundColor = UIColor.white
+        setupWebView()
+        subscribePayment()
+    }
+
+    private func clearWebView() {
         if let wv = webView {
             wv.stopLoading()
             wv.removeFromSuperview()
@@ -31,52 +53,69 @@ class WebViewController: UIViewController, WKUIDelegate {
             wv.navigationDelegate = nil
         }
         webView = nil
-        view.removeFromSuperview()
+    }
 
-//        clear()
+    private func clearAll() {
+        clearWebView()
+        view.removeFromSuperview()
+        payment = nil
         disposeBag = DisposeBag()
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        #if DEBUG
-        print("WebViewController 어서오고")
-        #endif
+    private func setupWebView() {
 
-        view.backgroundColor = UIColor.white
-        setupWebView()
-        observePaymentData()
+        clearWebView()
+
+        let userController = WKUserContentController().then { controller in
+            controller.add(self, name: JsInterface.RECEIVED.rawValue)
+            controller.add(self, name: JsInterface.START_REQUEST_PAY.rawValue)
+            controller.add(self, name: JsInterface.CUSTOM_CALL_BACK.rawValue)
+        }
+
+        let config = WKWebViewConfiguration.init().then { configuration in
+            configuration.userContentController = userController
+        }
+
+        webView = WKWebView.init(frame: view.frame, configuration: config).then { (wv: WKWebView) in
+            wv.backgroundColor = UIColor.white
+            wv.frame = view.bounds
+
+            view.addSubview(wv)
+
+            wv.uiDelegate = self
+            wv.navigationDelegate = self
+        }
     }
 
-    func clear() {
-        viewModel.clear()
-    }
-
-    private func observePaymentData() {
+    private func subscribePayment() {
         let eventBus = EventBus.shared
 
-        eventBus.closeBus.subscribe { [weak self] in
-            print("closeBus")
-            self?.sdkFinish(nil)
+        // 외부 종료 시그널
+        eventBus.clearBus.subscribe { [weak self] in
+            print("clearBus")
+            self?.sdkFinish(nil) // data clear 는 viewWillDisappear 에서 처리
         }.disposed(by: disposeBag)
 
-        eventBus.paymentBus.subscribe { [weak self] event in
+        // 결제 데이터
+        EventBus.shared.webViewPaymentBus.subscribe { [weak self] event in
             guard let el = event.element, let pay = el else {
-                print("Error paymentBus is nil")
+                print("Error not found PaymentEvent")
                 return
             }
-            self?.observe(pay)
+
+            self?.subscribe(pay)
         }.disposed(by: disposeBag)
     }
 
-    private func observe(_ payment: Payment) {
-        print("observe")
+    // 결제 데이터가 있을때 처리 할 이벤트들
+    private func subscribe(_ payment: Payment) {
+        print("subscribe")
 
         self.payment = payment
         let bus = RxBus.shared
-        let events = EventBus.WebViewEvents.self
+        let webViewEvents = EventBus.WebViewEvents.self
 
-        bus.asObservable(event: events.ImpResponse.self).subscribe { [weak self] event in
+        bus.asObservable(event: webViewEvents.ImpResponse.self).subscribe { [weak self] event in
             guard let el = event.element else {
                 print("Error not found ImpResponse")
                 return
@@ -86,7 +125,7 @@ class WebViewController: UIViewController, WKUIDelegate {
             self?.sdkFinish(el.impResponse)
         }.disposed(by: disposeBag)
 
-        bus.asObservable(event: events.OpenWebView.self).subscribe { [weak self] event in
+        bus.asObservable(event: webViewEvents.OpenWebView.self).subscribe { [weak self] event in
             guard nil != event.element else {
                 print("Error not found OpenWebView")
                 return
@@ -94,7 +133,7 @@ class WebViewController: UIViewController, WKUIDelegate {
             self?.openWebView()
         }.disposed(by: disposeBag)
 
-        bus.asObservable(event: events.ThirdPartyUri.self).subscribe { [weak self] event in
+        bus.asObservable(event: webViewEvents.ThirdPartyUri.self).subscribe { [weak self] event in
             guard let el = event.element else {
                 print("Error not found ThirdPartyUri")
                 return
@@ -102,11 +141,11 @@ class WebViewController: UIViewController, WKUIDelegate {
             self?.openThirdPartyApp(el.thirdPartyUri)
         }.disposed(by: disposeBag)
 
-        observeForBankPay()
+        subscribeForBankPay()
         requestPayment(payment)
     }
 
-    private func observeForBankPay() {
+    private func subscribeForBankPay() {
 
         let bus = RxBus.shared
         let events = EventBus.WebViewEvents.self
@@ -159,11 +198,9 @@ class WebViewController: UIViewController, WKUIDelegate {
      */
     func sdkFinish(_ iamPortResponse: IamPortResponse?) {
         print("명시적 sdkFinish")
-        #if DEBUG
-        dump(iamPortResponse)
-        #endif
+        ddump(iamPortResponse)
 
-//        clear()
+//        clear() // viewWillDisappear 에서 처리
         navigationController?.popViewController(animated: false)
         dismiss(animated: true) {
             EventBus.shared.impResponseRelay.accept(iamPortResponse)
@@ -185,9 +222,7 @@ class WebViewController: UIViewController, WKUIDelegate {
      * 나이스 뱅크페이 결과 처리 viewModel 에 요청
      */
     func finalProcessBankPayPayment(_ url: URL) {
-        #if DEBUG
-        print("finalProcessBankPayPayment :: \(url)")
-        #endif
+        dlog("finalProcessBankPayPayment :: \(url)")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         DispatchQueue.main.async { [weak self] in
@@ -206,36 +241,25 @@ class WebViewController: UIViewController, WKUIDelegate {
 
 
     func openThirdPartyApp(_ url: URL) {
-        #if DEBUG
-        print("openThirdPartyApp \(url)")
-        #endif
+        dlog("openThirdPartyApp \(url)")
         let result = Utils.openApp(url) // 앱 열기
         if (!result) {
-            if let scheme = url.scheme, let url = URL(string: Utils.getMarketUrl(scheme: scheme)) {
+
+            if let scheme = url.scheme,
+               let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
+               let url = URL(string: urlString) {
+
                 Utils.openApp(url) // 앱스토어로 이동
+            } else {
+
+                guard let pay = payment else {
+                    sdkFinish(nil)
+                    return
+                }
+
+                let response = IamPortResponse.makeFail(payment: pay, msg: "지원하지 않는 App Scheme\(url.scheme) 입니다")
+                sdkFinish(response)
             }
-        }
-    }
-
-    private func setupWebView() {
-
-        let config = WKWebViewConfiguration.init()
-        let userController = WKUserContentController()
-        userController.add(self, name: JsInterface.RECEIVED.rawValue)
-        userController.add(self, name: JsInterface.START_REQUEST_PAY.rawValue)
-        userController.add(self, name: JsInterface.CUSTOM_CALL_BACK.rawValue)
-        config.userContentController = userController
-        webView = WKWebView.init(frame: view.frame, configuration: config)
-
-        if let wv = webView {
-            wv.backgroundColor = UIColor.white
-            wv.frame = view.bounds
-
-            view.removeFromSuperview()
-            view.addSubview(wv)
-
-            wv.uiDelegate = self
-            wv.navigationDelegate = self
         }
     }
 
@@ -264,28 +288,29 @@ class WebViewController: UIViewController, WKUIDelegate {
                 return
             }
 
-            #if DEBUG
-            dump(url)
-            #endif
+            ddump(url)
 
             urlRequest = URLRequest(url: url)
         }
 
         DispatchQueue.main.async { [weak self] in
-            if let wv = self?.webView {
-                if (myPG == PG.smilepay) {
-                    if let base = URL(string: CONST.SMILE_PAY_BASE_URL),
-                       let contents = htmlContents {
-                        wv.loadHTMLString(contents, baseURL: base)
-                    }
-                } else {
-                    if let request = urlRequest {
-                        wv.load(request)
-                    }
-                }
+            guard let wv = self?.webView else {
+                self?.failFinish(errMsg: "webView 를 찾을 수 없습니다.")
+                return
+            }
 
+            if (myPG == PG.smilepay) {
+                if let base = URL(string: CONST.SMILE_PAY_BASE_URL),
+                   let contents = htmlContents {
+                    wv.loadHTMLString(contents, baseURL: base)
+                }
+            } else {
+                if let request = urlRequest {
+                    wv.load(request)
+                }
             }
         }
+
     }
 }
 
@@ -360,35 +385,30 @@ extension WebViewController: WKNavigationDelegate {
 
 extension WebViewController: WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        #if DEBUG
-        print("body \(message.body)")
-        #endif
+        dlog("body \(message.body)")
 
-        // TODO enum 으로 분기 및 코드정리
-        if (message.name == JsInterface.START_REQUEST_PAY.rawValue) {
-            print("JS SDK 통한 결제 시작 요청")
-            let encoder = JSONEncoder()
-            // encoder.outputFormatting = .prettyPrinted
-            let jsonData = try? encoder.encode(payment?.iamPortRequest)
+        if let jsMethod = JsInterface.convertJsInterface(s: message.name) {
+            switch jsMethod {
+            case .START_REQUEST_PAY:
+                print("JS SDK 통한 결제 시작 요청")
+                let encoder = JSONEncoder()
+                // encoder.outputFormatting = .prettyPrinted
+                let jsonData = try? encoder.encode(payment?.iamPortRequest)
 //            dump(payment)
-            if let json = jsonData, let code = payment?.userCode, let request = String(data: json, encoding: .utf8) {
-                #if DEBUG
-                print("'\(code)', '\(request)'")
-                #endif
-                webView?.evaluateJavaScript("requestPay('\(code)', '\(request)');")
-            }
-        }
+                if let json = jsonData, let code = payment?.userCode, let request = String(data: json, encoding: .utf8) {
+                    dlog("'\(code)', '\(request)'")
+                    webView?.evaluateJavaScript("requestPay('\(code)', '\(request)');")
+                }
 
-        if (message.name == JsInterface.RECEIVED.rawValue) {
-            print("Received from webview")
-        }
+            case .RECEIVED:
+                print("Received from webview")
 
-        if (message.name == JsInterface.CUSTOM_CALL_BACK.rawValue) {
-            print("Received payment callback")
-            let decoder = JSONDecoder()
-            if let data = (message.body as? String)?.data(using: .utf8), let impStruct = try? decoder.decode(IamPortResponseStruct.self, from: data) {
-                let response = IamPortResponse.structToClass(impStruct)
-                sdkFinish(response)
+            case .CUSTOM_CALL_BACK:
+                print("Received payment callback")
+                if let data = (message.body as? String)?.data(using: .utf8), let impStruct = try? JSONDecoder().decode(IamPortResponseStruct.self, from: data) {
+                    let response = IamPortResponse.structToClass(impStruct)
+                    sdkFinish(response)
+                }
             }
         }
     }

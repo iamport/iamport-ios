@@ -40,7 +40,7 @@ public class BaseStrategy: IStrategy {
         clear()
         self.payment = payment
 
-        EventBus.shared.closeBus.subscribe { [weak self] event in
+        EventBus.shared.clearBus.subscribe { [weak self] event in
             self?.clear()
         }.disposed(by: disposeBag)
 

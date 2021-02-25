@@ -8,12 +8,25 @@ import Alamofire
 // TODO Alamofire -> Moya 로 변경하자
 class Network {
 
+    static func getURLSessionConfiguration(useShortTimeout: Bool = false) -> URLSessionConfiguration {
+        var timeout = CONST.NETWORK_TIMEOUT_SEC
+        if (useShortTimeout) {
+            timeout = CONST.NETWORK_SHORT_TIMEOUT_SEC
+        }
+        let sessionConfiguration = URLSessionConfiguration.default.then { config in
+            config.timeoutIntervalForRequest = TimeInterval(timeout)
+            config.timeoutIntervalForResource = TimeInterval(timeout)
+        }
+
+        return sessionConfiguration
+    }
+
     static let alamoFireManager: SessionManager = {
-        let configuration = URLSessionConfiguration.default
-        configuration.timeoutIntervalForRequest = TimeInterval(CONST.NETWORK_TIMEOUT_SEC)
-        configuration.timeoutIntervalForResource = TimeInterval(CONST.NETWORK_TIMEOUT_SEC)
-        let alamoFireManager = Alamofire.SessionManager(configuration: configuration)
-        return alamoFireManager
+        Alamofire.SessionManager(configuration: getURLSessionConfiguration())
+    }()
+
+    static let alamoFireManagerShortTimeOut: SessionManager = {
+        Alamofire.SessionManager(configuration: getURLSessionConfiguration(useShortTimeout: true))
     }()
 
 }

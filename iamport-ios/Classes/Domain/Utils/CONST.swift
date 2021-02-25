@@ -23,7 +23,7 @@ class CONST {
     static let NICE_PG_PROVIDER = "nice"
 
     // 이 url 로 감지되면, 결제완료 콜백이란 의미 + 붙은 파라미터로 결제결과 처리
-    static let IAMPORT_DUMMY_URL = "http://localhost/iamport"
+    static let IAMPORT_DETECT_URL = "http://detectchangingwebview/iamport"
 
     static let IAMPORT_PROD_URL = "https://service.iamport.kr" // 테스트도 상용서버에서
 //    static let IAMPORT_TEST_URL = "https://kicc.iamport.kr"
@@ -45,6 +45,7 @@ class CONST {
     static let BUNDLE_PAYMENT = "payment"
 
     static let NETWORK_TIMEOUT_SEC = 20
+    static let NETWORK_SHORT_TIMEOUT_SEC = 5
     static let POLLING_DELAY = 1
 //
     private static let TIME_OUT_ONE_MIN = 60
@@ -54,9 +55,10 @@ class CONST {
     static let TIME_OUT = TIME_OUT_ONE_MIN * TIME_OUT_MIN // 차이 폴링 타임아웃
 ////    static let TRY_OUT_COUNT = 15
 
-//    static let CHAI_FINAL_PAYMENT_TIME_OUT_SEC = 6 * POLLING_DELAY // 차이 최종결제 위한 머천트 컨펌 타임아웃
+    static let CHAI_FINAL_PAYMENT_TIME_OUT_SEC = 6 * POLLING_DELAY // 차이 최종결제 위한 머천트 컨펌 타임아웃
 //
 
+    static let PASS = "성공"
     static let ERR_PAYMENT_VALIDATOR_VBANK = "가상계좌 결제는 만료일자(vbank_due) 항목 필수입니다 (YYYYMMDDhhmm 형식)"
     static let ERR_PAYMENT_VALIDATOR_PHONE = "휴대폰 소액결제는 digital 항목 필수입니다"
     static let ERR_PAYMENT_VALIDATOR_DANAL_VBANK = "다날 가상계좌 결제는 사업자 등록번호(biz_num) 항목 필수입니다 (계약된 사업자등록번호 10자리)"

@@ -8,11 +8,11 @@ import Foundation
 
 internal class WebViewModel {
 
-    let repository = StrategyRepository() // sTODO dependency inject
+    let repository = StrategyRepository() // TODO dependency inject
 
-    func clear() {
-        repository.clear()
-    }
+//    func clear() {
+//        repository.clear()
+//    }
 
     /**
      * 뱅크페이 결과 처리
@@ -25,9 +25,7 @@ internal class WebViewModel {
      * 결제 요청
      */
     func requestPayment(payment: Payment) {
-        #if DEBUG
-        print("뷰모델에 요청했니")
-        #endif
+        dlog("뷰모델에 요청했니")
         DispatchQueue.main.async {
             self.repository.getWebViewStrategy(payment).doWork(payment)
         }

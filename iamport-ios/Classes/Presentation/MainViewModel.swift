@@ -15,7 +15,8 @@ class MainViewModel {
         disposeBag = DisposeBag()
     }
 
-    init() {
+    func subscribe() {
+        clear()
         RxBus.shared.asObservable(event: EventBus.MainEvents.JudgeEvent.self).subscribe { [weak self] event in
             guard let el = event.element else {
                 print("Error not found JudgeEvent")
@@ -26,10 +27,22 @@ class MainViewModel {
     }
 
     func judgePayment(_ payment: Payment) {
-        DispatchQueue.main.async { [weak self] in
-            //  TODO Payment Validator
 
-            // TODO judge
+        subscribe()
+
+        DispatchQueue.main.async { [weak self] in
+
+            Payment.validator(payment) { valid, desc in
+                print("Payment validator valid :: \(valid), valid :: \(desc)")
+                if (!valid) {
+                    IamPortResponse.makeFail(payment: payment, msg: desc).do { it in
+                        self?.clear()
+                        EventBus.shared.impResponseRelay.accept(it)
+                    }
+                }
+            }
+
+            // judge
             self?.repository.judgeStrategy.doWork(payment)
         }
     }
@@ -42,9 +55,19 @@ class MainViewModel {
                 repository.chaiStrategy.doWork(userData.pg_id, judge.2)
             }
         case .WEB:
-            RxBus.shared.post(event: EventBus.WebViewEvents.PaymentEvent(webViewPayment: judge.2))
-        case .EMPTY:
+//            RxBus.shared.post(event: EventBus.WebViewEvents.PaymentEvent(webViewPayment: judge.2))
+            EventBus.shared.paymentRelay.accept(judge.2)
+        case .ERROR:
             print("판단불가 \(judge)")
         }
+    }
+
+
+    /**
+     * 차이 최종 결제 요청
+     */
+    func requestApprovePayments(approve: IamPortApprove) {
+        print("차이 최종 결제 요청")
+        repository.chaiStrategy.requestApprovePayments(approve: approve)
     }
 }

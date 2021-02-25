@@ -80,7 +80,7 @@ public enum PG: String, CaseIterable, Codable {
         }
     }
 
-    public func getPgSting(storeId: String? = nil) -> String {
+    public func makePgRawName(storeId: String? = nil) -> String {
         var id: String = CONST.EMPTY_STR
         if let store = storeId {
             if (store.count > 0) {

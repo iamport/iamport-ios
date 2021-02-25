@@ -6,6 +6,18 @@ import Foundation
 import RxSwift
 import SystemConfiguration
 
+func dlog(_ log: Any...) {
+    #if DEBUG
+    debugPrint(log)
+    #endif
+}
+
+func ddump<T>(_ value: T) {
+    #if DEBUG
+    dump(value)
+    #endif
+}
+
 enum BusThread {
     //- utility: 유저의 프로세스에 필요한 연산작업에 사용한다. 프로그래스바, I/O, Networking 등
     //- background: 유저에게 직접적으로 필요하지 않은 작업들. logging 등
@@ -132,79 +144,32 @@ extension String {
     func trim() -> String {
         return self.trimmingCharacters(in: CharacterSet.whitespaces)
     }
+}
 
-    func NilOrEmpty() -> Bool {
-        if (self.trim().isEmpty) {
+extension Optional where Wrapped == String {
+
+    var nilOrEmpty: Bool {
+
+        guard let strongSelf = self else {
             return true
-        } else {
-            return false
         }
+
+        return strongSelf.trim().isEmpty ? true : false
     }
 }
+
 
 class Utils {
     static public func getQueryStringToImpResponse(_ url: URL) -> IamPortResponse? {
         #if DEBUG
-        print(url.queryParams().toJsonString())
+        dlog(url.queryParams().toJsonString())
         #endif
-        let decoder = JSONDecoder()
         let data = url.queryParams().toJsonData()
-        if let impStruct = try? decoder.decode(IamPortResponseStruct.self, from: data) {
+        if let impStruct = try? JSONDecoder().decode(IamPortResponseStruct.self, from: data) {
             return IamPortResponse.structToClass(impStruct)
         }
         return nil
     }
-
-    static func getMarketUrl(scheme: String) -> String {
-
-        var code: String
-        switch (scheme) {
-        case "kftc-bankpay": // 뱅크페이
-            code = "id398456030";
-        case "ispmobile": // ISP/페이북
-            code = "id369125087";
-        case "hdcardappcardansimclick": // 현대카드 앱카드
-            code = "id702653088";
-        case "shinhan-sr-ansimclick": // 신한 앱카드
-            code = "id572462317";
-        case "kb-acp": // KB국민 앱카드
-            code = "id695436326";
-        case "mpocket.online.ansimclick": // 삼성앱카드
-            code = "id535125356";
-        case "lottesmartpay": // 롯데 모바일결제
-            code = "id668497947";
-        case "lotteappcard": // 롯데 앱카드
-            code = "id688047200";
-        case "cloudpay": // 하나1Q페이(앱카드)
-            code = "id847268987";
-        case "citimobileapp": // 시티은행 앱카드
-            code = "id1179759666";
-        case "payco": // 페이코
-            code = "id924292102";
-        case "kakaotalk": // 카카오톡
-            code = "id362057947";
-        case "lpayapp": // 롯데 L.pay
-            code = "id1036098908";
-        case "wooripay": // 우리페이
-            code = "id1201113419";
-        case "nhallonepayansimclick": // NH농협카드 올원페이(앱카드)
-            code = "id1177889176";
-        case "hanawalletmembers": // 하나카드(하나멤버스 월렛)
-            code = "id1038288833";
-        case "shinsegaeeasypayment": // 신세계 SSGPAY
-            code = "id666237916";
-        case "shinsegaeeasypayment": // 신세계 SSGPAY
-            code = "id666237916";
-        case CHAI.scheme: // 차이
-            code = "id1459979272";
-        default:
-            code = "";
-        }
-
-        let marketUrl = "itms-apps://itunes.apple.com/app/\(code)"
-        return marketUrl
-    }
-
 
     static func openApp(_ url: URL) -> Bool {
         let application = UIApplication.shared
@@ -234,7 +199,7 @@ class Utils {
  * 결제 끝났는지 여부
  */
     static func isPaymentOver(_ uri: URL) -> Bool {
-        uri.absoluteString.contains(CONST.IAMPORT_DUMMY_URL)
+        return uri.absoluteString.contains(CONST.IAMPORT_DETECT_URL)
     }
 
     static func getActionPolicy(_ uri: URL) -> Bool {

@@ -39,8 +39,8 @@ public class BaseWebViewStrategy: IStrategy {
         clear()
         self.payment = payment
 
-        EventBus.shared.closeBus.subscribe { [weak self] event in
-            self?.clear()
+        EventBus.shared.clearBus.subscribe { [weak self] event in
+            self?.clear() // 종료 없이 only clear
         }.disposed(by: disposeBag)
 
         RxBus.shared.asObservable(event: EventBus.WebViewEvents.UpdateUrl.self)
@@ -49,9 +49,7 @@ public class BaseWebViewStrategy: IStrategy {
                         print("Error not found WebViewEvents")
                         return
                     }
-                    #if DEBUG
-                    print("onUpdatedUrl \(el.url)")
-                    #endif
+                    dlog("onUpdatedUrl \(el.url)")
                     self?.onUpdatedUrl(url: el.url)
                 }.disposed(by: disposeBag)
     }

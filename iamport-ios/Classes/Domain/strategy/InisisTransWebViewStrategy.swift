@@ -40,13 +40,11 @@ class InisisTransWebViewStrategy: WebViewStrategy {
         let redirectUrl = separated.map { s -> String in
             s.removingPercentEncoding ?? s
         }.filter { s in
-            s.contains(CONST.IAMPORT_DUMMY_URL)
+            s.contains(CONST.IAMPORT_DETECT_URL)
         }.first
 
         if let urlStr = redirectUrl, let url = URL(string: urlStr) {
-            #if DEBUG
-            print("parse url \(url.absoluteString)")
-            #endif
+            dlog("parse url \(url.absoluteString)")
             RxBus.shared.post(event: EventBus.WebViewEvents.FinalBankPayProcess(url: url))
         }
     }

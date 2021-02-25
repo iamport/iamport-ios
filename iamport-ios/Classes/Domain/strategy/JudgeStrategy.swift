@@ -11,20 +11,17 @@ public class JudgeStrategy: BaseStrategy {
 
     // 유저 정보 판단 결과 타입
     enum JudgeKinds {
-        case CHAI, WEB, EMPTY
+        case CHAI, WEB, ERROR
     }
 
     override func doWork(_ payment: Payment) {
         super.doWork(payment)
 
-        let headers: HTTPHeaders = [
-            "Content-Type": "application/json"
-        ]
+        let headers: HTTPHeaders = ["Content-Type": "application/json"]
         let url = CONST.IAMPORT_PROD_URL + "/users/pg/\(payment.userCode)"
         print(url)
 
-        let doNetwork = Alamofire.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
-
+        let doNetwork = Network.alamoFireManagerShortTimeOut.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
         doNetwork.responseJSON { [weak self] response in
             switch response.result {
             case .success(let data):
@@ -44,7 +41,7 @@ public class JudgeStrategy: BaseStrategy {
                     self?.failureFinish(payment: payment, msg: "success but \(error.localizedDescription)")
                 }
             case .failure(let error):
-                self?.failureFinish(payment: payment, msg: "통신실패 \(error.localizedDescription)")
+                self?.failureFinish(payment: payment, msg: "네트워크 연결실패 \(error.localizedDescription)")
             }
         }
     }
@@ -53,18 +50,12 @@ public class JudgeStrategy: BaseStrategy {
 
         guard !userDataList.isEmpty else {
             failureFinish(payment: payment, msg: "Not found PF [ \(payment.iamPortRequest.pg) ] and any PG in your info.")
-            return (JudgeKinds.EMPTY, nil, payment)
+            return (JudgeKinds.ERROR, nil, payment)
         }
 
         guard let defUser = findDefaultUserData(userDataList) else {
             failureFinish(payment: payment, msg: "Not found Default PG. All PG empty.")
-            return (JudgeKinds.EMPTY, nil, payment)
-        }
-
-        func find(data: UserData, myPg: String, myPgId: String) -> Bool {
-            dump(data.pg_provider?.getPgSting())
-            dump(data.pg_id)
-            return data.pg_provider?.getPgSting() == myPg && data.pg_id == myPgId
+            return (JudgeKinds.ERROR, nil, payment)
         }
 
         print("userDataList :: \(userDataList)")
@@ -75,11 +66,11 @@ public class JudgeStrategy: BaseStrategy {
         if (split.count > 1) {
             let pgId = String(split[1])
             findPg = userDataList.first { data in
-                data.pg_provider?.getPgSting() == myPg && data.pg_id == pgId
+                data.pg_provider?.makePgRawName() == myPg && data.pg_id == pgId
             }
         } else {
             findPg = userDataList.first { data in
-                data.pg_provider?.getPgSting() == myPg
+                data.pg_provider?.makePgRawName() == myPg
             }
         }
 
@@ -124,7 +115,7 @@ public class JudgeStrategy: BaseStrategy {
      */
     private func replacePG(pg: PG, payment: Payment) -> Payment {
         let iamPortRequest = payment.iamPortRequest.with {
-            $0.pg = pg.getPgSting()
+            $0.pg = pg.makePgRawName()
         }
         return payment.with {
             $0.iamPortRequest = iamPortRequest

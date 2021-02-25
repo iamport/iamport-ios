@@ -7,6 +7,8 @@ import RxBus
 import RxSwift
 import Alamofire
 
+
+// TODO API 들을 따로 모아서 관리하기
 class ChaiStrategy: BaseStrategy {
 
     var prepareData: PrepareData?
@@ -37,39 +39,31 @@ class ChaiStrategy: BaseStrategy {
 
         //* 2. IMP 서버에 결제시작 요청 (+ chai id)
 
-        let headers: HTTPHeaders = [
-            "Content-Type": "application/json"
-        ]
+        let headers: HTTPHeaders = ["Content-Type": "application/json"]
         let url = CONST.IAMPORT_PROD_URL + "/chai_payments/prepare"
-        #if DEBUG
-        print(url)
-        #endif
+        dlog(url)
+
 
         let prepareRequest = PrepareRequest.makeDictionary(chaiId: pgId, payment: payment)
-        #if DEBUG
-        print(prepareRequest)
-        #endif
+        dlog(prepareRequest)
+
 
         let doNetwork = Network.alamoFireManager.request(url, method: .post, parameters: prepareRequest, encoding: JSONEncoding.default, headers: headers)
-        #if DEBUG
-        print(doNetwork)
-        #endif
+        dlog(doNetwork)
+
         doNetwork.responseJSON { [weak self] response in
             switch response.result {
             case .success(let data):
                 do {
                     let dataJson = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+                    dlog(dataJson)
                     let getData = try JSONDecoder().decode(Prepare.self, from: dataJson)
 
                     guard getData.code == 0 else {
                         self?.failureFinish(payment: payment, msg: "code : \(getData.code), msg : \(String(describing: getData.msg))")
                         return
                     }
-
-                    #if DEBUG
-                    print(dataJson)
-                    print(getData)
-                    #endif
+                    dlog(getData)
 
                     self?.processPrepare(getData.data)
 
@@ -77,7 +71,7 @@ class ChaiStrategy: BaseStrategy {
                     self?.failureFinish(payment: payment, msg: "success but \(error.localizedDescription)")
                 }
             case .failure(let error):
-                self?.failureFinish(payment: payment, msg: "통신실패 \(error.localizedDescription)")
+                self?.failureFinish(payment: payment, msg: "네트워크 연결실패 \(error.localizedDescription)")
             }
         }
     }
@@ -96,9 +90,7 @@ class ChaiStrategy: BaseStrategy {
             "public-API-Key": publicAPIKey
         ]
         let url = CONST.CHAI_SERVICE_URL + "/v1/payment/\(paymentId)"
-        #if DEBUG
-        print(url)
-        #endif
+        dlog(url)
 
         let doNetwork = Network.alamoFireManager.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
 
@@ -113,9 +105,7 @@ class ChaiStrategy: BaseStrategy {
                 do {
                     let dataJson = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
                     let getData = try JSONDecoder().decode(ChaiPayment.self, from: dataJson)
-                    #if DEBUG
-                    dump(getData)
-                    #endif
+                    ddump(getData)
 
                     if let status = ChaiPaymentStatus.from(displayStatus: getData.displayStatus) {
                         switch status {
@@ -142,7 +132,7 @@ class ChaiStrategy: BaseStrategy {
                 }
             case .failure(let error):
 //                self?.failureFinish(payment: payment, msgC: "통신실패 \(error.localizedDescription)")
-                print("통신실패로 인한 폴링 시도!!")
+                print("네트워크 통신실패로 인한 폴링 시도!! \(error.localizedDescription)")
                 self?.tryPolling()
             }
         }
@@ -168,9 +158,8 @@ class ChaiStrategy: BaseStrategy {
 
     func isTimeOut() -> Bool {
         if let timeOut = timeOutTime {
-            #if DEBUG
-            print("now time \(DispatchTime.now()) : timeout \(timeOut)")
-            #endif
+
+            dlog("now time \(DispatchTime.now()) : timeout \(timeOut)")
             return DispatchTime.now() >= timeOut
         }
         return true
@@ -179,34 +168,70 @@ class ChaiStrategy: BaseStrategy {
 
     private func confirmMerchant(payment: Payment, prepareData: PrepareData) {
 
-        let approve = IamPortApprove.make(payment: payment, prepareData: prepareData)
-        // TODO 머천트의 approve 체크
+        IamPortApprove.make(payment: payment, prepareData: prepareData).do {
+            RxBus.shared.post(event: EventBus.MainEvents.AskApproveFromChai(approve: $0))
+        }
 
-        requestApprovePayments(approve: approve)
+        Utils.delay(bySeconds: Double(CONST.CHAI_FINAL_PAYMENT_TIME_OUT_SEC), dispatchLevel: .userInteractive) {
+            print("최종 결제 타임아웃! over \(CONST.CHAI_FINAL_PAYMENT_TIME_OUT_SEC) sec")
+            self.clear()
+        }
     }
 
-    private func requestApprovePayments(approve: IamPortApprove) {
 
-//        let headers: HTTPHeaders = [
-//            "Content-Type": "application/json",
-//            "Idempotency-Key": idempotencyKey,
-//            "public-API-Key": publicAPIKey
-//        ]
-//        let url = CONST.CHAI_SERVICE_URL + "/v1/payment/\(paymentId)"
-//        print(url)
-//
-//        let doNetwork = Network.alamoFireManager.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
-//
-//        doNetwork.responseJSON { [weak self] response in
-//
-//        }
+    func requestApprovePayments(approve: IamPortApprove) {
 
-        // TODO 최종결제 승인요청
-        processApprovePayments(approve: approve)
+        guard let idempotencyKey = approve.idempotencyKey,
+              let publicAPIKey = approve.publicAPIKey, let paymentId = approve.paymentId else {
+            print("requestApprovePayments approve 정보 찾을 수 없습니다")
+            return
+        }
+
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "Idempotency-Key": idempotencyKey,
+            "public-API-Key": publicAPIKey
+        ]
+        let url = CONST.CHAI_SERVICE_URL + "/v1/payment/\(paymentId)"
+        dlog(url)
+
+
+        // 최종 결제 요청 전, 실제로 chai approve 상태인지 체크
+        let doNetwork = Network.alamoFireManager.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
+        doNetwork.responseJSON { [weak self] response in
+
+            guard let payment = self?.payment else {
+                print("requestApprovePayments payment 정보가 없습니다")
+                return
+            }
+
+            switch response.result {
+            case .success(let data):
+                do {
+                    let dataJson = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+                    let getData = try JSONDecoder().decode(ChaiPayment.self, from: dataJson)
+                    ddump(getData)
+
+                    if let status = ChaiPaymentStatus.from(displayStatus: getData.displayStatus) {
+
+                        if (status == .approved) {
+                            self?.processApprovePayments(approve: approve)
+                        } else {
+                            print("최종결제 진행하지 않습니다. \(status)")
+                            dlog("상세정보 \(String(describing: response.value))")
+                        }
+                    }
+                } catch {
+                    self?.failureFinish(payment: payment, msg: "success but \(error.localizedDescription)")
+                }
+            case .failure(let error):
+                self?.failureFinish(payment: payment, msg: "네트워크 통신실패로 인한 최종결제 실패!! \(error.localizedDescription)")
+            }
+        }
     }
 
     private func processApprovePayments(approve: IamPortApprove) {
-        print("결제 최종 승인 요청~~~")
+        print("결제 최종 승인 요청")
 
         let headers: HTTPHeaders = ["Content-Type": "application/json"]
         guard let idempotencyKey = approve.idempotencyKey else {
@@ -230,28 +255,26 @@ class ChaiStrategy: BaseStrategy {
             return
         }
 
-        print(urlComponents?.url)
+        dlog(urlComponents?.url)
 
         let doNetwork = Network.alamoFireManager.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
-        print(doNetwork)
+        dlog(doNetwork)
 
         doNetwork.responseJSON { [weak self] response in
             guard let payment = self?.payment, let prepareData = self?.prepareData else {
-                print("payment :: \(self?.payment), prepareData :: \(self?.prepareData)")
+                print("payment :: \(String(describing: self?.payment)), prepareData :: \(String(describing: self?.prepareData))")
                 return
             }
 
             switch response.result {
             case .success(let data):
                 do {
+
                     let dataJson = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
-                    #if DEBUG
-                    print(dataJson)
-                    #endif
+                    dlog(dataJson)
+
                     let getData = try JSONDecoder().decode(Approve.self, from: dataJson)
-                    #if DEBUG
-                    dump(getData)
-                    #endif
+                    ddump(getData)
 
                     guard getData.code == 0 else {
                         self?.failureFinish(payment: payment, prepareData: prepareData, msg: "결제실패 \(String(describing: approve.msg))")
@@ -272,25 +295,14 @@ class ChaiStrategy: BaseStrategy {
     private func processPrepare(_ prepareData: PrepareData) {
         self.prepareData = prepareData
 
-        let queryItems = [
-            URLQueryItem(name: "publicAPIKey", value: prepareData.publicAPIKey),
-            URLQueryItem(name: "paymentId", value: prepareData.paymentId),
-            URLQueryItem(name: "idempotencyKey", value: prepareData.idempotencyKey)]
-
-        var openDeepLink = URLComponents(string: "chaipayment://payment")
-        openDeepLink?.queryItems = queryItems
-        #if DEBUG
-        print(openDeepLink)
-        #endif
-
-        if let url = openDeepLink?.url {
+        if let returnUrl = prepareData.returnUrl, let url = URL(string: returnUrl) {
+            dlog(returnUrl)
             RxBus.shared.post(event: EventBus.MainEvents.ChaiUri(appAddress: url))
         }
 
         timeOutTime = DispatchTime.now() + Double(CONST.TIME_OUT)
-        #if DEBUG
-        print("set timeOutTime \(timeOutTime)")
-        #endif
+        dlog("set timeOutTime \(String(describing: timeOutTime))")
+
         pollingChaiStatus()
     }
 
