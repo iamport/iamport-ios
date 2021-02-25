@@ -39,10 +39,15 @@ class PrepareRequest: DictionaryEncodable, Then {
     }
 
 
-    static func make(chaiId: String, payment: Payment) -> PrepareRequest {
-        let empty = CONST.EMPTY_STR
-        let request = payment.iamPortRequest.with { _ in
+    static func make(chaiId: String, payment: Payment) -> PrepareRequest? {
+
+        guard let request = payment.iamPortRequest else {
+            print("PrepareRequest, make, iamPortRequest is nil")
+            return nil
         }
+
+        let empty = CONST.EMPTY_STR
+
         return PrepareRequest(user_code: payment.userCode,
                 merchant_uid: request.merchant_uid,
                 amount: request.amount,
@@ -65,7 +70,7 @@ class PrepareRequest: DictionaryEncodable, Then {
     }
 
     static func makeDictionary(chaiId: String, payment: Payment) -> [String: Any]? {
-        make(chaiId: chaiId, payment: payment).dictionary()
+        make(chaiId: chaiId, payment: payment)?.dictionary()
     }
 
 }

@@ -6,7 +6,7 @@ import Foundation
 import Then
 
 struct UserData: Codable, Then {
-    var pg_provider: PG? // TODO: 2020-12-15 015 nullable 로 오는데.. 확인필요..
+    var pg_provider: String? // TODO: 2020-12-15 015 nullable 로 오는데.. 확인필요..
     var pg_id: String
     var sandbox: Bool?
     var type: String

@@ -36,7 +36,8 @@ class CONST {
 
     static let PAYMENT_PLAY_STORE_URL = "market://details?id="
 
-    static let PAYMENT_FILE_URL = "경로/iamportcdn.html"
+    static let CDN_FILE_NAME = "iamportcdn"
+    static let CDN_FILE_EXTENSION = "html"
 
     static let IAMPORT_LOG = "IAMPORT"
 
@@ -53,11 +54,14 @@ class CONST {
 //    // POLLING_DELAY // 1분 단위
     static let TIME_OUT_MIN = 5 // 분
     static let TIME_OUT = TIME_OUT_ONE_MIN * TIME_OUT_MIN // 차이 폴링 타임아웃
-////    static let TRY_OUT_COUNT = 15
 
     static let CHAI_FINAL_PAYMENT_TIME_OUT_SEC = 6 * POLLING_DELAY // 차이 최종결제 위한 머천트 컨펌 타임아웃
-//
 
+    static let USER_TYPE_PAYMENT = "payment"
+    static let USER_TYPE_CERTIFICATION = "certification"
+
+
+    // payment 객체 validation 관련
     static let PASS = "성공"
     static let ERR_PAYMENT_VALIDATOR_VBANK = "가상계좌 결제는 만료일자(vbank_due) 항목 필수입니다 (YYYYMMDDhhmm 형식)"
     static let ERR_PAYMENT_VALIDATOR_PHONE = "휴대폰 소액결제는 digital 항목 필수입니다"

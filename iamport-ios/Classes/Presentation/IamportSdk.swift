@@ -13,7 +13,7 @@ public class IamportSdk {
     let naviController: UINavigationController
 
     var chaiApproveCallBack: ((IamPortApprove) -> Void)? // 차이 결제 확인 콜백
-    var paymentResult: ((IamPortResponse?) -> Void)? // 결제 결과 콜백
+    var resultCallBack: ((IamPortResponse?) -> Void)? // 결제 결과 콜백
 
     var disposeBag = DisposeBag()
 
@@ -35,17 +35,26 @@ public class IamportSdk {
     private func sdkFinish(_ iamportResponse: IamPortResponse?) {
         print("I'mport SDK 에서 종료입니다")
         clearData()
-        paymentResult?(iamportResponse)
+        resultCallBack?(iamportResponse)
     }
 
     internal func initStart(payment: Payment, approveCallback: ((IamPortApprove) -> Void)?, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
-        print("initStart")
+        print("initStart Payment")
 //        clearData()
 
         chaiApproveCallBack = approveCallback
-        paymentResult = paymentResultCallback
+        resultCallBack = paymentResultCallback
 
         subscribe(payment) // 관찰할 옵저버블
+    }
+
+    internal func initStart(payment: Payment, certificationResultCallback: @escaping (IamPortResponse?) -> Void) {
+        print("initStart Certification")
+//        clearData()
+
+        resultCallBack = certificationResultCallback
+
+        subscribeCertification(payment) // 관찰할 옵저버블
     }
 
     func postReceivedURL(_ url: URL) {
@@ -97,7 +106,27 @@ public class IamportSdk {
 
         // 결제요청
         requestPayment(payment)
+    }
 
+    private func subscribeCertification(_ payment: Payment) {
+
+        // 결제결과 옵저빙
+        EventBus.shared.impResponseBus.subscribe { [weak self] iamportResponse in
+            self?.sdkFinish(iamportResponse)
+        }.disposed(by: disposeBag)
+
+        // subscribe 웹뷰열기
+        EventBus.shared.paymentBus.subscribe { [weak self] event in
+            guard let el = event.element, let pay = el else {
+                print("Error paymentBus is nil")
+                return
+            }
+
+            self?.openWebViewController(pay)
+        }.disposed(by: disposeBag)
+
+        // 본인인증 요청
+        requestCertification(payment)
     }
 
 
@@ -140,6 +169,16 @@ public class IamportSdk {
                 return
             }
         }
+
+        if (!Utils.isInternetAvailable()) {
+            sdkFinish(IamPortResponse.makeFail(payment: payment, msg: "네트워크 연결 안됨"))
+            return
+        }
+
+        viewModel.judgePayment(payment)
+    }
+
+    private func requestCertification(_ payment: Payment) {
 
         if (!Utils.isInternetAvailable()) {
             sdkFinish(IamPortResponse.makeFail(payment: payment, msg: "네트워크 연결 안됨"))

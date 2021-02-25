@@ -40,6 +40,21 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         paymentButton?.rx.tap.bind { [weak self] in
             self?.requestPayment()
         }.disposed(by: disposeBag)
+
+        certificationButton?.rx.tap.bind { [weak self] in
+            self?.requestCertification()
+        }.disposed(by: disposeBag)
+    }
+
+    // 아임포트 SDK 본인인증 요청
+    func requestCertification() {
+        let userCode = "imp10391932" // 다날
+        let request = createCertificationData()
+        dump(request)
+
+        Iamport.shared.certification(navController: navigationController, userCode: userCode, iamPortCertification: request) { [weak self] iamPortResponse in
+            self?.paymentCallback(iamPortResponse)
+        }
     }
 
     // 아임포트 SDK 결제 요청
@@ -72,9 +87,20 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
                 merchant_uid: "muid_ios_\(Int(Date().timeIntervalSince1970))",
                 amount: "1000").then {
             $0.pay_method = PayMethod.trans
-            $0.name = "배달의 민족 주문~"
+            $0.name = "아임포트의 민족 주문~~"
             $0.buyer_name = "남궁안녕"
             $0.app_scheme = "iamport"
+        }
+    }
+
+    // 아임포트 본인인증 데이터 생성
+    func createCertificationData() -> IamPortCertification {
+        IamPortCertification(merchant_uid: "muid_ios_\(Int(Date().timeIntervalSince1970))").then {
+            $0.min_age = 19
+            $0.name = "김빙봉"
+            $0.phone = "010-1234-5678"
+            $0.carrier = "MVNO"
+            $0.company = "유어포트"
         }
     }
 
@@ -106,5 +132,6 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
 
 
     @IBOutlet var paymentButton: UIButton?
+    @IBOutlet var certificationButton: UIButton?
 }
 

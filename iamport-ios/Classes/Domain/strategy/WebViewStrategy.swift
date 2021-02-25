@@ -27,7 +27,7 @@ class WebViewStrategy: BaseWebViewStrategy {
 
         if (Utils.isPaymentOver(url)) {
             let response = Utils.getQueryStringToImpResponse(url)
-            dlog("paymentOver :: \(response)")
+            dlog("paymentOver :: \(String(describing: response))")
             ddump(response)
             sdkFinish(response)
             return

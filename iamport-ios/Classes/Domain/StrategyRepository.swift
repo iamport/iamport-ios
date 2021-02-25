@@ -20,6 +20,8 @@ class StrategyRepository {
     private let niceTransWebViewStrategy = NiceTransWebViewStrategy()
     private let inisisTransWebViewStrategy = InisisTransWebViewStrategy()
 
+    private let certificationWebViewStrategy = CertificationWebViewStrategy()
+
 //    func clear() {
 //        EventBus.shared.clearRelay.accept(())
 //    }
@@ -43,10 +45,9 @@ class StrategyRepository {
             pgPair.0 == PG.html5_inicis && pgPair.1 == PayMethod.trans
         }
 
-        let request = payment.iamPortRequest
-        print(request.pgEnum)
+        dlog(payment.iamPortRequest?.pgEnum)
 
-        if let it = request.pgEnum {
+        if let request = payment.iamPortRequest, let it = request.pgEnum {
             let pair = (it, request.pay_method)
 
             if (isChaiPayment(pgPair: pair)) {
@@ -92,6 +93,10 @@ class StrategyRepository {
         if (getPaymentKinds(payment: payment) == PaymentKinds.NICE) {
             niceTransWebViewStrategy.processBankPayPayment(url)
         }
+    }
+
+    func requestCertification(_ payment: Payment) {
+        certificationWebViewStrategy.doWork(payment)
     }
 
 
