@@ -8,22 +8,11 @@ import RxBus
 
 class MainViewModel {
 
-    var disposeBag = DisposeBag()
-    let repository = StrategyRepository() // TODO dependency inject
+    private var disposeBag = DisposeBag()
+    private let repository = StrategyRepository() // TODO dependency inject
 
     func clear() {
         disposeBag = DisposeBag()
-    }
-
-    func subscribe() {
-        clear()
-        RxBus.shared.asObservable(event: EventBus.MainEvents.JudgeEvent.self).subscribe { [weak self] event in
-            guard let el = event.element else {
-                print("Error not found JudgeEvent")
-                return
-            }
-            self?.judgeProcess(el.judge)
-        }.disposed(by: disposeBag)
     }
 
     func judgePayment(_ payment: Payment) {
@@ -42,21 +31,34 @@ class MainViewModel {
                 }
             }
 
-            // judge
+            // 판단 시작
             self?.repository.judgeStrategy.doWork(payment)
         }
     }
 
+    // 판단 결과 구독
+    func subscribe() {
+        clear()
+        RxBus.shared.asObservable(event: EventBus.MainEvents.JudgeEvent.self).subscribe { [weak self] event in
+            guard let el = event.element else {
+                print("Error not found JudgeEvent")
+                return
+            }
+            self?.judgeProcess(el.judge)
+        }.disposed(by: disposeBag)
+    }
+
+
+    // 판단 결과 처리
     private func judgeProcess(_ judge: (JudgeStrategy.JudgeKinds, UserData?, Payment)) {
         print("JudgeEvent \(judge)")
         switch judge.0 {
         case .CHAI:
-            if let userData = judge.1 {
+            judge.1?.do { userData in
                 repository.chaiStrategy.doWork(userData.pg_id, judge.2)
             }
-        case .WEB:
-//            RxBus.shared.post(event: EventBus.WebViewEvents.PaymentEvent(webViewPayment: judge.2))
-            EventBus.shared.paymentRelay.accept(judge.2)
+        case .WEB, .CERT:
+            EventBus.shared.paymentRelay.accept(judge.2) // 웹뷰 컨트롤러 열기
         case .ERROR:
             print("판단불가 \(judge)")
         }
@@ -70,4 +72,5 @@ class MainViewModel {
         print("차이 최종 결제 요청")
         repository.chaiStrategy.requestApprovePayments(approve: approve)
     }
+
 }

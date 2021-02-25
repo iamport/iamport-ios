@@ -5,9 +5,11 @@
 import Foundation
 
 public enum PG: String, CaseIterable, Codable {
+
     case chai
     case kcp
-    case html5_inicis
+    case html5_inicis // only for 결제
+//    case inicis // only for 본인인증
     case kcp_billing
     case uplus
     case jtnet
@@ -77,14 +79,16 @@ public enum PG: String, CaseIterable, Codable {
             return "알리페이"
         case .bluewalnut:
             return "bluewalnut"
+//        case .inicis:
+//            return "이니시스본인인증"
         }
     }
 
-    public func makePgRawName(storeId: String? = nil) -> String {
+    public func makePgRawName(pgId: String? = nil) -> String {
         var id: String = CONST.EMPTY_STR
-        if let store = storeId {
-            if (store.count > 0) {
-                id = ".\(store)"
+        if let pg = pgId {
+            if (pg.count > 0) {
+                id = ".\(pg)"
             }
         }
         return "\(self)\(id)"

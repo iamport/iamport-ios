@@ -12,11 +12,6 @@ class NiceTransWebViewStrategy: WebViewStrategy {
     var bankTid: String?
     var niceTransUrl: String?
 
-    override func doWork(_ payment: Payment) {
-        super.doWork(payment)
-        self.payment = payment
-    }
-
     override func onUpdatedUrl(url: URL) {
         dlog("아주 나이스~ \(url)")
         if (isNiceTransScheme(url)) {

@@ -25,10 +25,11 @@ public class IamPortApprove: Then {
 
     static func make(payment: Payment, prepareData: PrepareData) -> IamPortApprove {
         IamPortApprove(userCode: payment.userCode,
-                merchantUid: payment.iamPortRequest.merchant_uid,
+                merchantUid: payment.getMerchantUid(),
                 paymentId: prepareData.paymentId,
                 impUid: prepareData.impUid,
                 idempotencyKey: prepareData.idempotencyKey,
                 publicAPIKey: prepareData.publicAPIKey)
     }
 }
+

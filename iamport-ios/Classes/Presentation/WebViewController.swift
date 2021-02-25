@@ -9,8 +9,9 @@ class WebViewController: UIViewController, WKUIDelegate {
     // for communicate WebView
     enum JsInterface: String, CaseIterable {
         case RECEIVED = "received"
-        case START_REQUEST_PAY = "startRequestPay"
+        case START_WORKING_SDK = "startWorkingSdk"
         case CUSTOM_CALL_BACK = "customCallback"
+        case DEBUG_CONSOLE_LOG = "debugConsoleLog"
 
         static func convertJsInterface(s: String) -> JsInterface? {
             for value in self.allCases {
@@ -68,8 +69,9 @@ class WebViewController: UIViewController, WKUIDelegate {
 
         let userController = WKUserContentController().then { controller in
             controller.add(self, name: JsInterface.RECEIVED.rawValue)
-            controller.add(self, name: JsInterface.START_REQUEST_PAY.rawValue)
+            controller.add(self, name: JsInterface.START_WORKING_SDK.rawValue)
             controller.add(self, name: JsInterface.CUSTOM_CALL_BACK.rawValue)
+            controller.add(self, name: JsInterface.DEBUG_CONSOLE_LOG.rawValue)
         }
 
         let config = WKWebViewConfiguration.init().then { configuration in
@@ -107,8 +109,53 @@ class WebViewController: UIViewController, WKUIDelegate {
         }.disposed(by: disposeBag)
     }
 
-    // 결제 데이터가 있을때 처리 할 이벤트들
+    // isCertification 에 따라 bind 할 항목이 달라짐
     private func subscribe(_ payment: Payment) {
+        if (payment.isCertification()) {
+            subscribeCertification(payment)
+        } else {
+            subscribePayment(payment)
+        }
+    }
+
+    // 결제 데이터가 있을때 처리 할 이벤트들
+    private func subscribeCertification(_ payment: Payment) {
+        self.payment = payment
+
+        let bus = RxBus.shared
+        let webViewEvents = EventBus.WebViewEvents.self
+
+        bus.asObservable(event: webViewEvents.ImpResponse.self).subscribe { [weak self] event in
+            guard let el = event.element else {
+                print("Error not found ImpResponse")
+                return
+            }
+
+            print("receive ImpResponse")
+            self?.sdkFinish(el.impResponse)
+        }.disposed(by: disposeBag)
+
+        bus.asObservable(event: webViewEvents.OpenWebView.self).subscribe { [weak self] event in
+            guard nil != event.element else {
+                print("Error not found OpenWebView")
+                return
+            }
+            self?.openWebView()
+        }.disposed(by: disposeBag)
+
+        bus.asObservable(event: webViewEvents.ThirdPartyUri.self).subscribe { [weak self] event in
+            guard let el = event.element else {
+                print("Error not found ThirdPartyUri")
+                return
+            }
+            self?.openThirdPartyApp(el.thirdPartyUri)
+        }.disposed(by: disposeBag)
+
+        requestCertification(payment)
+    }
+
+    // 결제 데이터가 있을때 처리 할 이벤트들
+    private func subscribePayment(_ payment: Payment) {
         print("subscribe")
 
         self.payment = payment
@@ -192,6 +239,18 @@ class WebViewController: UIViewController, WKUIDelegate {
         viewModel.requestPayment(payment: it)
     }
 
+    /**
+     * 본인인증 요청 실행
+     */
+    private func requestCertification(_ it: Payment) {
+        if (!Utils.isInternetAvailable()) {
+            sdkFinish(IamPortResponse.makeFail(payment: it, msg: "네트워크 연결 안됨"))
+            return
+        }
+
+        viewModel.requestCertification(it)
+    }
+
 
     /*
      모든 결과 처리 및 SDK 종료
@@ -269,21 +328,19 @@ class WebViewController: UIViewController, WKUIDelegate {
     private func openWebView() {
         print("오픈! 웹뷰")
 
-        let fileName = "iamportcdn"
-        let fileExtension = "html"
 
-        let myPG = payment?.iamPortRequest.pgEnum
+        let myPG = payment?.iamPortRequest?.pgEnum
         let bundle = Bundle(for: type(of: self))
 
         var urlRequest: URLRequest? = nil // for webView load
         var htmlContents: String? = nil // for webView loadHtml(smilepay 자동 로그인)
 
         if (myPG == PG.smilepay) {
-            if let filepath = bundle.path(forResource: fileName, ofType: fileExtension) {
+            if let filepath = bundle.path(forResource: CONST.CDN_FILE_NAME, ofType: CONST.CDN_FILE_EXTENSION) {
                 htmlContents = try? String(contentsOfFile: filepath, encoding: .utf8)
             }
         } else {
-            guard let url = bundle.url(forResource: fileName, withExtension: fileExtension) else {
+            guard let url = bundle.url(forResource: CONST.CDN_FILE_NAME, withExtension: CONST.CDN_FILE_EXTENSION) else {
                 print("html file url 비정상")
                 return
             }
@@ -389,15 +446,26 @@ extension WebViewController: WKScriptMessageHandler {
 
         if let jsMethod = JsInterface.convertJsInterface(s: message.name) {
             switch jsMethod {
-            case .START_REQUEST_PAY:
+            case .START_WORKING_SDK:
                 print("JS SDK 통한 결제 시작 요청")
+
+                guard let pay = payment else {
+                    print(".START_WORKING_SDK payment 를 찾을 수 없음")
+                    return
+                }
+                ddump(pay)
+
                 let encoder = JSONEncoder()
                 // encoder.outputFormatting = .prettyPrinted
-                let jsonData = try? encoder.encode(payment?.iamPortRequest)
-//            dump(payment)
-                if let json = jsonData, let code = payment?.userCode, let request = String(data: json, encoding: .utf8) {
-                    dlog("'\(code)', '\(request)'")
-                    webView?.evaluateJavaScript("requestPay('\(code)', '\(request)');")
+
+                initSDK(userCode: pay.userCode, tierCode: pay.tierCode)
+
+                if (pay.isCertification()) {
+                    let jsonData = try? encoder.encode(pay.iamPortCertification)
+                    certification(impCertificationJsonData: jsonData)
+                } else {
+                    let jsonData = try? encoder.encode(pay.iamPortRequest)
+                    requestPay(impRequestJsonData: jsonData)
                 }
 
             case .RECEIVED:
@@ -405,13 +473,49 @@ extension WebViewController: WKScriptMessageHandler {
 
             case .CUSTOM_CALL_BACK:
                 print("Received payment callback")
-                if let data = (message.body as? String)?.data(using: .utf8), let impStruct = try? JSONDecoder().decode(IamPortResponseStruct.self, from: data) {
+                if let data = (message.body as? String)?.data(using: .utf8),
+                   let impStruct = try? JSONDecoder().decode(IamPortResponseStruct.self, from: data) {
                     let response = IamPortResponse.structToClass(impStruct)
                     sdkFinish(response)
                 }
+
+            case .DEBUG_CONSOLE_LOG:
+                dlog("DEBUG_CONSOLE_LOG :: \(message)")
             }
         }
     }
+
+    private func evaluateJS(method: String) {
+        webView?.evaluateJavaScript(method)
+    }
+
+    private func initSDK(userCode: String, tierCode: String? = nil) {
+        dlog("userCode : '\(userCode)', tierCode : '\(tierCode)'")
+
+        var jsInitMethod = "init('\(userCode)');" // IMP.init
+        if (!tierCode.nilOrEmpty) {
+            jsInitMethod = "agency('\(userCode)', '\(String(describing: tierCode))');" // IMP.agency
+        }
+
+        evaluateJS(method: jsInitMethod)
+    }
+
+    private func requestPay(impRequestJsonData: Data?) {
+        if let json = impRequestJsonData,
+           let request = String(data: json, encoding: .utf8) {
+            dlog("requestPay request : '\(request)'")
+            evaluateJS(method: "requestPay('\(request)');")
+        }
+    }
+
+    private func certification(impCertificationJsonData: Data?) {
+        if let json = impCertificationJsonData,
+           let request = String(data: json, encoding: .utf8) {
+            dlog("certification request : '\(request)'")
+            evaluateJS(method: "certification('\(request)');")
+        }
+    }
+
 }
 
 

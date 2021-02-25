@@ -140,7 +140,7 @@ pod 'iamport-ios'
 ```swift
   // 결제 요청 데이터 구성 
   let request = IamPortRequest(
-                pg: PG.html5_inicis.getPgSting(storeId: ""), // PG 사
+                pg: PG.html5_inicis.getPgSting(pgId: ""), // PG 사
                 merchant_uid: "mid_123456",                   // 주문번호                
                 amount: "1000").then {                        // 가격
                   $0.pay_method = PayMethod.card              // 결제수단

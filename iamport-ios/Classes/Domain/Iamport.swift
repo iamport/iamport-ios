@@ -50,6 +50,28 @@ open class Iamport {
         sdk?.initStart(payment: Payment(userCode: userCode, iamPortRequest: iamPortRequest), approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
     }
 
+    /**
+     아임포트 SDK에 본인인증 요청
+     - Parameters:
+       - navController: ThirdParty 웹뷰 컨트롤러를 띄우기 위한 UINavigationController
+       - userCode: 아임포트 머천트 식별코드
+       - iamPortCertification: 본인인증 요청 데이터
+       - paymentResultCallback: 결제 후 콜백 함수
+     */
+    public func certification(navController: UINavigationController?, userCode: String, iamPortCertification: IamPortCertification, certificationResultCallback: @escaping (IamPortResponse?) -> Void) {
+        print("IamPort SDK certification")
+        clear()
+
+        guard let nc = navController else {
+            print("UINavigationController 를 찾을 수 없습니다")
+            return
+        }
+
+        paymentResult = certificationResultCallback
+        sdk = IamportSdk(nc)
+        sdk?.initStart(payment: Payment(userCode: userCode, iamPortCertification: iamPortCertification), certificationResultCallback: certificationResultCallback)
+    }
+
     // 외부 앱 종료후 AppDelegate 에서 받은 URL
     public func receivedURL(_ url: URL) {
         print("IamPort SDK receivedURL")
