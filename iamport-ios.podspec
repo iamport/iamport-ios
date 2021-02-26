@@ -24,8 +24,9 @@ Pod::Spec.new do |s|
   s.homepage         = 'https://github.com/iamport/iamport-ios'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'bingbong' => 'bingbong@chai.finance' }
+  s.author           = { 'iamport' => 'support@chai.finance' }
   s.source           = { :git => 'https://github.com/iamport/iamport-ios.git', :tag => s.version.to_s }
+  s.build            = 'https://www.travis-ci.com/github/iamport/iamport-ios'
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
   
   s.swift_versions = '5.0'
