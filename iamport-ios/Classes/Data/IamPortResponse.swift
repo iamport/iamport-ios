@@ -24,12 +24,13 @@ public class IamPortResponse: Encodable, Then {
         }
     }
 
+
     static func makeSuccess(payment: Payment, prepareData: PrepareData? = nil, msg: String) -> IamPortResponse {
         IamPortResponse().then { it in
             it.imp_success = true
             it.success = true
             it.imp_uid = prepareData?.impUid
-            it.merchant_uid = payment.iamPortRequest.merchant_uid
+            it.merchant_uid = payment.getMerchantUid()
             it.error_msg = msg
         }
     }
@@ -39,7 +40,7 @@ public class IamPortResponse: Encodable, Then {
             it.imp_success = false
             it.success = false
             it.imp_uid = prepareData?.impUid
-            it.merchant_uid = payment.iamPortRequest.merchant_uid
+            it.merchant_uid = payment.getMerchantUid()
             it.error_msg = msg
         }
     }

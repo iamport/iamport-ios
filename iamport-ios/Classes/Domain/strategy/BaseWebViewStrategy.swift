@@ -16,16 +16,16 @@ public class BaseWebViewStrategy: IStrategy {
         disposeBag = DisposeBag()
     }
 
-    func successFinish(payment: Payment, prepareData: PrepareData? = nil, msg: String) {
+    func successFinish(payment: Payment, msg: String) {
         print(msg)
-        IamPortResponse.makeSuccess(payment: payment, prepareData: prepareData, msg: msg).do { it in
+        IamPortResponse.makeSuccess(payment: payment, msg: msg).do { it in
             sdkFinish(it)
         }
     }
 
-    func failureFinish(payment: Payment, prepareData: PrepareData? = nil, msg: String) {
+    func failureFinish(payment: Payment, msg: String) {
         print(msg)
-        IamPortResponse.makeFail(payment: payment, prepareData: prepareData, msg: msg).do { it in
+        IamPortResponse.makeFail(payment: payment, msg: msg).do { it in
             sdkFinish(it)
         }
     }
@@ -55,6 +55,7 @@ public class BaseWebViewStrategy: IStrategy {
     }
 
     func onUpdatedUrl(url: URL) {
+        // NOTHING here, use Child Strategy
     }
 
     /**

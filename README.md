@@ -2,7 +2,7 @@
 
 # iamport-ios
 
-[![CI Status](https://img.shields.io/travis/bingbong/iamport-ios.svg?style=flat)](https://travis-ci.org/bingbong/iamport-ios)
+[![CI Status](https://www.travis-ci.com/iamport/iamport-ios.svg?style=flat)](https://www.travis-ci.com/github/iamport/iamport-ios)
 [![Version](https://img.shields.io/cocoapods/v/iamport-ios.svg?style=flat)](https://cocoapods.org/pods/iamport-ios)
 [![License](https://img.shields.io/cocoapods/l/iamport-ios.svg?style=flat)](https://cocoapods.org/pods/iamport-ios)
 [![Platform](https://img.shields.io/cocoapods/p/iamport-ios.svg?style=flat)](https://cocoapods.org/pods/iamport-ios)
@@ -140,7 +140,7 @@ pod 'iamport-ios'
 ```swift
   // 결제 요청 데이터 구성 
   let request = IamPortRequest(
-                pg: PG.html5_inicis.getPgSting(storeId: ""), // PG 사
+                pg: PG.html5_inicis.getPgSting(pgId: ""), // PG 사
                 merchant_uid: "mid_123456",                   // 주문번호                
                 amount: "1000").then {                        // 가격
                   $0.pay_method = PayMethod.card              // 결제수단
@@ -186,7 +186,7 @@ pod 'iamport-ios'
 
 ## Author
 
-bingbong, bingbong@chai.finance
+I'mport, support@chai.finance
 
 ## License
 

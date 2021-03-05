@@ -7,21 +7,43 @@
 <!-- 현재 콜백은 불필요 할 듯 onPageFinished 쓰니까..! -->
     <script type="text/javascript">
         console.log("Wait cdn-iamport-sdk...");
+
+        const iosHandler = window.webkit.messageHandlers
         document.addEventListener('DOMContentLoaded', () => {
             console.log("Load finish cdn-iamport-sdk...");
-            window.webkit.messageHandlers.startRequestPay.postMessage("")
+            iosHandler.startWorkingSdk.postMessage("")
         });
 
-        function requestPay(userCode, impRequest) {
-            function callback(response) {
-                console.log(response)
-                window.webkit.messageHandlers.customCallback.postMessage(JSON.stringify(response))
-            }
+        function dLog(log) {
+            console.log(log)
+            iosHandler.debugConsoleLog.postMessage(log)
+        }
 
-            window.webkit.messageHandlers.received.postMessage("")
+        function callback(response) {
+            dLog(response)
+            iosHandler.customCallback.postMessage(JSON.stringify(response))
+        }
+
+        function init(userCode) {
+            dLog("init userCode :: " + dLog)
             IMP.init(userCode);
+        }
+
+        function agency(userCode, tierCode) {
+            dLog("agency userCode :: " + dLog + ", tierCode :: " + tierCode)
+            IMP.agency(userCode, tierCode);
+        }
+
+        function requestPay(impRequest) {
+            dLog("requestPay :: " + impRequest)
             IMP.request_pay(JSON.parse(impRequest), callback);
         }
+
+        function certification(impCertification) {
+            dLog("certification :: " + impCertification)
+            IMP.certification(JSON.parse(impCertification), callback);
+        }
+
     </script>
     <script defer type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
     <script defer type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.8.js"></script>

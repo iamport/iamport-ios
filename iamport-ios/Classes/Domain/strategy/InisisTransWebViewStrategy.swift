@@ -11,7 +11,7 @@ class InisisTransWebViewStrategy: WebViewStrategy {
 
     override func onUpdatedUrl(url: URL) {
 
-        if let appScheme = payment?.iamPortRequest.app_scheme {
+        if let appScheme = payment?.iamPortRequest?.app_scheme {
             if (url.absoluteString.hasPrefix(appScheme)) {
                 processInisisTrans(appScheme, url)
                 return

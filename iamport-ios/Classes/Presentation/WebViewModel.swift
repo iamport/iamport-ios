@@ -25,9 +25,19 @@ internal class WebViewModel {
      * 결제 요청
      */
     func requestPayment(payment: Payment) {
-        dlog("뷰모델에 요청했니")
+        dlog("뷰모델에 결제 요청했니")
         DispatchQueue.main.async {
             self.repository.getWebViewStrategy(payment).doWork(payment)
+        }
+    }
+
+    /**
+     * 본인인증 요청
+     */
+    func requestCertification(_ payment: Payment) {
+        dlog("뷰모델에 본인인증 요청했니")
+        DispatchQueue.main.async {
+            self.repository.requestCertification(payment)
         }
     }
 }

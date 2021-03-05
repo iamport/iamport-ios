@@ -18,66 +18,6 @@ func ddump<T>(_ value: T) {
     #endif
 }
 
-enum BusThread {
-    //- utility: 유저의 프로세스에 필요한 연산작업에 사용한다. 프로그래스바, I/O, Networking 등
-    //- background: 유저에게 직접적으로 필요하지 않은 작업들. logging 등
-
-    case main, background, utility, `default`
-
-    func toScheduler() -> SchedulerType {
-        switch self {
-        case .main:
-            return MainScheduler.instance
-        case .background:
-            return ConcurrentDispatchQueueScheduler(qos: .background)
-        case .utility:
-            return ConcurrentDispatchQueueScheduler(qos: .utility)
-        case .default:
-            return ConcurrentDispatchQueueScheduler(qos: .default)
-        }
-    }
-}
-
-extension ObservableType {
-
-    public func subscribeOnMain() -> Observable<Element> {
-        subscribeOn(BusThread.main.toScheduler())
-    }
-
-    public func subscribeOnBg() -> Observable<Element> {
-        subscribeOn(BusThread.background.toScheduler())
-    }
-
-    public func subscribeOnUtility() -> Observable<Element> {
-        subscribeOn(BusThread.utility.toScheduler())
-    }
-
-    public func observeOnMain() -> Observable<Element> {
-        observeOn(BusThread.main.toScheduler())
-    }
-
-    public func observeOnBg() -> Observable<Element> {
-        observeOn(BusThread.background.toScheduler())
-    }
-
-    public func observeOnUtility() -> Observable<Element> {
-        observeOn(BusThread.utility.toScheduler())
-    }
-
-    public func main() -> Observable<Element> {
-        subscribeOnMain().observeOnMain()
-    }
-
-    public func bgMain() -> Observable<Element> {
-        subscribeOnBg().observeOnMain()
-    }
-
-    public func asyncMain() -> Observable<Element> {
-        subscribeOnUtility().observeOnMain()
-    }
-
-}
-
 extension URL {
     func queryParams() -> [String: Any] {
         let queryItems = URLComponents(url: self, resolvingAgainstBaseURL: false)?.queryItems
@@ -90,11 +30,11 @@ extension URL {
         return Dictionary(uniqueKeysWithValues: queryTuples)
     }
 
-    func valueOf(_ queryParamaterName: String) -> String? {
+    func valueOf(_ queryParameterName: String) -> String? {
         guard let url = URLComponents(string: self.absoluteString) else {
             return nil
         }
-        return url.queryItems?.first(where: { $0.name == queryParamaterName })?.value
+        return url.queryItems?.first(where: { $0.name == queryParameterName })?.value
     }
 }
 
@@ -160,6 +100,7 @@ extension Optional where Wrapped == String {
 
 
 class Utils {
+
     static public func getQueryStringToImpResponse(_ url: URL) -> IamPortResponse? {
         #if DEBUG
         dlog(url.queryParams().toJsonString())
@@ -171,16 +112,20 @@ class Utils {
         return nil
     }
 
-    static func openApp(_ url: URL) -> Bool {
-        let application = UIApplication.shared
-        let result = application.canOpenURL(url)
-
-        if (result) {
+    static func justOpenApp(_ url: URL) {
+        UIApplication.shared.do { app in
             if #available(iOS 10.0, *) {
-                application.open(url, options: [:], completionHandler: nil)
+                app.open(url, options: [:], completionHandler: nil)
             } else {
-                application.openURL(url)
+                app.openURL(url)
             }
+        }
+    }
+
+    static func openAppWithCanOpen(_ url: URL) -> Bool {
+        let result = UIApplication.shared.canOpenURL(url)
+        if (result) {
+            justOpenApp(url)
         }
         return result
     }
@@ -195,9 +140,9 @@ class Utils {
         return false
     }
 
-/**
- * 결제 끝났는지 여부
- */
+    /**
+     * 결제 끝났는지 여부
+     */
     static func isPaymentOver(_ uri: URL) -> Bool {
         return uri.absoluteString.contains(CONST.IAMPORT_DETECT_URL)
     }
