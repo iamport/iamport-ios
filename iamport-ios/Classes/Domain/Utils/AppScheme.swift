@@ -24,6 +24,8 @@ enum AppScheme: CaseIterable {
     case hanacard // 하나카드(하나멤버스 월렛)
     case ssgpay // 신세계 SSGPAY
     case chai // 차이
+    case kbauth // 국민 본인인증
+    case hyundaicardappcardid // 현대 본인인증
 
     var scheme: String {
         switch self {
@@ -64,6 +66,10 @@ enum AppScheme: CaseIterable {
             return "shinsegaeeasypayment"
         case .chai:
             return "chaipayment"
+        case .kbauth:
+            return "kb-auth"
+        case .hyundaicardappcardid:
+            return "hyundaicardappcardid"
         }
     }
 
@@ -106,6 +112,10 @@ enum AppScheme: CaseIterable {
             return "id666237916"
         case .chai:
             return "id1459979272"
+        case .kbauth:
+            return "id695436326"
+        case .hyundaicardappcardid:
+            return "id702653088"
         }
     }
 
@@ -125,7 +135,7 @@ enum AppScheme: CaseIterable {
         let appScheme = findAppScheme(scheme)
 
         guard let appId = appScheme?.appID else {
-            print("지원하지 않는 AppScheme 입니다.")
+            print("지원하지 않는 App Scheme 입니다.")
             return nil
         }
 
