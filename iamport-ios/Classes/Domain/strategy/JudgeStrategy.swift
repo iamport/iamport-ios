@@ -54,7 +54,7 @@ public class JudgeStrategy: BaseStrategy {
             failureFinish(payment: payment, msg: "Not found PF [ \(String(describing: payment.iamPortRequest?.pg)) ] and any PG in your info.")
             return (JudgeKinds.ERROR, nil, payment)
         }
-        print("userDataList :: \(userDataList)")
+        dlog("userDataList :: \(userDataList)")
 
         // 1. 본인인증의 경우 판단 (현재 있는지 없는지만 판단)
         if (payment.isCertification()) {

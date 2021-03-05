@@ -51,7 +51,7 @@ class MainViewModel {
 
     // 판단 결과 처리
     private func judgeProcess(_ judge: (JudgeStrategy.JudgeKinds, UserData?, Payment)) {
-        print("JudgeEvent \(judge)")
+        dlog("JudgeEvent \(judge)")
         switch judge.0 {
         case .CHAI:
             judge.1?.do { userData in
