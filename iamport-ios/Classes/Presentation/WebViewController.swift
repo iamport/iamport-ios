@@ -301,14 +301,12 @@ class WebViewController: UIViewController, WKUIDelegate {
 
     func openThirdPartyApp(_ url: URL) {
         dlog("openThirdPartyApp \(url)")
-        let result = Utils.openApp(url) // 앱 열기
+        let result = Utils.openAppWithCanOpen(url) // 앱 열기
         if (!result) {
-
             if let scheme = url.scheme,
                let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
                let url = URL(string: urlString) {
-
-                Utils.openApp(url) // 앱스토어로 이동
+                Utils.justOpenApp(url) // 앱스토어로 이동
             } else {
 
                 guard let pay = payment else {
@@ -316,8 +314,9 @@ class WebViewController: UIViewController, WKUIDelegate {
                     return
                 }
 
-                let response = IamPortResponse.makeFail(payment: pay, msg: "지원하지 않는 App Scheme\(url.scheme) 입니다")
-                sdkFinish(response)
+//                let response = IamPortResponse.makeFail(payment: pay, msg: "지원하지 않는 App Scheme \(String(describing: url.scheme)) 입니다")
+//                sdkFinish(response)
+                Utils.justOpenApp(url) // 걍 열엇
             }
         }
     }

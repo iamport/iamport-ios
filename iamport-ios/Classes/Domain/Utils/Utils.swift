@@ -112,16 +112,20 @@ class Utils {
         return nil
     }
 
-    static func openApp(_ url: URL) -> Bool {
-        let application = UIApplication.shared
-        let result = application.canOpenURL(url)
-
-        if (result) {
+    static func justOpenApp(_ url: URL) {
+        UIApplication.shared.do { app in
             if #available(iOS 10.0, *) {
-                application.open(url, options: [:], completionHandler: nil)
+                app.open(url, options: [:], completionHandler: nil)
             } else {
-                application.openURL(url)
+                app.openURL(url)
             }
+        }
+    }
+
+    static func openAppWithCanOpen(_ url: URL) -> Bool {
+        let result = UIApplication.shared.canOpenURL(url)
+        if (result) {
+            justOpenApp(url)
         }
         return result
     }
@@ -136,9 +140,9 @@ class Utils {
         return false
     }
 
-/**
- * 결제 끝났는지 여부
- */
+    /**
+     * 결제 끝났는지 여부
+     */
     static func isPaymentOver(_ uri: URL) -> Bool {
         return uri.absoluteString.contains(CONST.IAMPORT_DETECT_URL)
     }
