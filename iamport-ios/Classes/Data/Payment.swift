@@ -40,9 +40,10 @@ struct Payment: Codable, Then {
 
         return merchantUid
     }
+
     static func validator(_ payment: Payment, _ validateResult: @escaping ((Bool, String)) -> Void) {
 
-        var validResult = ((true, CONST.PASS))
+        var validResult = ((true, CONST.PASS_PAYMENT_VALIDATOR))
 
         payment.iamPortRequest?.do { it in
 

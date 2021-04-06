@@ -34,12 +34,15 @@ public class IamPortRequest: Codable, Then {
     public var app_scheme: String? // 명세상 nilable 이나 RN 에서 필수
     public var biz_num: String?
     public var popup: Bool? // 명세상 없으나 RN 에 있음
+    private var niceMobileV2: Bool? = true
 
     public init(pg: String, merchant_uid: String, amount: String) {
         self.pg = pg
         self.merchant_uid = merchant_uid
         self.amount = amount
     }
+
+    // TODO platform 에 따라 m_redirect_url 변경
 }
 
 extension IamPortRequest {
