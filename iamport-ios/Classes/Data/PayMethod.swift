@@ -21,6 +21,12 @@ public enum PayMethod: String, Codable {
     case happymoney
     case booknlife
     case point
+    case unionpay
+    case alipay
+    case tenpay
+    case wechat
+    case molpay
+    case paysbuy
 
     var name: String {
         switch self {
@@ -56,6 +62,18 @@ public enum PayMethod: String, Codable {
             return "도서문화상품권 / LGU+, KCP 전용"
         case .point:
             return "베네피아 포인트 등 포인트 결제 / KCP 전용"
+        case .unionpay:
+            return "유니온페이"
+        case .alipay:
+            return "알리페이"
+        case .tenpay:
+            return "텐페이"
+        case .wechat:
+            return "위챗페이"
+        case .molpay:
+            return "몰페이"
+        case .paysbuy:
+            return "태국 paysbuy"
         }
     }
 }
