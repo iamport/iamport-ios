@@ -10,15 +10,22 @@ import RxSwift
 public class IamportSdk {
 
     let viewModel = MainViewModel()
-    let naviController: UINavigationController
+    let naviController: UINavigationController?
 
     var chaiApproveCallBack: ((IamPortApprove) -> Void)? // 차이 결제 확인 콜백
     var resultCallBack: ((IamPortResponse?) -> Void)? // 결제 결과 콜백
 
     var disposeBag = DisposeBag()
 
-    public init(_ naviController: UINavigationController) {
+    private var webview: WKWebView?
+
+    public init(naviController naviController: UINavigationController? = nil, webview webview: WKWebView? = nil) {
+        if(webview == nil && naviController == nil) {
+            print("정상적이지 않은 호출입니다.")
+        }
+
         self.naviController = naviController
+        self.webview = webview
     }
 
     // 뷰모델 데이터 클리어
@@ -193,8 +200,14 @@ public class IamportSdk {
     private func openWebViewController(_ payment: Payment) {
         DispatchQueue.main.async { [weak self] in
             EventBus.shared.webViewPaymentRelay.accept(payment)
-            self?.naviController.pushViewController(WebViewController(), animated: true)
+
+            if let wv = self?.webview {
+                IamPortWebViewMode().start(webview: wv)
+            } else {
+                self?.naviController?.pushViewController(WebViewController(), animated: true)
 //            self?.naviController.present(WebViewController(), animated: true)
+            }
+
             dlog("check navigationController :: \(String(describing: self?.naviController))")
         }
     }

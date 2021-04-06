@@ -46,7 +46,21 @@ open class Iamport {
         }
 
         paymentResult = paymentResultCallback
-        sdk = IamportSdk(nc)
+        sdk = IamportSdk(naviController: nc)
+        sdk?.initStart(payment: Payment(userCode: userCode, iamPortRequest: iamPortRequest), approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
+    }
+
+    public func paymentWebView(webview: WKWebView?, userCode: String, iamPortRequest: IamPortRequest, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
+        print("IamPort SDK payment")
+        clear()
+
+        guard let wv = webview else {
+            print("WKWebView 를 찾을 수 없습니다")
+            return
+        }
+
+        paymentResult = paymentResultCallback
+        sdk = IamportSdk(naviController: nil, webview: wv)
         sdk?.initStart(payment: Payment(userCode: userCode, iamPortRequest: iamPortRequest), approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
     }
 
@@ -68,7 +82,7 @@ open class Iamport {
         }
 
         paymentResult = certificationResultCallback
-        sdk = IamportSdk(nc)
+        sdk = IamportSdk(naviController: nc)
         sdk?.initStart(payment: Payment(userCode: userCode, iamPortCertification: iamPortCertification), certificationResultCallback: certificationResultCallback)
     }
 
