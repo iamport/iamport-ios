@@ -49,11 +49,11 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     private func clearWebView() {
         if let wv = webview {
             wv.stopLoading()
-            wv.removeFromSuperview()
+//            wv.removeFromSuperview()
             wv.uiDelegate = nil
             wv.navigationDelegate = nil
         }
-        webview = nil
+//        webview = nil
     }
 
     private func clearAll() {
