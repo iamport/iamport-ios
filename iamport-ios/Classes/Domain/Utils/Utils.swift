@@ -197,6 +197,10 @@ class Utils {
         dispatchLevel.dispatchQueue.asyncAfter(deadline: dispatchTime, execute: closure)
     }
 
+    public static func getRedirectUrl(platformKey: String) -> String {
+        "\(CONST.IAMPORT_DETECT_SCHEME)\(CONST.IAMPORT_DETECT_ADDRESS)/\(platformKey)"
+    }
+
     public enum DispatchLevel {
         case main, userInteractive, userInitiated, utility, background
         var dispatchQueue: DispatchQueue {

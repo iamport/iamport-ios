@@ -41,8 +41,6 @@ public class IamPortRequest: Codable, Then {
         self.merchant_uid = merchant_uid
         self.amount = amount
     }
-
-    // TODO platform 에 따라 m_redirect_url 변경
 }
 
 extension IamPortRequest {
@@ -55,4 +53,11 @@ extension IamPortRequest {
         }
     }
 
+    public func setPlatform(platform : String) {
+        if let p = Platform.convertPlatform(platformStr: platform) {
+            m_redirect_url = p.redirectUrl
+        } else {
+            m_redirect_url = Utils.getRedirectUrl(platformKey: platform)
+        }
+    }
 }
