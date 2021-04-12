@@ -41,7 +41,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
         subscribePayment()
     }
 
-    func close(webview: WKWebView) {
+    func close() {
         dlog("IamPortWebViewMode close")
         clearAll()
     }
@@ -67,24 +67,15 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
 
         clearWebView()
 
-        let userController = WKUserContentController().then { controller in
-            controller.add(self, name: JsInterface.RECEIVED.rawValue)
-            controller.add(self, name: JsInterface.START_WORKING_SDK.rawValue)
-            controller.add(self, name: JsInterface.CUSTOM_CALL_BACK.rawValue)
-            controller.add(self, name: JsInterface.DEBUG_CONSOLE_LOG.rawValue)
-        }
-
-        let config = WKWebViewConfiguration.init().then { configuration in
-            configuration.userContentController = userController
-        }
-
-//        webview = WKWebView.init(frame: view.frame, configuration: config).then { (wv: WKWebView) in
         if let wv = webview {
+            wv.configuration.userContentController.then { controller in
+                controller.add(self, name: JsInterface.RECEIVED.rawValue)
+                controller.add(self, name: JsInterface.START_WORKING_SDK.rawValue)
+                controller.add(self, name: JsInterface.CUSTOM_CALL_BACK.rawValue)
+                controller.add(self, name: JsInterface.DEBUG_CONSOLE_LOG.rawValue)
+            }
+
             wv.backgroundColor = UIColor.white
-//            wv.frame = view.bounds
-
-//            view.addSubview(wv)
-
             wv.uiDelegate = self
             wv.navigationDelegate = self
         }
@@ -262,7 +253,8 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
 
 //        navigationController?.popViewController(animated: false)
 //        dismiss(animated: true) {
-            EventBus.shared.impResponseRelay.accept(iamPortResponse)
+        EventBus.shared.impResponseRelay.accept(iamPortResponse)
+        close()
 //        }
     }
 
