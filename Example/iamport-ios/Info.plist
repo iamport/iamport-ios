@@ -58,6 +58,7 @@
 		<string>chaipayment</string>
 		<string>kb-auth</string>
 		<string>hyundaicardappcardid</string>
+		<string>com.wooricard.wcard</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
