@@ -59,6 +59,7 @@
 		<string>kb-auth</string>
 		<string>hyundaicardappcardid</string>
 		<string>com.wooricard.wcard</string>
+		<string>lmslpay</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
