@@ -21,12 +21,12 @@ class Network {
         return sessionConfiguration
     }
 
-    static let alamoFireManager: SessionManager = {
-        Alamofire.SessionManager(configuration: getURLSessionConfiguration())
+    static let alamoFireManager: Alamofire.Session = {
+        Alamofire.Session(configuration: getURLSessionConfiguration())
     }()
 
-    static let alamoFireManagerShortTimeOut: SessionManager = {
-        Alamofire.SessionManager(configuration: getURLSessionConfiguration(useShortTimeout: true))
+    static let alamoFireManagerShortTimeOut: Alamofire.Session = {
+        Alamofire.Session(configuration: getURLSessionConfiguration(useShortTimeout: true))
     }()
 
 }
