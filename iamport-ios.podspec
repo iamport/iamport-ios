@@ -55,7 +55,7 @@ Pod::Spec.new do |s|
 #    s.dependency 'AlamoyireActivityLogger'
 
     # Pods for RxSwift+MVVM
-    s.dependency 'RxBus'
+    s.dependency 'RxBus', '~> 1.3.1'
     s.dependency 'RxSwift'
     s.dependency 'RxCocoa'
     s.dependency 'RxRelay'
