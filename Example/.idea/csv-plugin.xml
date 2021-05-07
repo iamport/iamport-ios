@@ -3,6 +3,27 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="/Podfile">
+          <value>
+            <Attribute>
+              <option name="separator" value="|" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/Pods/Local Podspecs/iamport-ios.podspec.json">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../iamport-ios.podspec">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../iamport-ios/Classes/Data/BaseProtocol.swift">
           <value>
             <Attribute>
@@ -94,6 +115,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../iamport-ios/Classes/Domain/StrategyRepository.swift">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../iamport-ios/Classes/Domain/Utils/AppScheme.swift">
           <value>
             <Attribute>
@@ -164,6 +192,27 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../iamport-ios/Classes/Domain/strategy/WebViewStrategy.swift">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../iamport-ios/Classes/Presentation/IamPortWebView.swift">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../iamport-ios/Classes/Presentation/IamPortWebViewMode.swift">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../iamport-ios/Classes/Presentation/IamportSdk.swift">
           <value>
             <Attribute>
@@ -179,6 +228,13 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/../iamport-ios/Classes/Presentation/WebViewController.swift">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../iamport-ios/Classes/Presentation/WebViewModel.swift">
           <value>
             <Attribute>
               <option name="separator" value=":" />
