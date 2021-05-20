@@ -1,3 +1,4 @@
+
 # :seedling: I'mport iOS SDK :seedling:
 
 # iamport-ios
@@ -92,6 +93,11 @@ iOS에서 아임포트 결제연동 모듈을 사용하기 위해서는 아래 3
   <string>nhallonepayansimclick</string> <!-- NH 올원페이 -->
   <string>hanawalletmembers</string> <!-- 하나카드(하나멤버스 월렛) -->
   <string>chaipayment</string> <!-- 차이 -->
+  <string>kb-auth</string>
+  <string>hyundaicardappcardid</string>
+  <string>com.wooricard.wcard</string>
+  <string>lmslpay</string>
+  
 </array>
 ```
 
