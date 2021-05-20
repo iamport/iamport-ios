@@ -32,6 +32,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     let viewModel = WebViewModel()
 
     var webview: WKWebView?
+    var popupWebView: WKWebView? ///window.open()으로 열리는 새창
     var payment: Payment?
 
     func start(webview: WKWebView) {
@@ -358,13 +359,31 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
                 }
             }
         }
-
     }
 }
 
-
 extension IamPortWebViewMode: WKNavigationDelegate {
 
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        let frame = UIScreen.main.bounds
+        popupWebView = WKWebView(frame: frame, configuration: configuration)
+        if let popup = popupWebView {
+            popup.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            popup.navigationDelegate = self
+            popup.uiDelegate = self
+            webView.superview?.addSubview(popup)
+            return popup
+        }
+
+        return nil
+    }
+
+    func webViewDidClose(_ webView: WKWebView) {
+        if webView == popupWebView {
+            popupWebView?.removeFromSuperview()
+            popupWebView = nil
+        }
+    }
 
     @available(iOS 8.0, *)
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
