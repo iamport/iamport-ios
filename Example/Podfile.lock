@@ -1,6 +1,6 @@
 PODS:
   - Alamofire (5.4.3)
-  - iamport-ios (0.0.3-dev11):
+  - iamport-ios (1.0.0-dev01):
     - Alamofire (~> 5.1)
     - RxBus (~> 1.3.1)
     - RxCocoa
@@ -64,7 +64,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: e447a2774a40c996748296fa2c55112fdbbc42f9
-  iamport-ios: bc93b81aad31d857912b02792c202344a99ba569
+  iamport-ios: 15af9fb4d3f77f7320364c0fdf0570d557771fce
   RxBlocking: 5f700a78cad61ce253ebd37c9a39b5ccc76477b4
   RxBus: ee5cb413fe4e0853712144c9ed20705d9e8e03cd
   RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
