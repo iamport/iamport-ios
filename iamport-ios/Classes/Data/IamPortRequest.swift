@@ -36,6 +36,21 @@ public class IamPortRequest: Codable, Then {
     public var popup: Bool? // 명세상 없으나 RN 에 있음
     private var niceMobileV2: Bool? = true
 
+
+    // 네이버 관련
+    public var naverPopupMode: Bool?
+    public var naverUseCfm: String?
+
+    public var naverProducts: [BaseProduct]? // 네이버페이 주문형
+
+    public var naverCultureBenefit: Bool?
+    public var naverProductCode: String?
+    public var naverActionType: String?
+
+    public var cultureBenefit: Bool?
+    public var naverInterface: NaverInterface?
+
+
     public init(pg: String, merchant_uid: String, amount: String) {
         self.pg = pg
         self.merchant_uid = merchant_uid
