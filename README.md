@@ -139,9 +139,10 @@ pod 'iamport-ios'
 
 ## Usage
 
-> - Navigation Controller 생성.  
-  storyboard 의 root view controller 에서.  
+> - UINavigationController 생성.  
+  storyboard 의 root view controller 에서
   Xcode 상단 -> Editor -> Embed in -> Navigation Controller.  
+> - 또는 UIViewController, WKWebView 지원.
 
 ```swift
   // 결제 요청 데이터 구성 
@@ -156,6 +157,7 @@ pod 'iamport-ios'
               }
 
   // I'mport SDK 에 결제 요청
+  // UINavigationController, UIViewController, WKWebView 지원
   Iamport.shared.payment(navController: navigationController, // 네비게이션 컨트롤러
                          userCode: userCode, // 머천트 유저 식별 코드
                          iamPortRequest: request) // 결제 요청 데이터
