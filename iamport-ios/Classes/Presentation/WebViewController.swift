@@ -43,8 +43,11 @@ class WebViewController: UIViewController, WKUIDelegate {
         dlog("WebViewController 어서오고")
 
         view.backgroundColor = UIColor.white
-        setupWebView()
-        subscribePayment()
+
+        DispatchQueue.main.async { [weak self] in
+            self?.setupWebView()
+            self?.subscribePayment()
+        }
     }
 
     private func clearWebView() {
@@ -93,20 +96,21 @@ class WebViewController: UIViewController, WKUIDelegate {
     private func subscribePayment() {
         let eventBus = EventBus.shared
 
-        // 외부 종료 시그널
-        eventBus.clearBus.subscribe { [weak self] in
-            print("clearBus")
-            self?.sdkFinish(nil) // data clear 는 viewWillDisappear 에서 처리
-        }.disposed(by: disposeBag)
-
         // 결제 데이터
-        EventBus.shared.webViewPaymentBus.subscribe { [weak self] event in
+        eventBus.webViewPaymentBus.subscribe { [weak self] event in
             guard let el = event.element, let pay = el else {
                 print("Error not found PaymentEvent")
                 return
             }
 
+            dlog("PaymentEvent 있음!")
             self?.subscribe(pay)
+        }.disposed(by: disposeBag)
+
+        // 외부 종료 시그널
+        eventBus.clearBus.subscribe { [weak self] in
+            print("clearBus")
+            self?.sdkFinish(nil) // data clear 는 viewWillDisappear 에서 처리
         }.disposed(by: disposeBag)
     }
 

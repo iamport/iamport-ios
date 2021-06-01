@@ -55,6 +55,11 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         Iamport.shared.certification(navController: navigationController, userCode: userCode, iamPortCertification: request) { [weak self] iamPortResponse in
             self?.paymentCallback(iamPortResponse)
         }
+
+        // use for UIViewController
+//        Iamport.shared.certification(viewController: self, userCode: userCode, iamPortCertification: request) { [weak self] iamPortResponse in
+//            self?.paymentCallback(iamPortResponse)
+//        }
     }
 
     // 아임포트 SDK 결제 요청
@@ -74,7 +79,13 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
 //                })
 
         // 결제요청 case 2
-        Iamport.shared.payment(navController: navigationController,
+//        Iamport.shared.payment(navController: navigationController,
+//                userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+//            self?.paymentCallback(iamPortResponse)
+//        }
+
+        // use for UIViewController
+        Iamport.shared.payment(viewController: self,
                 userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
             self?.paymentCallback(iamPortResponse)
         }
@@ -82,11 +93,14 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
 
     // 아임포트 결제 데이터 생성
     func createPaymentData() -> IamPortRequest {
-        IamPortRequest(
-                pg: PG.chai.makePgRawName(pgId: ""),
+        let display = CardQuota()
+        display.card_quota = []
+
+        return IamPortRequest(
+                pg: PG.kcp.makePgRawName(pgId: ""),
                 merchant_uid: "muid_ios_\(Int(Date().timeIntervalSince1970))",
                 amount: "1000").then {
-            $0.pay_method = PayMethod.trans
+            $0.pay_method = PayMethod.card
             $0.name = "아임포트의 민족 주문~~"
             $0.buyer_name = "남궁안녕"
             $0.app_scheme = "iamport"

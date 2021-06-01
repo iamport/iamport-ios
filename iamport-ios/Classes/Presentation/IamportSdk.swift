@@ -10,22 +10,50 @@ import RxSwift
 public class IamportSdk {
 
     let viewModel = MainViewModel()
-    let naviController: UINavigationController?
+
+    private var viewController: UIViewController?
+    private var naviController: UINavigationController?
+    private var webview: WKWebView?
 
     var chaiApproveCallBack: ((IamPortApprove) -> Void)? // 차이 결제 확인 콜백
     var resultCallBack: ((IamPortResponse?) -> Void)? // 결제 결과 콜백
 
     var disposeBag = DisposeBag()
 
-    private var webview: WKWebView?
-
-    public init(naviController naviController: UINavigationController? = nil, webview webview: WKWebView? = nil) {
-        if(webview == nil && naviController == nil) {
+    public init(naviController: UINavigationController? = nil) {
+        if (webview == nil && naviController == nil && viewController == nil) {
             print("정상적이지 않은 호출입니다.")
+            return
         }
 
+        initController()
         self.naviController = naviController
+    }
+
+    public init(webview: WKWebView? = nil) {
+        if (webview == nil && naviController == nil && viewController == nil) {
+            print("정상적이지 않은 호출입니다.")
+            return
+        }
+
+        initController()
         self.webview = webview
+    }
+
+    public init(viewController: UIViewController? = nil) {
+        if (webview == nil && naviController == nil && viewController == nil) {
+            print("정상적이지 않은 호출입니다.")
+            return
+        }
+
+        initController()
+        self.viewController = viewController
+    }
+
+    func initController() {
+        self.naviController = nil
+        self.webview = nil
+        self.viewController = nil
     }
 
     // 뷰모델 데이터 클리어
@@ -203,10 +231,16 @@ public class IamportSdk {
 
             if let wv = self?.webview {
                 IamPortWebViewMode().start(webview: wv)
-            } else {
-                self?.naviController?.pushViewController(WebViewController(), animated: true)
-//            self?.naviController.present(WebViewController(), animated: true)
             }
+
+            let wvc = WebViewController()
+
+            self?.naviController?.pushViewController(wvc, animated: true)
+//            self?.naviController.present(WebViewController(), animated: true)
+
+//            wvc.modalPresentationStyle = UIModalPresentationStyle.currentContext
+//            wvc.modalTransitionStyle = UIModalTransitionStyle.coverVertical
+            self?.viewController?.present(wvc, animated: true)
 
             dlog("check navigationController :: \(String(describing: self?.naviController))")
         }
