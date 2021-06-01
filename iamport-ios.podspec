@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'iamport-ios'
-  s.version          = '1.0.0-dev01'
+  s.version          = '1.0.0-dev02'
   s.summary          = 'iamport-ios will help develop for your iOS App payments'
 
 # This description is used to generate tags and improve search results.
@@ -55,6 +55,7 @@ Pod::Spec.new do |s|
 #    s.dependency 'AlamoyireActivityLogger'
 
     # Pods for RxSwift+MVVM
+    # 최신 1.3.2 대응 고민
     s.dependency 'RxBus', '~> 1.3.1'
     s.dependency 'RxSwift'
     s.dependency 'RxCocoa'
