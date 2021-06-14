@@ -134,7 +134,7 @@ iamport-ios is available through [CocoaPods](https://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'iamport-ios'
+pod 'iamport-ios', '~> 1.0.0-dev03'
 ```
 
 ## Usage
