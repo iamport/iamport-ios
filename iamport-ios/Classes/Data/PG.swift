@@ -30,6 +30,7 @@ public enum PG: String, CaseIterable, Codable {
     case payple
     case alipay
     case bluewalnut
+    case tosspay
 
     var name: String {
         switch self {
@@ -79,6 +80,8 @@ public enum PG: String, CaseIterable, Codable {
             return "알리페이"
         case .bluewalnut:
             return "bluewalnut"
+        case .tosspay:
+            return "토스페이"
 //        case .inicis:
 //            return "이니시스본인인증"
         }
