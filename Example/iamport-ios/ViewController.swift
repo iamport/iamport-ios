@@ -89,6 +89,11 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
                 userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
             self?.paymentCallback(iamPortResponse)
         }
+
+//        Iamport.shared.paymentWebView(webview: self.wkWebView,
+//                userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+//            self?.paymentCallback(iamPortResponse)
+//        }
     }
 
     // 아임포트 결제 데이터 생성
