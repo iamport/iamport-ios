@@ -60,6 +60,7 @@
             <string>hyundaicardappcardid</string>
             <string>com.wooricard.wcard</string>
             <string>lmslpay</string>
+            <string>lguthepay-xpay</string>
         </array>
         <key>LSRequiresIPhoneOS</key>
         <true/>
