@@ -158,7 +158,7 @@ class ChaiStrategy: BaseStrategy {
                         switch status {
                         case .approved:
                             print("결제승인! \(status.rawValue)")
-                            self?.confirmMerchant(payment: payment, prepareData: prepareData, status: status.rawValue)
+                            self?.confirmMerchant(payment: payment, prepareData: prepareData, status: status)
 
                         case .confirmed:
                             self?.successFinish(payment: payment, prepareData: prepareData, msg: "가맹점 측 결제 승인 완료 (결제 성공) \(status.rawValue)")
@@ -172,7 +172,7 @@ class ChaiStrategy: BaseStrategy {
                         case .user_canceled, .canceled, .failed, .timeout, .inactive, .churn:
                             print("결제취소 \(status.rawValue)")
 //                            self?.failureFinish(payment: payment, prepareData: prepareData, msg: "결제취소 \(status.rawValue)")
-                            IamPortApprove.make(payment: payment, prepareData: prepareData, status: status.rawValue).do {
+                            IamPortApprove.make(payment: payment, prepareData: prepareData, status: status).do {
                                 self?.requestApprovePayments(approve: $0)
                             }
 
@@ -216,7 +216,7 @@ class ChaiStrategy: BaseStrategy {
     }
 
 
-    private func confirmMerchant(payment: Payment, prepareData: PrepareData, status: String) {
+    private func confirmMerchant(payment: Payment, prepareData: PrepareData, status: ChaiPaymentStatus) {
 
         IamPortApprove.make(payment: payment, prepareData: prepareData, status: status).do {
             RxBus.shared.post(event: EventBus.MainEvents.AskApproveFromChai(approve: $0))

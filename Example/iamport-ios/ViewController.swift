@@ -48,7 +48,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
 
     // 아임포트 SDK 본인인증 요청
     func requestCertification() {
-        let userCode = "imp10391932" // 다날
+        let userCode = "iamport" // 다날
         let request = createCertificationData()
         dump(request)
 
@@ -64,7 +64,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
 
     // 아임포트 SDK 결제 요청
     func requestPayment() {
-        let userCode = "imp96304110"
+        let userCode = "iamport"
         let request = createPaymentData()
         dump(request)
 
@@ -102,7 +102,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         display.card_quota = []
 
         return IamPortRequest(
-                pg: PG.kcp.makePgRawName(pgId: ""),
+                pg: PG.html5_inicis.makePgRawName(pgId: ""),
                 merchant_uid: "muid_ios_\(Int(Date().timeIntervalSince1970))",
                 amount: "1000").then {
             $0.pay_method = PayMethod.card

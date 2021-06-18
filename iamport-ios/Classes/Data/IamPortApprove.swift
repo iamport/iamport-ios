@@ -32,14 +32,14 @@ public class IamPortApprove: Then {
         self.status = status
     }
 
-    static func make(payment: Payment, prepareData: PrepareData, status: String) -> IamPortApprove {
+    static func make(payment: Payment, prepareData: PrepareData, status: ChaiPaymentStatus) -> IamPortApprove {
         IamPortApprove(userCode: payment.userCode,
                 merchantUid: payment.getMerchantUid(),
                 paymentId: prepareData.paymentId,
                 impUid: prepareData.impUid,
                 idempotencyKey: prepareData.idempotencyKey,
                 publicAPIKey: prepareData.publicAPIKey,
-                status: status,
+                status: status.rawValue,
                 subscriptionId: prepareData.subscriptionId,
                 customerUid: payment.getCustomerUid())
     }
