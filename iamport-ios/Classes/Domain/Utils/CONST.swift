@@ -27,11 +27,13 @@ class CONST {
     static let IAMPORT_DETECT_ADDRESS = "detectchangingwebview/iamport/i"
     static let IAMPORT_DETECT_URL = "\(IAMPORT_DETECT_SCHEME)\(IAMPORT_DETECT_ADDRESS)"
 
-    static let IAMPORT_PROD_URL = "https://service.iamport.kr" // 테스트도 상용서버에서
+    static let IAMPORT_PROD_URL = "https://service.iamport.kr"
+//    static let IAMPORT_PROD_URL = "http://1b8309246be2.ngrok.io"
 //    static let IAMPORT_TEST_URL = "https://kicc.iamport.kr"
 
 
     static let CHAI_SERVICE_URL = "https://api.chai.finance"
+    static let CHAI_SERVICE_DEV_URL = "https://api-dev.chai.finance"
     static let CHAI_SERVICE_STAGING_URL = "https://api-staging.chai.finance"
 
     static let SMILE_PAY_BASE_URL = "https://www.mysmilepay.com"

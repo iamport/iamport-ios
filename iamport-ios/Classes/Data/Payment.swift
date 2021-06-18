@@ -30,15 +30,17 @@ struct Payment: Codable, Then {
     }
 
     func getMerchantUid() -> String {
-
-        var merchantUid: String = CONST.EMPTY_STR
         if (isCertification()) {
-            merchantUid = iamPortCertification?.merchant_uid ?? merchantUid
-        } else {
-            merchantUid = iamPortRequest?.merchant_uid ?? merchantUid
+            return iamPortCertification?.merchant_uid ?? CONST.EMPTY_STR
         }
+        return iamPortRequest?.merchant_uid ?? CONST.EMPTY_STR
+    }
 
-        return merchantUid
+    func getCustomerUid() -> String {
+        if (isCertification()) {
+            return CONST.EMPTY_STR
+        }
+        return iamPortRequest?.customer_uid ?? CONST.EMPTY_STR
     }
 
     static func validator(_ payment: Payment, _ validateResult: @escaping ((Bool, String)) -> Void) {

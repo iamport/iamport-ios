@@ -15,6 +15,7 @@ class PrepareRequest: DictionaryEncodable, Then {
     var tax_free: String? // 결제금액 중 면세공급가액
     var name: String //주문명
     var merchant_uid: String // 가맹점 주문번호
+    var customer_uid: String?
     var user_code: String // 아임포트 가맹점 식별코드
     var tier_code: String? // 아임포트 agency 하위계정 tier code
     var pg_id: String // 차이계정 public Key // 복수PG로직에 따라 Http 요청 1에서 받은 정보 + 요청인자 활용
@@ -65,6 +66,7 @@ class PrepareRequest: DictionaryEncodable, Then {
             $0.app_scheme = request.app_scheme
             $0.custom_data = request.custom_data
             $0.notice_url = request.notice_url
+            $0.customer_uid = request.customer_uid
             $0.confirm_url = nil
         }
     }

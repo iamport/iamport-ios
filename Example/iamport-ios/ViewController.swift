@@ -109,6 +109,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
             $0.name = "아임포트의 민족 주문~~"
             $0.buyer_name = "남궁안녕"
             $0.app_scheme = "iamport"
+//            $0.customer_uid = "cuid_ios_\(Int(Date().timeIntervalSince1970))"
         }
     }
 

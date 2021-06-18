@@ -179,18 +179,19 @@ class Utils {
     static func getOrZeroString(value: String?) -> String {
         if let result = value {
             return !result.isEmpty ? result : "0"
-        } else {
-            return "0"
         }
+
+        return "0"
     }
 
     static func getOrEmpty(value: String?) -> String {
         if let result = value {
             return !result.isEmpty ? result : CONST.EMPTY_STR
-        } else {
-            return CONST.EMPTY_STR
         }
+
+        return CONST.EMPTY_STR
     }
+
 
     public static func delay(bySeconds seconds: Double, dispatchLevel: DispatchLevel = .userInteractive, closure: @escaping () -> Void) {
         let dispatchTime = DispatchTime.now() + seconds

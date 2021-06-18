@@ -8,7 +8,7 @@ enum ChaiPaymentStatus: String, CaseIterable {
     case waiting, prepared,
          approved,
          user_canceled, canceled, failed, timeout,
-         confirmed, partial_confirmed;
+         confirmed, partial_confirmed, inactive, churn;
 
     static func from(displayStatus: String) -> ChaiPaymentStatus? {
         for value in self.allCases {
