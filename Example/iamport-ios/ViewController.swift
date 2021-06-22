@@ -52,7 +52,12 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         let request = createCertificationData()
         dump(request)
 
-        Iamport.shared.certification(navController: navigationController, userCode: userCode, iamPortCertification: request) { [weak self] iamPortResponse in
+        guard let navController = navigationController else {
+            print("navigationController 를 찾을 수 없습니다")
+            return
+        }
+
+        Iamport.shared.certification(navController: navController, userCode: userCode, iamPortCertification: request) { [weak self] iamPortResponse in
             self?.paymentCallback(iamPortResponse)
         }
 
@@ -68,8 +73,13 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         let request = createPaymentData()
         dump(request)
 
+//        guard let navController = navigationController else {
+//            print("navigationController 를 찾을 수 없습니다")
+//            return
+//        }
+
         // case 1
-//        Iamport.shared.payment(navController: navigationController,
+//        Iamport.shared.payment(navController: navController,
 //                userCode: userCode, iamPortRequest: request,
 //                approveCallback: { approve in
 //                    self.approveCallback(iamPortApprove: approve)
@@ -85,15 +95,39 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
 //        }
 
         // use for UIViewController
-        Iamport.shared.payment(viewController: self,
+//        Iamport.shared.payment(viewController: self,
+//                userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+//            self?.paymentCallback(iamPortResponse)
+//        }
+
+        if #available(iOS 11.0, *) {
+            setupWebView()
+        } else {
+        }
+        Iamport.shared.paymentWebView(webViewMode: wkWebView,
                 userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
             self?.paymentCallback(iamPortResponse)
         }
 
-//        Iamport.shared.paymentWebView(webview: self.wkWebView,
-//                userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
-//            self?.paymentCallback(iamPortResponse)
-//        }
+//        openWebView()
+//        Iamport.shared.pluginMobileWebSupporter(mobileWebMode: wkWebView)
+    }
+
+
+    private func openWebView() {
+        print("오픈! 샘플 웹뷰")
+
+        let bundle = Bundle(for: type(of: self))
+
+        guard let url = bundle.url(forResource: "mobileweb", withExtension: "html") else {
+            print("html file url 비정상")
+            return
+        }
+
+        let urlRequest = URLRequest(url: url)
+        DispatchQueue.main.async { [weak self] in
+            self?.wkWebView.load(urlRequest)
+        }
     }
 
     // 아임포트 결제 데이터 생성
@@ -135,7 +169,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
 
 
     /**
-     *  TODO 재고확인 등 최종결제를 위한 처리를 해주세요
+     *  TODO: PG "CHAI" 결제시 재고확인 등 최종결제를 위한 처리를 해주세요
      *  CONST.CHAI_FINAL_PAYMENT_TIME_OUT_SEC 만큼 타임아웃 후 결제 데이터가
      *  초기화 되기 때문에 타임아웃 시간 안에 Iamport.chaiPayment 함수를 호출해주셔야 합니다.
      */
@@ -150,6 +184,26 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
 
+
+    @available(iOS 11.0, *)
+    private func setupWebView() {
+        view.addSubview(wkWebView)
+        wkWebView.frame = view.frame
+
+        let safeAreaInsets = view.safeAreaInsets
+        wkWebView.translatesAutoresizingMaskIntoConstraints = false
+        wkWebView.topAnchor.constraint(equalTo: view.topAnchor, constant: safeAreaInsets.top).isActive = true
+        wkWebView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: safeAreaInsets.bottom).isActive = true
+        wkWebView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        wkWebView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+    }
+
+    // test use webview
+    lazy var wkWebView: WKWebView = {
+        var view = WKWebView()
+        view.backgroundColor = UIColor.clear
+        return view
+    }()
 
     @IBOutlet var paymentButton: UIButton?
     @IBOutlet var certificationButton: UIButton?

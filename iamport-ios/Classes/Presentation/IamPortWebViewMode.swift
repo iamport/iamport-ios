@@ -8,6 +8,7 @@ import WebKit
 import RxBus
 import RxSwift
 import RxRelay
+import Then
 
 class IamPortWebViewMode: UIView, WKUIDelegate {
 
@@ -47,29 +48,26 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
         clearAll()
     }
 
-    private func clearWebView() {
+    func clearWebView() {
         if let wv = webview {
             wv.stopLoading()
-//            wv.removeFromSuperview()
             wv.uiDelegate = nil
             wv.navigationDelegate = nil
         }
-//        webview = nil
     }
 
     private func clearAll() {
         clearWebView()
-//        view.removeFromSuperview()
         payment = nil
         disposeBag = DisposeBag()
     }
 
-    private func setupWebView() {
+    internal func setupWebView() {
 
         clearWebView()
 
         if let wv = webview {
-            wv.configuration.userContentController.then { controller in
+            wv.configuration.userContentController.do { controller in
                 controller.add(self, name: JsInterface.RECEIVED.rawValue)
                 controller.add(self, name: JsInterface.START_WORKING_SDK.rawValue)
                 controller.add(self, name: JsInterface.CUSTOM_CALL_BACK.rawValue)
@@ -82,7 +80,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
         }
     }
 
-    private func subscribePayment() {
+    internal func subscribePayment() {
         let eventBus = EventBus.shared
 
         // 외부 종료 시그널
@@ -92,7 +90,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
         }.disposed(by: disposeBag)
 
         // 결제 데이터
-        EventBus.shared.webViewPaymentBus.subscribe { [weak self] event in
+        eventBus.webViewPaymentBus.subscribe { [weak self] event in
             guard let el = event.element, let pay = el else {
                 print("Error not found PaymentEvent")
                 return
@@ -103,17 +101,21 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 
     // isCertification 에 따라 bind 할 항목이 달라짐
-    private func subscribe(_ payment: Payment) {
+    internal func subscribe(_ payment: Payment) {
+        dlog("나왔니?")
+        self.payment = payment
         if (payment.isCertification()) {
+            dlog("subscribeCertification?")
             subscribeCertification(payment)
         } else {
+            dlog("subscribePayment?")
             subscribePayment(payment)
         }
     }
 
     // 결제 데이터가 있을때 처리 할 이벤트들
-    private func subscribeCertification(_ payment: Payment) {
-        self.payment = payment
+    internal func subscribeCertification(_ payment: Payment) {
+        dlog("subscribe webview mode certification")
 
         let bus = RxBus.shared
         let webViewEvents = EventBus.WebViewEvents.self
@@ -148,10 +150,9 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 
     // 결제 데이터가 있을때 처리 할 이벤트들
-    private func subscribePayment(_ payment: Payment) {
-        print("subscribe")
+    internal func subscribePayment(_ payment: Payment) {
+        dlog("subscribe webview mode payment")
 
-        self.payment = payment
         let bus = RxBus.shared
         let webViewEvents = EventBus.WebViewEvents.self
 
@@ -185,7 +186,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
         requestPayment(payment)
     }
 
-    private func subscribeForBankPay() {
+    internal func subscribeForBankPay() {
 
         let bus = RxBus.shared
         let events = EventBus.WebViewEvents.self
@@ -208,7 +209,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
             self?.processBankPayPayment(el.url)
         }.disposed(by: disposeBag)
 
-        // also use inisis + trans pair
+        // also use inicis + trans pair
         bus.asObservable(event: events.FinalBankPayProcess.self).subscribe { [weak self] event in
             guard let el = event.element else {
                 print("Error not found FinalBankPayProcess")
@@ -223,7 +224,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     /**
      * 결제 요청 실행
      */
-    private func requestPayment(_ it: Payment) {
+    internal func requestPayment(_ it: Payment) {
         if (!Utils.isInternetAvailable()) {
             sdkFinish(IamPortResponse.makeFail(payment: it, msg: "네트워크 연결 안됨"))
             return
@@ -235,7 +236,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     /**
      * 본인인증 요청 실행
      */
-    private func requestCertification(_ it: Payment) {
+    internal func requestCertification(_ it: Payment) {
         if (!Utils.isInternetAvailable()) {
             sdkFinish(IamPortResponse.makeFail(payment: it, msg: "네트워크 연결 안됨"))
             return
@@ -271,12 +272,12 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 
     /**
-     * 나이스 뱅크페이 결과 처리 viewModel 에 요청
+     * 뱅크페이 결과 처리 viewModel 에 요청
      */
     func finalProcessBankPayPayment(_ url: URL) {
         dlog("finalProcessBankPayPayment :: \(url)")
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+////        request.httpMethod = "POST" // 해보니까 굳이 post 날릴 필요 없는 것 같음
         DispatchQueue.main.async { [weak self] in
             self?.webview?.load(request)
         }
@@ -319,7 +320,6 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
      */
     private func openWebView() {
         print("오픈! 웹뷰")
-
 
         let myPG = payment?.iamPortRequest?.pgEnum
         let bundle = Bundle(for: type(of: self))
@@ -411,36 +411,65 @@ extension IamPortWebViewMode: WKNavigationDelegate {
 //        failFinish(errMsg: "컨텐츠 로드중 에러가 발생하였습니다 :: \(error.localizedDescription)")
     }
 
-    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
-        let alertController = UIAlertController(title: message, message: nil, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "확인", style: .default) { _ in
-            completionHandler()
-        }
-        alertController.addAction(okAction)
-        DispatchQueue.main.async {
-//            self.present(alertController, animated: true, completion: nil)
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo,
+                 completionHandler: @escaping () -> Void) {
+        let completionHandlerWrapper = CompletionHandlerWrapper(completionHandler: completionHandler, defaultValue: Void())
 
-            if let window = self.window, let controller = window.rootViewController {
+        let alertController = UIAlertController(title: "", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { (action) in
+            completionHandlerWrapper.respondHandler(Void())
+        }))
+
+        DispatchQueue.main.async {
+            if let window = webView.superview?.window, let controller = window.rootViewController {
                 controller.present(alertController, animated: true, completion: nil)
             }
         }
     }
 
-    // for Alert(for 주로 모빌리언스 + 휴대폰 소액결제 Pair)
-    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
-        let alertController = UIAlertController(title: message, message: nil, preferredStyle: .alert)
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
-            completionHandler(false)
-        }
-        let okAction = UIAlertAction(title: "확인", style: .default) { _ in
-            completionHandler(true)
-        }
-        alertController.addAction(cancelAction)
-        alertController.addAction(okAction)
-        DispatchQueue.main.async {
-//            self.present(alertController, animated: true, completion: nil)
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo,
+                 completionHandler: @escaping (Bool) -> Void) {
 
-            if let window = self.window, let controller = window.rootViewController {
+        let completionHandlerWrapper = CompletionHandlerWrapper(completionHandler: completionHandler, defaultValue: false)
+
+        let alertController = UIAlertController(title: "", message: message, preferredStyle: .alert)
+
+        alertController.addAction(UIAlertAction(title: "취소", style: .cancel, handler: { (action) in
+            completionHandlerWrapper.respondHandler(false)
+        }))
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { (action) in
+            completionHandlerWrapper.respondHandler(true)
+        }))
+
+        DispatchQueue.main.async {
+            if let window = webView.superview?.window, let controller = window.rootViewController {
+                controller.present(alertController, animated: true, completion: nil)
+            }
+        }
+    }
+
+    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo,
+                 completionHandler: @escaping (String?) -> Void) {
+        let completionHandlerWrapper = CompletionHandlerWrapper(completionHandler: completionHandler, defaultValue: "")
+        let alertController = UIAlertController(title: "", message: prompt, preferredStyle: .alert)
+        alertController.addTextField { (textField) in
+            textField.text = defaultText
+        }
+
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { (action) in
+            if let text = alertController.textFields?.first?.text {
+                completionHandlerWrapper.respondHandler(text)
+            } else {
+                completionHandlerWrapper.respondHandler(defaultText)
+            }
+        }))
+
+        alertController.addAction(UIAlertAction(title: "취소", style: .default, handler: { (action) in
+            completionHandlerWrapper.respondHandler(nil)
+        }))
+
+        DispatchQueue.main.async {
+            if let window = webView.superview?.window, let controller = window.rootViewController {
                 controller.present(alertController, animated: true, completion: nil)
             }
         }

@@ -6,8 +6,9 @@ import Foundation
 import WebKit
 import RxBus
 import RxSwift
+import Then
 
-public class IamportSdk {
+public class IamportSdk: Then {
 
     let viewModel = MainViewModel()
 
@@ -18,42 +19,46 @@ public class IamportSdk {
     var chaiApproveCallBack: ((IamPortApprove) -> Void)? // 차이 결제 확인 콜백
     var resultCallBack: ((IamPortResponse?) -> Void)? // 결제 결과 콜백
 
+    var iamportWebViewMode: IamPortWebViewMode?
+    var iamPortMobileWebMode: IamPortMobileWebMode?
     var disposeBag = DisposeBag()
 
-    public init(naviController: UINavigationController? = nil) {
-        if (webview == nil && naviController == nil && viewController == nil) {
-            print("정상적이지 않은 호출입니다.")
-            return
-        }
-
+    public init(naviController: UINavigationController) {
         initController()
         self.naviController = naviController
     }
 
-    public init(webview: WKWebView? = nil) {
-        if (webview == nil && naviController == nil && viewController == nil) {
-            print("정상적이지 않은 호출입니다.")
-            return
-        }
-
+    /**
+    for WebView Mode (WKWebView 를 넘기지만 결제요청은 네이티브에서)
+     - Parameter webViewMode:
+     */
+    public init(webViewMode: WKWebView) {
         initController()
-        self.webview = webview
+        webview = webViewMode
+        iamportWebViewMode = IamPortWebViewMode()
     }
 
-    public init(viewController: UIViewController? = nil) {
-        if (webview == nil && naviController == nil && viewController == nil) {
-            print("정상적이지 않은 호출입니다.")
-            return
+    /**
+     for MobileWeb Mode (WKWebView 를 넘기고, 결제요청 또한 JS 에서 사용)
+     - Parameter mobileWebMode:
+     */
+    public init(mobileWebMode: WKWebView) {
+        initController()
+        webview = mobileWebMode
+        iamPortMobileWebMode = IamPortMobileWebMode().then { mode in
+            mode.start(webview: mobileWebMode)
         }
+    }
 
+    public init(viewController: UIViewController) {
         initController()
         self.viewController = viewController
     }
 
     func initController() {
-        self.naviController = nil
-        self.webview = nil
-        self.viewController = nil
+        naviController = nil
+        webview = nil
+        viewController = nil
     }
 
     // 뷰모델 데이터 클리어
@@ -64,6 +69,8 @@ public class IamportSdk {
 
         viewModel.clear()
         EventBus.shared.clearRelay.accept(())
+
+//        iamportWebViewMode?.close()
         disposeBag = DisposeBag()
     }
 
@@ -230,7 +237,7 @@ public class IamportSdk {
             EventBus.shared.webViewPaymentRelay.accept(payment)
 
             if let wv = self?.webview {
-                IamPortWebViewMode().start(webview: wv)
+                self?.iamportWebViewMode?.start(webview: wv)
             }
 
             let wvc = WebViewController()

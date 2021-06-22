@@ -92,7 +92,10 @@ class StrategyRepository {
     func processBankPayPayment(_ payment: Payment, _ url: URL) {
         if (getPaymentKinds(payment: payment) == PaymentKinds.NICE) {
             niceTransWebViewStrategy.processBankPayPayment(url)
+            return
         }
+
+        dlog("NICE 가 아니므로 무시")
     }
 
     func requestCertification(_ payment: Payment) {
