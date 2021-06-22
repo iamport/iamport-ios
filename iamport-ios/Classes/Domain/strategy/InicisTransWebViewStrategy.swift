@@ -22,6 +22,7 @@ class InicisTransWebViewStrategy: WebViewStrategy {
     }
 
     private func processInicisTrans(_ appScheme: String, _ url: URL) {
+        dlog("processInicisTrans")
         func isParseUrl(_ str: String) -> Bool {
             if URL(string: str) != nil {
                 return true
@@ -35,12 +36,15 @@ class InicisTransWebViewStrategy: WebViewStrategy {
             scheme = "\(appScheme)\(CONST.COLON_SLASH_SLASH)?"
         }
 
+        let m_redirect_url = payment?.iamPortRequest?.getRedirectUrl() ?? CONST.IAMPORT_DETECT_URL
+
         let removeAppScheme = url.absoluteString.replacingOccurrences(of: scheme, with: "")
         let separated = removeAppScheme.components(separatedBy: "=")
         let redirectUrl = separated.map { s -> String in
             s.removingPercentEncoding ?? s
         }.filter { s in
-            s.contains(CONST.IAMPORT_DETECT_URL)
+//            s.contains(CONST.IAMPORT_DETECT_URL)
+            s.contains(m_redirect_url)
         }.first
 
         if let urlStr = redirectUrl, let url = URL(string: urlStr) {

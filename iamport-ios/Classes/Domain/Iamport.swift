@@ -24,17 +24,17 @@ open class Iamport {
         paymentResult = nil
     }
 
-    private func paymentStart(sdk: IamportSdk, userCode: String, iamPortRequest: IamPortRequest, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
+    private func paymentStart(sdk: IamportSdk, userCode: String, tierCode: String? = nil, iamPortRequest: IamPortRequest, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
         paymentResult = paymentResultCallback
         self.sdk = sdk
-        sdk.initStart(payment: Payment(userCode: userCode, iamPortRequest: iamPortRequest), approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
+        sdk.initStart(payment: Payment(userCode: userCode, tierCode: tierCode, iamPortRequest: iamPortRequest), approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
     }
 
 
-    private func certStart(sdk: IamportSdk, userCode: String, iamPortCertification: IamPortCertification, certificationResultCallback: @escaping (IamPortResponse?) -> Void) {
+    private func certStart(sdk: IamportSdk, userCode: String, tierCode: String? = nil, iamPortCertification: IamPortCertification, certificationResultCallback: @escaping (IamPortResponse?) -> Void) {
         paymentResult = certificationResultCallback
         self.sdk = sdk
-        sdk.initStart(payment: Payment(userCode: userCode, iamPortCertification: iamPortCertification), certificationResultCallback: certificationResultCallback)
+        sdk.initStart(payment: Payment(userCode: userCode, tierCode: tierCode, iamPortCertification: iamPortCertification), certificationResultCallback: certificationResultCallback)
     }
 
     /**
@@ -45,41 +45,38 @@ open class Iamport {
        - iamPortRequest: 결제요청 데이터
        - paymentResultCallback: 결제 후 콜백 함수
      */
-    public func payment(navController: UINavigationController?, userCode: String, iamPortRequest: IamPortRequest, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
+
+    public func payment(navController: UINavigationController, userCode: String, tierCode: String? = nil, iamPortRequest: IamPortRequest, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
         print("IamPort SDK payment for navController mode")
         clear()
 
-        guard let nc = navController else {
-            print("UINavigationController 를 찾을 수 없습니다")
-            return
-        }
-
-        paymentStart(sdk : IamportSdk(naviController: nc), userCode: userCode, iamPortRequest: iamPortRequest, approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
+        paymentStart(sdk: IamportSdk(naviController: navController), userCode: userCode, tierCode: tierCode, iamPortRequest: iamPortRequest, approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
     }
 
-    public func payment(viewController: UIViewController?, userCode: String, iamPortRequest: IamPortRequest, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
+    public func payment(viewController: UIViewController, userCode: String, tierCode: String? = nil, iamPortRequest: IamPortRequest, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
         print("IamPort SDK payment for viewController mode")
         clear()
 
-        guard let vc = viewController else {
-            print("UIViewController 를 찾을 수 없습니다")
-            return
-        }
-
-        paymentStart(sdk : IamportSdk(viewController: vc), userCode: userCode, iamPortRequest: iamPortRequest, approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
+        paymentStart(sdk: IamportSdk(viewController: viewController), userCode: userCode, tierCode: tierCode, iamPortRequest: iamPortRequest, approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
     }
 
 
-    public func paymentWebView(webview: WKWebView?, userCode: String, iamPortRequest: IamPortRequest, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
+    public func paymentWebView(webViewMode: WKWebView, userCode: String, tierCode: String? = nil, iamPortRequest: IamPortRequest, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
         print("IamPort SDK payment for webview mode")
         clear()
 
-        guard let wv = webview else {
-            print("WKWebView 를 찾을 수 없습니다")
-            return
-        }
+        paymentStart(sdk: IamportSdk(webViewMode: webViewMode), userCode: userCode, tierCode: tierCode, iamPortRequest: iamPortRequest, approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
+    }
 
-        paymentStart(sdk : IamportSdk(webview: wv), userCode: userCode, iamPortRequest: iamPortRequest, approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
+    /**
+     Mobile Web Mode 를 사용합니다. (WKWebView 를 넘기고, 결제요청 또한 JS 에서 사용)
+     - Parameter mobileWebMode: url 을 로드한 WKWebView 파라미터
+     */
+    public func pluginMobileWebSupporter(mobileWebMode: WKWebView) {
+        print("IamPort SDK payment for mobileweb mode")
+        clear()
+
+        sdk = IamportSdk(mobileWebMode: mobileWebMode) // 생성 및 mobileWebMode 실행
     }
 
     /**
@@ -90,40 +87,25 @@ open class Iamport {
        - iamPortCertification: 본인인증 요청 데이터
        - paymentResultCallback: 결제 후 콜백 함수
      */
-    public func certification(navController: UINavigationController?, userCode: String, iamPortCertification: IamPortCertification, certificationResultCallback: @escaping (IamPortResponse?) -> Void) {
+    public func certification(navController: UINavigationController, userCode: String, tierCode: String? = nil, iamPortCertification: IamPortCertification, certificationResultCallback: @escaping (IamPortResponse?) -> Void) {
         print("IamPort SDK certification")
         clear()
 
-        guard let nc = navController else {
-            print("UINavigationController 를 찾을 수 없습니다")
-            return
-        }
-
-        certStart(sdk : IamportSdk(naviController: nc), userCode: userCode, iamPortCertification: iamPortCertification, certificationResultCallback: certificationResultCallback)
+        certStart(sdk: IamportSdk(naviController: navController), userCode: userCode, tierCode: tierCode, iamPortCertification: iamPortCertification, certificationResultCallback: certificationResultCallback)
     }
 
-    public func certification(viewController: UIViewController?, userCode: String, iamPortCertification: IamPortCertification, certificationResultCallback: @escaping (IamPortResponse?) -> Void) {
+    public func certification(viewController: UIViewController, userCode: String, tierCode: String? = nil, iamPortCertification: IamPortCertification, certificationResultCallback: @escaping (IamPortResponse?) -> Void) {
         print("IamPort SDK certification")
         clear()
 
-        guard let vc = viewController else {
-            print("UIViewController 를 찾을 수 없습니다")
-            return
-        }
-
-        certStart(sdk : IamportSdk(viewController: vc), userCode: userCode, iamPortCertification: iamPortCertification, certificationResultCallback: certificationResultCallback)
+        certStart(sdk: IamportSdk(viewController: viewController), userCode: userCode, tierCode: tierCode, iamPortCertification: iamPortCertification, certificationResultCallback: certificationResultCallback)
     }
 
-    public func certification(webview: WKWebView?, userCode: String, iamPortCertification: IamPortCertification, certificationResultCallback: @escaping (IamPortResponse?) -> Void) {
+    public func certification(webview: WKWebView, userCode: String, tierCode: String? = nil, iamPortCertification: IamPortCertification, certificationResultCallback: @escaping (IamPortResponse?) -> Void) {
         print("IamPort SDK certification")
         clear()
 
-        guard let wv = webview else {
-            print("WKWebView 를 찾을 수 없습니다")
-            return
-        }
-
-        certStart(sdk : IamportSdk(webview: wv), userCode: userCode, iamPortCertification: iamPortCertification, certificationResultCallback: certificationResultCallback)
+        certStart(sdk: IamportSdk(webViewMode: webview), userCode: userCode, tierCode: tierCode, iamPortCertification: iamPortCertification, certificationResultCallback: certificationResultCallback)
     }
 
     // 외부 앱 종료후 AppDelegate 에서 받은 URL
