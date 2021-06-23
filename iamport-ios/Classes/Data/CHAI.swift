@@ -8,10 +8,40 @@ struct CHAI {
     static let SCHEME_HOST: String = "\(AppScheme.chai.scheme)://payment"
     static let PUBLIC_API_KEY = "publicAPIKey"
     static let PAYMENT_ID = "paymentId"
-    static let IDEMPOENCY_KEY = "idempotencyKey"
-
+    static let SUBSCRIPTION_ID = "subscriptionId"
+    static let IDEMPOTENCY_KEY = "idempotencyKey"
     static let STATUS = "status"
     static let NATIVE = "native"
     static let CHANNEL = "mobile"
-    static let MODE = "staging"
+}
+
+
+public enum CHAI_MODE: String, CaseIterable, Codable {
+
+    case prod
+    case staging
+    case dev
+
+    var url: String {
+        switch self {
+        case .prod:
+            return CONST.CHAI_SERVICE_URL
+        case .staging:
+            return CONST.CHAI_SERVICE_STAGING_URL
+        case .dev:
+            return CONST.CHAI_SERVICE_DEV_URL
+        }
+    }
+
+    static func getChaiUrl(mode: String) -> String {
+        for value in self.allCases {
+            if (mode == value.rawValue) {
+                dlog("Found CHAI mode => [\(mode)]")
+                return value.url
+            }
+        }
+
+        print("Not found CHAI mode => [\(mode)]")
+        return prod.url // default
+    }
 }

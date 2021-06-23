@@ -7,13 +7,13 @@ import WebKit
 import RxBus
 import RxSwift
 
-class InisisTransWebViewStrategy: WebViewStrategy {
+class InicisTransWebViewStrategy: WebViewStrategy {
 
     override func onUpdatedUrl(url: URL) {
 
         if let appScheme = payment?.iamPortRequest?.app_scheme {
             if (url.absoluteString.hasPrefix(appScheme)) {
-                processInisisTrans(appScheme, url)
+                processInicisTrans(appScheme, url)
                 return
             }
         }
@@ -21,13 +21,13 @@ class InisisTransWebViewStrategy: WebViewStrategy {
         super.onUpdatedUrl(url: url)
     }
 
-    private func processInisisTrans(_ appScheme: String, _ url: URL) {
+    private func processInicisTrans(_ appScheme: String, _ url: URL) {
         func isParseUrl(_ str: String) -> Bool {
             if URL(string: str) != nil {
                 return true
-            } else {
-                return false
             }
+
+            return false
         }
 
         var scheme = "\(appScheme)?"

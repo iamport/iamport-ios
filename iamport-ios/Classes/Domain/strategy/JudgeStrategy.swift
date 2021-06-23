@@ -26,6 +26,7 @@ public class JudgeStrategy: BaseStrategy {
             switch response.result {
             case .success(let data):
                 do {
+                    dlog(data)
                     let dataJson = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
                     let getData = try JSONDecoder().decode(Users.self, from: dataJson)
 
@@ -51,7 +52,7 @@ public class JudgeStrategy: BaseStrategy {
     private func judge(_ payment: Payment, _ userDataList: Array<UserData>) -> (JudgeKinds, UserData?, Payment) {
 
         guard !userDataList.isEmpty else {
-            failureFinish(payment: payment, msg: "Not found PF [ \(String(describing: payment.iamPortRequest?.pg)) ] and any PG in your info.")
+            failureFinish(payment: payment, msg: "Not found PG [ \(String(describing: payment.iamPortRequest?.pg)) ] and any PG in your info.")
             return (JudgeKinds.ERROR, nil, payment)
         }
         dlog("userDataList :: \(userDataList)")

@@ -15,6 +15,7 @@ public class IamPortRequest: Codable, Then {
     public var pay_method: PayMethod = PayMethod.card // 명세상 필수인지 불명확함 default card
     public var escrow: Bool? // default false
     public let merchant_uid: String // 없음안됨 // default "random"
+    public var customer_uid: String?
     public var name: String?
     let amount: String // 없음안됨
     public var custom_data: String? // 명세상 불명확

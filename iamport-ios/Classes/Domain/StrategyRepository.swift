@@ -18,7 +18,7 @@ class StrategyRepository {
 
     private let webViewStrategy = WebViewStrategy() // webview 사용하는 pg
     private let niceTransWebViewStrategy = NiceTransWebViewStrategy()
-    private let inisisTransWebViewStrategy = InisisTransWebViewStrategy()
+    private let inicisTransWebViewStrategy = InicisTransWebViewStrategy()
 
     private let certificationWebViewStrategy = CertificationWebViewStrategy()
 
@@ -75,7 +75,7 @@ class StrategyRepository {
             return niceTransWebViewStrategy
 
         case .INISIS:
-            return inisisTransWebViewStrategy
+            return inicisTransWebViewStrategy
 
         case .WEB:
             return webViewStrategy
