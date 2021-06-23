@@ -411,6 +411,16 @@ extension IamPortWebViewMode: WKNavigationDelegate {
 //        failFinish(errMsg: "컨텐츠 로드중 에러가 발생하였습니다 :: \(error.localizedDescription)")
     }
 
+    private func presentAlert(webView: WKWebView, alertController: UIAlertController) {
+        DispatchQueue.main.async {
+            guard let controller = webView.superview?.viewController else {
+                print("viewController 를 찾을 수 없습니다.")
+                return
+            }
+            controller.present(alertController, animated: true, completion: nil)
+        }
+    }
+
     func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo,
                  completionHandler: @escaping () -> Void) {
         let completionHandlerWrapper = CompletionHandlerWrapper(completionHandler: completionHandler, defaultValue: Void())
@@ -419,12 +429,7 @@ extension IamPortWebViewMode: WKNavigationDelegate {
         alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { (action) in
             completionHandlerWrapper.respondHandler(Void())
         }))
-
-        DispatchQueue.main.async {
-            if let window = webView.superview?.window, let controller = window.rootViewController {
-                controller.present(alertController, animated: true, completion: nil)
-            }
-        }
+        presentAlert(webView: webView, alertController: alertController)
     }
 
     func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo,
@@ -441,11 +446,7 @@ extension IamPortWebViewMode: WKNavigationDelegate {
             completionHandlerWrapper.respondHandler(true)
         }))
 
-        DispatchQueue.main.async {
-            if let window = webView.superview?.window, let controller = window.rootViewController {
-                controller.present(alertController, animated: true, completion: nil)
-            }
-        }
+        presentAlert(webView: webView, alertController: alertController)
     }
 
     func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo,
@@ -468,11 +469,7 @@ extension IamPortWebViewMode: WKNavigationDelegate {
             completionHandlerWrapper.respondHandler(nil)
         }))
 
-        DispatchQueue.main.async {
-            if let window = webView.superview?.window, let controller = window.rootViewController {
-                controller.present(alertController, animated: true, completion: nil)
-            }
-        }
+        presentAlert(webView: webView, alertController: alertController)
     }
 
     func failFinish(errMsg: String) {
