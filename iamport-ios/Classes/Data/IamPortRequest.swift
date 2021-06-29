@@ -34,7 +34,7 @@ public class IamPortRequest: Codable, Then {
     private var m_redirect_url: String? = CONST.IAMPORT_DETECT_URL // 콜백
     public var app_scheme: String? // 명세상 nilable 이나 RN 에서 필수
     public var biz_num: String?
-    public var popup: Bool? // 명세상 없으나 RN 에 있음
+    public var popup: Bool? // 명세상 없으나 RN 에 있음, 엑심베이일때 false 로 해야 열림
     private var niceMobileV2: Bool? = true
 
 
@@ -57,6 +57,10 @@ public class IamPortRequest: Codable, Then {
         self.merchant_uid = merchant_uid
         self.amount = amount
     }
+
+    func getRedirectUrl() -> String? {
+        m_redirect_url
+    }
 }
 
 extension IamPortRequest {
@@ -69,7 +73,7 @@ extension IamPortRequest {
         }
     }
 
-    public func setPlatform(platform : String) {
+    public func setPlatform(platform: String) {
         if let p = Platform.convertPlatform(platformStr: platform) {
             m_redirect_url = p.redirectUrl
         } else {

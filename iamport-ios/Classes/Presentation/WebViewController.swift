@@ -220,7 +220,7 @@ class WebViewController: UIViewController, WKUIDelegate {
             self?.processBankPayPayment(el.url)
         }.disposed(by: disposeBag)
 
-        // also use inisis + trans pair
+        // also use inicis + trans pair
         bus.asObservable(event: events.FinalBankPayProcess.self).subscribe { [weak self] event in
             guard let el = event.element else {
                 print("Error not found FinalBankPayProcess")

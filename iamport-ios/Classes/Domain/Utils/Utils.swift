@@ -18,6 +18,19 @@ func ddump<T>(_ value: T) {
     #endif
 }
 
+extension UIView {
+    // 뷰컨트롤러 찾기
+    var viewController: UIViewController? {
+        if let vc = self.next as? UIViewController {
+            return vc
+        } else if let superView = self.superview {
+            return superView.viewController
+        } else {
+            return nil
+        }
+    }
+}
+
 extension URL {
     func queryParams() -> [String: Any] {
         let queryItems = URLComponents(url: self, resolvingAgainstBaseURL: false)?.queryItems

@@ -11,13 +11,15 @@ struct Payment: Codable, Then {
     var iamPortRequest: IamPortRequest?
     var iamPortCertification: IamPortCertification?
 
-    init(userCode: String, iamPortRequest: IamPortRequest) {
+    init(userCode: String, tierCode: String? = nil, iamPortRequest: IamPortRequest) {
         self.userCode = userCode
+        self.tierCode = tierCode
         self.iamPortRequest = iamPortRequest
     }
 
-    init(userCode: String, iamPortCertification: IamPortCertification) {
+    init(userCode: String, tierCode: String? = nil, iamPortCertification: IamPortCertification) {
         self.userCode = userCode
+        self.tierCode = tierCode
         self.iamPortCertification = iamPortCertification
     }
 
