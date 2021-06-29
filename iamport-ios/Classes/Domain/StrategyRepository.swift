@@ -18,7 +18,7 @@ class StrategyRepository {
 
     private let webViewStrategy = WebViewStrategy() // webview 사용하는 pg
     private let niceTransWebViewStrategy = NiceTransWebViewStrategy()
-    private let inisisTransWebViewStrategy = InisisTransWebViewStrategy()
+    private let inicisTransWebViewStrategy = InicisTransWebViewStrategy()
 
     private let certificationWebViewStrategy = CertificationWebViewStrategy()
 
@@ -75,7 +75,7 @@ class StrategyRepository {
             return niceTransWebViewStrategy
 
         case .INISIS:
-            return inisisTransWebViewStrategy
+            return inicisTransWebViewStrategy
 
         case .WEB:
             return webViewStrategy
@@ -92,7 +92,10 @@ class StrategyRepository {
     func processBankPayPayment(_ payment: Payment, _ url: URL) {
         if (getPaymentKinds(payment: payment) == PaymentKinds.NICE) {
             niceTransWebViewStrategy.processBankPayPayment(url)
+            return
         }
+
+        dlog("NICE 가 아니므로 무시")
     }
 
     func requestCertification(_ payment: Payment) {

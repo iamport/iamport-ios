@@ -11,13 +11,15 @@ struct Payment: Codable, Then {
     var iamPortRequest: IamPortRequest?
     var iamPortCertification: IamPortCertification?
 
-    init(userCode: String, iamPortRequest: IamPortRequest) {
+    init(userCode: String, tierCode: String? = nil, iamPortRequest: IamPortRequest) {
         self.userCode = userCode
+        self.tierCode = tierCode
         self.iamPortRequest = iamPortRequest
     }
 
-    init(userCode: String, iamPortCertification: IamPortCertification) {
+    init(userCode: String, tierCode: String? = nil, iamPortCertification: IamPortCertification) {
         self.userCode = userCode
+        self.tierCode = tierCode
         self.iamPortCertification = iamPortCertification
     }
 
@@ -30,19 +32,22 @@ struct Payment: Codable, Then {
     }
 
     func getMerchantUid() -> String {
-
-        var merchantUid: String = CONST.EMPTY_STR
         if (isCertification()) {
-            merchantUid = iamPortCertification?.merchant_uid ?? merchantUid
-        } else {
-            merchantUid = iamPortRequest?.merchant_uid ?? merchantUid
+            return iamPortCertification?.merchant_uid ?? CONST.EMPTY_STR
         }
-
-        return merchantUid
+        return iamPortRequest?.merchant_uid ?? CONST.EMPTY_STR
     }
+
+    func getCustomerUid() -> String {
+        if (isCertification()) {
+            return CONST.EMPTY_STR
+        }
+        return iamPortRequest?.customer_uid ?? CONST.EMPTY_STR
+    }
+
     static func validator(_ payment: Payment, _ validateResult: @escaping ((Bool, String)) -> Void) {
 
-        var validResult = ((true, CONST.PASS))
+        var validResult = ((true, CONST.PASS_PAYMENT_VALIDATOR))
 
         payment.iamPortRequest?.do { it in
 

@@ -1,10 +1,16 @@
+//
+// Created by BingBong on 2021/04/06.
+//
+
+import Foundation
 import UIKit
 import WebKit
 import RxBus
 import RxSwift
 import RxRelay
+import Then
 
-class WebViewController: UIViewController, WKUIDelegate {
+class IamPortWebViewMode: UIView, WKUIDelegate {
 
     // for communicate WebView
     enum JsInterface: String, CaseIterable {
@@ -26,75 +32,62 @@ class WebViewController: UIViewController, WKUIDelegate {
     var disposeBag = DisposeBag()
     let viewModel = WebViewModel()
 
-    var webView: WKWebView?
-    var popupWebView: WKWebView?//window.open()으로 열리는 새창
+    var webview: WKWebView?
+    var popupWebView: WKWebView? ///window.open()으로 열리는 새창
     var payment: Payment?
 
-    // Disappear
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        dlog("viewWillDisappear")
+    func start(webview: WKWebView) {
+        dlog("IamPortWebViewMode 어서오고")
+        self.webview = webview
+        setupWebView()
+        subscribePayment()
+    }
+
+    func close() {
+        dlog("IamPortWebViewMode close")
         clearAll()
     }
 
-    // loaded
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        dlog("WebViewController 어서오고")
-
-        view.backgroundColor = UIColor.white
-
-        DispatchQueue.main.async { [weak self] in
-            self?.setupWebView()
-            self?.subscribePayment()
-        }
-    }
-
-    private func clearWebView() {
-        if let wv = webView {
+    func clearWebView() {
+        if let wv = webview {
             wv.stopLoading()
-            wv.removeFromSuperview()
             wv.uiDelegate = nil
             wv.navigationDelegate = nil
         }
-        webView = nil
     }
 
     private func clearAll() {
         clearWebView()
-        view.removeFromSuperview()
         payment = nil
         disposeBag = DisposeBag()
     }
 
-    private func setupWebView() {
+    internal func setupWebView() {
 
         clearWebView()
 
-        let userController = WKUserContentController().then { controller in
-            controller.add(self, name: JsInterface.RECEIVED.rawValue)
-            controller.add(self, name: JsInterface.START_WORKING_SDK.rawValue)
-            controller.add(self, name: JsInterface.CUSTOM_CALL_BACK.rawValue)
-            controller.add(self, name: JsInterface.DEBUG_CONSOLE_LOG.rawValue)
-        }
+        if let wv = webview {
+            wv.configuration.userContentController.do { controller in
+                controller.add(self, name: JsInterface.RECEIVED.rawValue)
+                controller.add(self, name: JsInterface.START_WORKING_SDK.rawValue)
+                controller.add(self, name: JsInterface.CUSTOM_CALL_BACK.rawValue)
+                controller.add(self, name: JsInterface.DEBUG_CONSOLE_LOG.rawValue)
+            }
 
-        let config = WKWebViewConfiguration.init().then { configuration in
-            configuration.userContentController = userController
-        }
-
-        webView = WKWebView.init(frame: view.frame, configuration: config).then { (wv: WKWebView) in
             wv.backgroundColor = UIColor.white
-            wv.frame = view.bounds
-
-            view.addSubview(wv)
-
             wv.uiDelegate = self
             wv.navigationDelegate = self
         }
     }
 
-    private func subscribePayment() {
+    internal func subscribePayment() {
         let eventBus = EventBus.shared
+
+        // 외부 종료 시그널
+        eventBus.clearBus.subscribe { [weak self] in
+            print("clearBus")
+            self?.sdkFinish(nil) // data clear 는 viewWillDisappear 에서 처리
+        }.disposed(by: disposeBag)
 
         // 결제 데이터
         eventBus.webViewPaymentBus.subscribe { [weak self] event in
@@ -103,29 +96,26 @@ class WebViewController: UIViewController, WKUIDelegate {
                 return
             }
 
-            dlog("PaymentEvent 있음!")
             self?.subscribe(pay)
-        }.disposed(by: disposeBag)
-
-        // 외부 종료 시그널
-        eventBus.clearBus.subscribe { [weak self] in
-            print("clearBus")
-            self?.sdkFinish(nil) // data clear 는 viewWillDisappear 에서 처리
         }.disposed(by: disposeBag)
     }
 
     // isCertification 에 따라 bind 할 항목이 달라짐
-    private func subscribe(_ payment: Payment) {
+    internal func subscribe(_ payment: Payment) {
+        dlog("나왔니?")
+        self.payment = payment
         if (payment.isCertification()) {
+            dlog("subscribeCertification?")
             subscribeCertification(payment)
         } else {
+            dlog("subscribePayment?")
             subscribePayment(payment)
         }
     }
 
     // 결제 데이터가 있을때 처리 할 이벤트들
-    private func subscribeCertification(_ payment: Payment) {
-        self.payment = payment
+    internal func subscribeCertification(_ payment: Payment) {
+        dlog("subscribe webview mode certification")
 
         let bus = RxBus.shared
         let webViewEvents = EventBus.WebViewEvents.self
@@ -160,10 +150,9 @@ class WebViewController: UIViewController, WKUIDelegate {
     }
 
     // 결제 데이터가 있을때 처리 할 이벤트들
-    private func subscribePayment(_ payment: Payment) {
-        print("subscribe")
+    internal func subscribePayment(_ payment: Payment) {
+        dlog("subscribe webview mode payment")
 
-        self.payment = payment
         let bus = RxBus.shared
         let webViewEvents = EventBus.WebViewEvents.self
 
@@ -197,7 +186,7 @@ class WebViewController: UIViewController, WKUIDelegate {
         requestPayment(payment)
     }
 
-    private func subscribeForBankPay() {
+    internal func subscribeForBankPay() {
 
         let bus = RxBus.shared
         let events = EventBus.WebViewEvents.self
@@ -235,7 +224,7 @@ class WebViewController: UIViewController, WKUIDelegate {
     /**
      * 결제 요청 실행
      */
-    private func requestPayment(_ it: Payment) {
+    internal func requestPayment(_ it: Payment) {
         if (!Utils.isInternetAvailable()) {
             sdkFinish(IamPortResponse.makeFail(payment: it, msg: "네트워크 연결 안됨"))
             return
@@ -247,7 +236,7 @@ class WebViewController: UIViewController, WKUIDelegate {
     /**
      * 본인인증 요청 실행
      */
-    private func requestCertification(_ it: Payment) {
+    internal func requestCertification(_ it: Payment) {
         if (!Utils.isInternetAvailable()) {
             sdkFinish(IamPortResponse.makeFail(payment: it, msg: "네트워크 연결 안됨"))
             return
@@ -264,11 +253,11 @@ class WebViewController: UIViewController, WKUIDelegate {
         print("명시적 sdkFinish")
         ddump(iamPortResponse)
 
-//        clear() // viewWillDisappear 에서 처리
-        navigationController?.popViewController(animated: false)
-        dismiss(animated: true) {
-            EventBus.shared.impResponseRelay.accept(iamPortResponse)
-        }
+//        navigationController?.popViewController(animated: false)
+//        dismiss(animated: true) {
+        EventBus.shared.impResponseRelay.accept(iamPortResponse)
+//        close()
+//        }
     }
 
     /**
@@ -283,14 +272,14 @@ class WebViewController: UIViewController, WKUIDelegate {
     }
 
     /**
-     * 나이스 뱅크페이 결과 처리 viewModel 에 요청
+     * 뱅크페이 결과 처리 viewModel 에 요청
      */
     func finalProcessBankPayPayment(_ url: URL) {
         dlog("finalProcessBankPayPayment :: \(url)")
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+////        request.httpMethod = "POST" // 해보니까 굳이 post 날릴 필요 없는 것 같음
         DispatchQueue.main.async { [weak self] in
-            self?.webView?.load(request)
+            self?.webview?.load(request)
         }
     }
 
@@ -332,7 +321,6 @@ class WebViewController: UIViewController, WKUIDelegate {
     private func openWebView() {
         print("오픈! 웹뷰")
 
-
         let myPG = payment?.iamPortRequest?.pgEnum
         let bundle = Bundle(for: type(of: self))
 
@@ -355,7 +343,7 @@ class WebViewController: UIViewController, WKUIDelegate {
         }
 
         DispatchQueue.main.async { [weak self] in
-            guard let wv = self?.webView else {
+            guard let wv = self?.webview else {
                 self?.failFinish(errMsg: "webView 를 찾을 수 없습니다.")
                 return
             }
@@ -374,7 +362,7 @@ class WebViewController: UIViewController, WKUIDelegate {
     }
 }
 
-extension WebViewController: WKNavigationDelegate {
+extension IamPortWebViewMode: WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         let frame = UIScreen.main.bounds
@@ -383,7 +371,7 @@ extension WebViewController: WKNavigationDelegate {
             popup.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             popup.navigationDelegate = self
             popup.uiDelegate = self
-            view.addSubview(popup)
+            webView.superview?.addSubview(popup)
             return popup
         }
 
@@ -423,31 +411,65 @@ extension WebViewController: WKNavigationDelegate {
 //        failFinish(errMsg: "컨텐츠 로드중 에러가 발생하였습니다 :: \(error.localizedDescription)")
     }
 
-    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
-        let alertController = UIAlertController(title: message, message: nil, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "확인", style: .default) { _ in
-            completionHandler()
-        }
-        alertController.addAction(okAction)
+    private func presentAlert(webView: WKWebView, alertController: UIAlertController) {
         DispatchQueue.main.async {
-            self.present(alertController, animated: true, completion: nil)
+            guard let controller = webView.superview?.viewController else {
+                print("viewController 를 찾을 수 없습니다.")
+                return
+            }
+            controller.present(alertController, animated: true, completion: nil)
         }
     }
 
-    // for Alert(for 주로 모빌리언스 + 휴대폰 소액결제 Pair)
-    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
-        let alertController = UIAlertController(title: message, message: nil, preferredStyle: .alert)
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel) { _ in
-            completionHandler(false)
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo,
+                 completionHandler: @escaping () -> Void) {
+        let completionHandlerWrapper = CompletionHandlerWrapper(completionHandler: completionHandler, defaultValue: Void())
+
+        let alertController = UIAlertController(title: "", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { (action) in
+            completionHandlerWrapper.respondHandler(Void())
+        }))
+        presentAlert(webView: webView, alertController: alertController)
+    }
+
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo,
+                 completionHandler: @escaping (Bool) -> Void) {
+
+        let completionHandlerWrapper = CompletionHandlerWrapper(completionHandler: completionHandler, defaultValue: false)
+
+        let alertController = UIAlertController(title: "", message: message, preferredStyle: .alert)
+
+        alertController.addAction(UIAlertAction(title: "취소", style: .cancel, handler: { (action) in
+            completionHandlerWrapper.respondHandler(false)
+        }))
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { (action) in
+            completionHandlerWrapper.respondHandler(true)
+        }))
+
+        presentAlert(webView: webView, alertController: alertController)
+    }
+
+    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo,
+                 completionHandler: @escaping (String?) -> Void) {
+        let completionHandlerWrapper = CompletionHandlerWrapper(completionHandler: completionHandler, defaultValue: "")
+        let alertController = UIAlertController(title: "", message: prompt, preferredStyle: .alert)
+        alertController.addTextField { (textField) in
+            textField.text = defaultText
         }
-        let okAction = UIAlertAction(title: "확인", style: .default) { _ in
-            completionHandler(true)
-        }
-        alertController.addAction(cancelAction)
-        alertController.addAction(okAction)
-        DispatchQueue.main.async {
-            self.present(alertController, animated: true, completion: nil)
-        }
+
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { (action) in
+            if let text = alertController.textFields?.first?.text {
+                completionHandlerWrapper.respondHandler(text)
+            } else {
+                completionHandlerWrapper.respondHandler(defaultText)
+            }
+        }))
+
+        alertController.addAction(UIAlertAction(title: "취소", style: .default, handler: { (action) in
+            completionHandlerWrapper.respondHandler(nil)
+        }))
+
+        presentAlert(webView: webView, alertController: alertController)
     }
 
     func failFinish(errMsg: String) {
@@ -462,7 +484,7 @@ extension WebViewController: WKNavigationDelegate {
 
 }
 
-extension WebViewController: WKScriptMessageHandler {
+extension IamPortWebViewMode: WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         dlog("body \(message.body)")
 
@@ -508,7 +530,7 @@ extension WebViewController: WKScriptMessageHandler {
     }
 
     private func evaluateJS(method: String) {
-        webView?.evaluateJavaScript(method)
+        webview?.evaluateJavaScript(method)
     }
 
     private func initSDK(userCode: String, tierCode: String? = nil) {
@@ -539,39 +561,3 @@ extension WebViewController: WKScriptMessageHandler {
     }
 
 }
-
-
-/**
- 쿠키 처리 필요시..
-             let policy = Utils.getActionPolicy(url)
-            if (!policy) {
-//                let cookies = HTTPCookieStorage.shared.cookies ?? []
-//                for cookie in cookies {
-//                    if #available(iOS 11.0, *) {
-//                        dump(cookie)
-//                        if (cookie.domain.contains(".mysmilepay.com")) {
-//                            webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
-//                        }
-//                    } else {
-//                        // Fallback on earlier versions
-//                    }
-//                }
-
-
-//                if #available(iOS 11.0, *) {
-//                    webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { (cookies) in
-//                        for cookie in cookies {
-//                            print("@@@ cookie ==> \(cookie.name) : \(cookie.value)")
-//                            if cookie.name.contains("sp_") {
-////                                UserDefaults.standard.set(cookie.value, forKey: "PHPSESSID")
-//                                webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
-//                                print("@@@ PHPSESSID 저장하기: \(cookie.value)")
-//                            }
-//                        }
-//                    }
-//                } else {
-//                    // Fallback on earlier versions
-//                }
-
-            }
- */

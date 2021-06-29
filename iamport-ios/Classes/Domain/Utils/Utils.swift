@@ -18,6 +18,19 @@ func ddump<T>(_ value: T) {
     #endif
 }
 
+extension UIView {
+    // 뷰컨트롤러 찾기
+    var viewController: UIViewController? {
+        if let vc = self.next as? UIViewController {
+            return vc
+        } else if let superView = self.superview {
+            return superView.viewController
+        } else {
+            return nil
+        }
+    }
+}
+
 extension URL {
     func queryParams() -> [String: Any] {
         let queryItems = URLComponents(url: self, resolvingAgainstBaseURL: false)?.queryItems
@@ -179,22 +192,27 @@ class Utils {
     static func getOrZeroString(value: String?) -> String {
         if let result = value {
             return !result.isEmpty ? result : "0"
-        } else {
-            return "0"
         }
+
+        return "0"
     }
 
     static func getOrEmpty(value: String?) -> String {
         if let result = value {
             return !result.isEmpty ? result : CONST.EMPTY_STR
-        } else {
-            return CONST.EMPTY_STR
         }
+
+        return CONST.EMPTY_STR
     }
+
 
     public static func delay(bySeconds seconds: Double, dispatchLevel: DispatchLevel = .userInteractive, closure: @escaping () -> Void) {
         let dispatchTime = DispatchTime.now() + seconds
         dispatchLevel.dispatchQueue.asyncAfter(deadline: dispatchTime, execute: closure)
+    }
+
+    public static func getRedirectUrl(platformKey: String) -> String {
+        "\(CONST.IAMPORT_DETECT_SCHEME)\(CONST.IAMPORT_DETECT_ADDRESS)/\(platformKey)"
     }
 
     public enum DispatchLevel {

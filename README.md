@@ -1,3 +1,4 @@
+
 # :seedling: I'mport iOS SDK :seedling:
 
 # iamport-ios
@@ -86,15 +87,17 @@ iOS에서 아임포트 결제연동 모듈을 사용하기 위해서는 아래 3
   <string>citimobileapp</string> <!-- 씨티카드-간편결제 -->
   <string>kakaotalk</string> <!-- 카카오톡 -->
   <string>payco</string> <!-- 페이코 -->
-  <string>lpayapp</string> <!-- 롯데 L페이 -->
+  <string>lpayapp</string> <!-- (구)롯데 L페이 -->
   <string>hanamopmoasign</string> <!-- 하나카드 공인인증앱 -->
-  <string>wooripay</string> <!-- 우리페이 -->
+  <string>wooripay</string> <!-- (구) 우리페이 -->
   <string>nhallonepayansimclick</string> <!-- NH 올원페이 -->
   <string>hanawalletmembers</string> <!-- 하나카드(하나멤버스 월렛) -->
   <string>chaipayment</string> <!-- 차이 -->
-  <string>kb-auth</string>
-  <string>hyundaicardappcardid</string>
-  <string>com.wooricard.wcard</string>
+  <string>kb-auth</string> <!-- 국민 -->
+  <string>hyundaicardappcardid</string>  <!-- 현대카드 -->
+  <string>com.wooricard.wcard</string>  <!-- 우리won페이 -->
+  <string>lmslpay</string>  <!-- 롯데 L페이 -->
+  <string>lguthepay-xpay</string>  <!-- 페이나우 -->
 </array>
 ```
 
@@ -131,14 +134,15 @@ iamport-ios is available through [CocoaPods](https://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'iamport-ios'
+pod 'iamport-ios', '~> 1.0.0-dev05'
 ```
 
 ## Usage
 
-> - Navigation Controller 생성.  
-  storyboard 의 root view controller 에서.  
-  Xcode 상단 -> Editor -> Embed in -> Navigation Controller.  
+> - UINavigationController 사용의 경우.  
+  storyboard 의 root view controller 에서
+  Xcode 상단 -> Editor -> Embed in -> Navigation Controller.
+> - UIViewController, WKWebView 지원.
 
 ```swift
   // 결제 요청 데이터 구성 
@@ -153,13 +157,19 @@ pod 'iamport-ios'
               }
 
   // I'mport SDK 에 결제 요청
+  // case1 : UINavigationController 사용
   Iamport.shared.payment(navController: navigationController, // 네비게이션 컨트롤러
                          userCode: userCode, // 머천트 유저 식별 코드
                          iamPortRequest: request) // 결제 요청 데이터
                          { [weak self] iamPortResponse in
                             // 결제 종료 콜백
                          }
-                         
+
+  // case2 : UIViewController 사용
+  Iamport.shared.payment(viewController: viewController, /* 이하동일.. */)
+
+  // case3 : WebView 를 바로 넘겨 결제를 원하면, 아래 [Optional 구현사항 WebView Mode 와 MobileWeb Mode] 참조하세요.
+  
   Iamport.shared.close() // sdk 종료 원할시 호출
 ```
 
@@ -171,6 +181,130 @@ pod 'iamport-ios'
       return true
   }
 ```
+
+
+---
+
+### Optional 구현사항 WebView Mode 와 MobileWeb Mode
+<details>
+<summary>펼쳐보기</summary>
+
+> 본 sdk 에서는 기본적으로 결제연동의 편의를 제공하고자  
+Iamport.payment 를 통해 결제 요청시 새로운 UIViewController 가 열리고,   
+내부적으로 WebView 를 생성하여 전달해주신 parameters 를 통해 결제창을 열고 있습니다.
+
+그러나 요청에 따라 개발의 자유도를 드리기 위해 WebView Mode, MobileWeb Mode 두가지가 추가되었습니다. ( <= 1.0.0-dev05 )
+
+### 1. WebView Mode
+
+설명 : 결제페이지를 직접 생성하시고 iamport-sdk 에 WKWebView 를 넘겨 결제를 진행합니다.  
+ex) 직접 결제페이지를 꾸미기 원하는 분.
+
+반영방법 : 기존 위의 [Usage] 사항 과 같이 iamport-sdk 세팅을 합니다.  
+Iamport.shared.paymentWebView 호출 파라미터 중 webview 에 WKWebView 를 넣어주시면 됩니다.
+그 외는 기존의 동작과 같습니다.
+
+```swift
+Iamport.shared.paymentWebView(webViewMode: wkWebView, /*이하 동일*/)
+```    
+
+
+
+### 2. MobileWeb Mode
+
+설명 : 아임포트를 사용하는 Mobile 웹페이지가 load 된 webview 를 넘겨 결제 진행을 서포트 합니다.    
+ex) 이미 웹사이트에서 아임포트 js sdk 를 이용하고 있고, 본인 서비스를 app 으로만 감싸서 출시 하고자 하시는 분.
+
+반영방법 : 기존 위의 [Usage] 사항 과 같이 iamport-sdk 세팅을 합니다.  
+추가로 Iamport.shared.pluginMobileWebSupporter(webview) 를 호출하여 파라미터로 webview 를 전달합니다.  
+실제 결제 진행은 고객님의 웹사이트 내에서 진행됩니다.
+
+```swift
+Iamport.shared.pluginMobileWebSupporter(mobileWebMode: wkWebView)
+```
+
+
+
+</details>
+
+---
+
+### Optional 구현사항 SwiftUI 에서의 사용
+<details>
+<summary>펼쳐보기</summary>
+
+> SwiftUI 를 사용하시는 분들은 위의 WebViewMode 를 사용하시거나,   
+아래 코드를 참조하시어 UIViewContorller 를 구성해 사용하시기 바랍니다.
+
+```swift
+struct IamportPaymentView: UIViewControllerRepresentable {
+
+  func makeUIViewController(context: Context) -> UIViewController {
+    let view = IamportPaymentViewController()
+    return view
+  }
+
+  func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+}
+
+class IamportPaymentViewController: UIViewController {
+
+  // 아임포트 SDK 결제 요청 
+  func requestIamportPayment() {
+    let userCode = "iamport" // iamport 에서 부여받은 가맹점 식별코드
+    let request = createPaymentData()
+    
+    Iamport.shared.payment(viewController: self,
+            userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+      print("결과 : \(response)")
+    }
+  }
+
+  // 아임포트 결제 데이터 생성
+  func createPaymentData() -> IamPortRequest {
+    return IamPortRequest(
+            pg: PG.html5_inicis.makePgRawName(pgId: ""),
+            merchant_uid: "swiftui_ios_\(Int(Date().timeIntervalSince1970))",
+            amount: "1000").then {
+      $0.pay_method = PayMethod.card
+      $0.name = "SwiftUI 에서 주문입니다"
+      $0.buyer_name = "SwiftUI"
+      $0.app_scheme = "iamporttest" // 결제 후 돌아올 앱스킴
+    }
+  }
+}
+```
+
+
+
+</details>
+
+---
+
+### Optional 구현사항 SceneDelegate 에서의 사용 (target iOS13)
+<details>
+<summary>펼쳐보기</summary>
+
+> iOS 13 부터는 기존의 AppDelegate 으로 부터 UILifecycle 관리가 분리되면서    
+> SceneDelegate 가 추가되었습니다.   
+> AppDelegate 사용 코드 대신 아래 코드를 참조해서 반영하시기 바랍니다.
+
+
+```swift
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    ..
+  func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    if let url = URLContexts.first?.url {
+      Iamport.shared.receivedURL(url)
+    }
+  }  
+}
+```
+
+
+</details>
+
+---
 
 ## 💡 샘플앱
 

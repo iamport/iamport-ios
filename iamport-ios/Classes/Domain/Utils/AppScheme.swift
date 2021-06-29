@@ -18,14 +18,17 @@ enum AppScheme: CaseIterable {
     case citi // 시티은행 앱카드
     case payco // 페이코
     case kakaotalk // 카카오톡
-    case lpay // 롯데 L.pay
-    case woori // 우리페이
+    case lpay // 롯데 L.pay(구)
+    case lmslpay // 롯데 L.pay(L.POINT App 신규 2021.05.27)
+    case woori // 우리페이(구, 종료가능성 있음)
+    case wooricard // 우리카드(신규)
     case nhcard // NH농협카드 올원페이(앱카드)
     case hanacard // 하나카드(하나멤버스 월렛)
     case ssgpay // 신세계 SSGPAY
     case chai // 차이
     case kbauth // 국민 본인인증
     case hyundaicardappcardid // 현대 본인인증
+    case lguthepayxpay // 페이나우
 
     var scheme: String {
         switch self {
@@ -70,6 +73,12 @@ enum AppScheme: CaseIterable {
             return "kb-auth"
         case .hyundaicardappcardid:
             return "hyundaicardappcardid"
+        case .lmslpay:
+            return "lmslpay"
+        case .wooricard:
+            return "com.wooricard.wcard"
+        case .lguthepayxpay:
+            return "lguthepay-xpay"
         }
     }
 
@@ -116,6 +125,12 @@ enum AppScheme: CaseIterable {
             return "id695436326"
         case .hyundaicardappcardid:
             return "id702653088"
+        case .lmslpay:
+            return "id473250588"
+        case .wooricard:
+            return "id1499598869"
+        case .lguthepayxpay:
+            return "id760098906"
         }
     }
 

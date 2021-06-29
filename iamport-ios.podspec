@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'iamport-ios'
-  s.version          = '0.0.3-dev04'
+  s.version          = '1.0.0-dev05'
   s.summary          = 'iamport-ios will help develop for your iOS App payments'
 
 # This description is used to generate tags and improve search results.
@@ -19,6 +19,7 @@ Pod::Spec.new do |s|
 
   s.description      = <<-DESC
   iamport-ios will help develop for your iOS App payments
+  Please contact us!
                        DESC
 
   s.homepage         = 'https://github.com/iamport/iamport-ios'
@@ -29,7 +30,7 @@ Pod::Spec.new do |s|
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
   
   s.swift_versions = '5.0'
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '10.0'
   
   s.source_files = 'iamport-ios/Classes/**/*'
   
@@ -48,14 +49,15 @@ Pod::Spec.new do |s|
     s.dependency 'Swinject'
        
     # 대표적인 네트워크 라이브러리입니다.
-    s.dependency 'Alamofire'
+    s.dependency 'Alamofire', '~> 5.1'
     # Alamofire를 사용할 때 상단 상태 바에 통신중일때 기본 인디케이터가 나타나도록 합니다.
-    s.dependency 'AlamofireNetworkActivityIndicator'
-    # Alamofire를 이용할 때 로그를 쉽게 볼 수 있습니다.
-    s.dependency 'AlamofireActivityLogger'
+#    s.dependency 'AlamofireNetworkActivityIndicator', '~> 3.1'
+    # Alamofire를 이용할 때 로그를 쉽게 볼수 있습니다.
+#    s.dependency 'AlamoyireActivityLogger'
 
     # Pods for RxSwift+MVVM
-    s.dependency 'RxBus'
+    # 최신 1.3.2 대응 고민
+    s.dependency 'RxBus', '~> 1.3.1'
     s.dependency 'RxSwift'
     s.dependency 'RxCocoa'
     s.dependency 'RxRelay'

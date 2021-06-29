@@ -15,6 +15,7 @@ public class IamPortRequest: Codable, Then {
     public var pay_method: PayMethod = PayMethod.card // 명세상 필수인지 불명확함 default card
     public var escrow: Bool? // default false
     public let merchant_uid: String // 없음안됨 // default "random"
+    public var customer_uid: String?
     public var name: String?
     let amount: String // 없음안됨
     public var custom_data: String? // 명세상 불명확
@@ -33,12 +34,32 @@ public class IamPortRequest: Codable, Then {
     private var m_redirect_url: String? = CONST.IAMPORT_DETECT_URL // 콜백
     public var app_scheme: String? // 명세상 nilable 이나 RN 에서 필수
     public var biz_num: String?
-    public var popup: Bool? // 명세상 없으나 RN 에 있음
+    public var popup: Bool? // 명세상 없으나 RN 에 있음, 엑심베이일때 false 로 해야 열림
+    private var niceMobileV2: Bool? = true
+
+
+    // 네이버 관련
+    public var naverPopupMode: Bool?
+    public var naverUseCfm: String?
+
+    public var naverProducts: [BaseProduct]? // 네이버페이 주문형
+
+    public var naverCultureBenefit: Bool?
+    public var naverProductCode: String?
+    public var naverActionType: String?
+
+    public var cultureBenefit: Bool?
+    public var naverInterface: NaverInterface?
+
 
     public init(pg: String, merchant_uid: String, amount: String) {
         self.pg = pg
         self.merchant_uid = merchant_uid
         self.amount = amount
+    }
+
+    func getRedirectUrl() -> String? {
+        m_redirect_url
     }
 }
 
@@ -52,4 +73,11 @@ extension IamPortRequest {
         }
     }
 
+    public func setPlatform(platform: String) {
+        if let p = Platform.convertPlatform(platformStr: platform) {
+            m_redirect_url = p.redirectUrl
+        } else {
+            m_redirect_url = Utils.getRedirectUrl(platformKey: platform)
+        }
+    }
 }
