@@ -220,7 +220,7 @@ ex) 이미 웹사이트에서 아임포트 js sdk 를 이용하고 있고, 본�
 실제 결제 진행은 고객님의 웹사이트 내에서 진행됩니다.
 
 ```swift
-Iamport.shared.pluginMobileWebSupporter(mobileWebMode: wkWebView, /*이하 동일*/)
+Iamport.shared.pluginMobileWebSupporter(mobileWebMode: wkWebView)
 ```
 
 
