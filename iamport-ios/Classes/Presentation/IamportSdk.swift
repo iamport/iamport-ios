@@ -23,6 +23,9 @@ public class IamportSdk: Then {
     var iamPortMobileWebMode: IamPortMobileWebMode?
     var disposeBag = DisposeBag()
 
+    var animate = true
+    var useNaviButton = false
+
     public init(naviController: UINavigationController) {
         initController()
         self.naviController = naviController
@@ -246,12 +249,14 @@ public class IamportSdk: Then {
 
             let wvc = WebViewController()
 
-            self?.naviController?.pushViewController(wvc, animated: true)
+            self?.naviController?.pushViewController(wvc, animated: self?.animate ?? true)
 //            self?.naviController.present(WebViewController(), animated: true)
 
 //            wvc.modalPresentationStyle = UIModalPresentationStyle.currentContext
 //            wvc.modalTransitionStyle = UIModalTransitionStyle.coverVertical
-            self?.viewController?.present(wvc, animated: true)
+            wvc.modalPresentationStyle = .fullScreen
+            wvc.useNaviButton = self?.useNaviButton ?? false
+            self?.viewController?.present(wvc, animated: self?.animate ?? true)
 
             dlog("check viewController :: \(String(describing: self?.viewController))")
             dlog("check navigationController :: \(String(describing: self?.naviController))")
