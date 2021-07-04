@@ -32,7 +32,7 @@ public enum PG: String, CaseIterable, Codable {
     case bluewalnut
     case tosspay
 
-    var name: String {
+    public var name: String {
         switch self {
         case .chai:
             return "차이 간편결제"
@@ -97,7 +97,7 @@ public enum PG: String, CaseIterable, Codable {
         return "\(self)\(id)"
     }
 
-    static func convertPG(pgString: String) -> PG? {
+    public static func convertPG(pgString: String) -> PG? {
         for value in self.allCases {
             if (pgString == value.rawValue) {
                 return value
