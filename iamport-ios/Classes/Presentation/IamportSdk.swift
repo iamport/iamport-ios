@@ -67,10 +67,12 @@ public class IamportSdk: Then {
 //        updatePolling(false)
 //        controlForegroundService(false)
 
+        iamportWebViewMode?.close()
+        iamPortMobileWebMode?.close()
+
         viewModel.clear()
         EventBus.shared.clearRelay.accept(())
 
-//        iamportWebViewMode?.close()
         disposeBag = DisposeBag()
     }
 
@@ -82,7 +84,6 @@ public class IamportSdk: Then {
 
     internal func initStart(payment: Payment, approveCallback: ((IamPortApprove) -> Void)?, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
         print("initStart Payment")
-//        clearData()
 
         chaiApproveCallBack = approveCallback
         resultCallBack = paymentResultCallback
@@ -92,7 +93,6 @@ public class IamportSdk: Then {
 
     internal func initStart(payment: Payment, certificationResultCallback: @escaping (IamPortResponse?) -> Void) {
         print("initStart Certification")
-//        clearData()
 
         resultCallBack = certificationResultCallback
 
@@ -231,13 +231,17 @@ public class IamportSdk: Then {
         viewModel.judgePayment(payment)
     }
 
+
     // 웹뷰 컨트롤러 열기 및 데이터 전달
     private func openWebViewController(_ payment: Payment) {
-        DispatchQueue.main.async { [weak self] in
-            EventBus.shared.webViewPaymentRelay.accept(payment)
+
+        DispatchQueue.main.async(execute: { [weak self] in
+
+            EventBus.shared.webViewPaymentRelay.accept(payment) // 여기서 먼저 결제 데이터를 넘김
 
             if let wv = self?.webview {
                 self?.iamportWebViewMode?.start(webview: wv)
+                return
             }
 
             let wvc = WebViewController()
@@ -249,8 +253,9 @@ public class IamportSdk: Then {
 //            wvc.modalTransitionStyle = UIModalTransitionStyle.coverVertical
             self?.viewController?.present(wvc, animated: true)
 
+            dlog("check viewController :: \(String(describing: self?.viewController))")
             dlog("check navigationController :: \(String(describing: self?.naviController))")
-        }
+        })
     }
 
 }

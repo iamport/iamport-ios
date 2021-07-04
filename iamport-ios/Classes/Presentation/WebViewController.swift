@@ -34,8 +34,15 @@ class WebViewController: UIViewController, WKUIDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         dlog("viewWillDisappear")
+//        clearAll()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        dlog("viewDidDisappear")
         clearAll()
     }
+
 
     // loaded
     override func viewDidLoad() {
@@ -52,6 +59,12 @@ class WebViewController: UIViewController, WKUIDelegate {
 
     private func clearWebView() {
         if let wv = webView {
+            wv.configuration.userContentController.do { controller in
+                for value in JsInterface.allCases {
+                    controller.removeScriptMessageHandler(forName: value.rawValue)
+                }
+            }
+
             wv.stopLoading()
             wv.removeFromSuperview()
             wv.uiDelegate = nil
@@ -61,8 +74,8 @@ class WebViewController: UIViewController, WKUIDelegate {
     }
 
     private func clearAll() {
-        clearWebView()
-        view.removeFromSuperview()
+//        clearWebView()
+//        view.removeFromSuperview()
         payment = nil
         disposeBag = DisposeBag()
     }
@@ -71,15 +84,12 @@ class WebViewController: UIViewController, WKUIDelegate {
 
         clearWebView()
 
-        let userController = WKUserContentController().then { controller in
-            controller.add(self, name: JsInterface.RECEIVED.rawValue)
-            controller.add(self, name: JsInterface.START_WORKING_SDK.rawValue)
-            controller.add(self, name: JsInterface.CUSTOM_CALL_BACK.rawValue)
-            controller.add(self, name: JsInterface.DEBUG_CONSOLE_LOG.rawValue)
-        }
-
         let config = WKWebViewConfiguration.init().then { configuration in
-            configuration.userContentController = userController
+            configuration.userContentController = WKUserContentController().then { controller in
+                for value in JsInterface.allCases {
+                    controller.add(self, name: value.rawValue)
+                }
+            }
         }
 
         webView = WKWebView.init(frame: view.frame, configuration: config).then { (wv: WKWebView) in
@@ -108,10 +118,11 @@ class WebViewController: UIViewController, WKUIDelegate {
         }.disposed(by: disposeBag)
 
         // 외부 종료 시그널
-        eventBus.clearBus.subscribe { [weak self] in
-            print("clearBus")
-            self?.sdkFinish(nil) // data clear 는 viewWillDisappear 에서 처리
-        }.disposed(by: disposeBag)
+//        eventBus.clearBus.subscribe { [weak self] in
+//            print("clearBus")
+////            self?.sdkFinish(nil)
+//            self?.clearAll()
+//        }.disposed(by: disposeBag)
     }
 
     // isCertification 에 따라 bind 할 항목이 달라짐
@@ -136,7 +147,7 @@ class WebViewController: UIViewController, WKUIDelegate {
                 return
             }
 
-            print("receive ImpResponse")
+            dlog("receive ImpResponse")
             self?.sdkFinish(el.impResponse)
         }.disposed(by: disposeBag)
 
@@ -161,7 +172,7 @@ class WebViewController: UIViewController, WKUIDelegate {
 
     // 결제 데이터가 있을때 처리 할 이벤트들
     private func subscribePayment(_ payment: Payment) {
-        print("subscribe")
+        dlog("subscribePayment vc")
 
         self.payment = payment
         let bus = RxBus.shared
@@ -173,7 +184,7 @@ class WebViewController: UIViewController, WKUIDelegate {
                 return
             }
 
-            print("receive ImpResponse")
+            dlog("receive ImpResponse")
             self?.sdkFinish(el.impResponse)
         }.disposed(by: disposeBag)
 
@@ -263,8 +274,8 @@ class WebViewController: UIViewController, WKUIDelegate {
     func sdkFinish(_ iamPortResponse: IamPortResponse?) {
         print("명시적 sdkFinish")
         ddump(iamPortResponse)
+        clearAll()
 
-//        clear() // viewWillDisappear 에서 처리
         navigationController?.popViewController(animated: false)
         dismiss(animated: true) {
             EventBus.shared.impResponseRelay.accept(iamPortResponse)
@@ -330,8 +341,7 @@ class WebViewController: UIViewController, WKUIDelegate {
      * 결제 요청 실행
      */
     private func openWebView() {
-        print("오픈! 웹뷰")
-
+        print("오픈! 웹뷰 vc")
 
         let myPG = payment?.iamPortRequest?.pgEnum
         let bundle = Bundle(for: type(of: self))
@@ -502,7 +512,7 @@ extension WebViewController: WKScriptMessageHandler {
                 }
 
             case .DEBUG_CONSOLE_LOG:
-                dlog("DEBUG_CONSOLE_LOG :: \(message)")
+                dlog("DEBUG_CONSOLE_LOG :: \(message.body)")
             }
         }
     }

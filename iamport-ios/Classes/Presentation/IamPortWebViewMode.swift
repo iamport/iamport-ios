@@ -12,23 +12,6 @@ import Then
 
 class IamPortWebViewMode: UIView, WKUIDelegate {
 
-    // for communicate WebView
-    enum JsInterface: String, CaseIterable {
-        case RECEIVED = "received"
-        case START_WORKING_SDK = "startWorkingSdk"
-        case CUSTOM_CALL_BACK = "customCallback"
-        case DEBUG_CONSOLE_LOG = "debugConsoleLog"
-
-        static func convertJsInterface(s: String) -> JsInterface? {
-            for value in self.allCases {
-                if (s == value.rawValue) {
-                    return value
-                }
-            }
-            return nil
-        }
-    }
-
     var disposeBag = DisposeBag()
     let viewModel = WebViewModel()
 
@@ -38,6 +21,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
 
     func start(webview: WKWebView) {
         dlog("IamPortWebViewMode 어서오고")
+        clearAll()
         self.webview = webview
         setupWebView()
         subscribePayment()
@@ -50,6 +34,11 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
 
     func clearWebView() {
         if let wv = webview {
+            wv.configuration.userContentController.do { controller in
+                for value in WebViewController.JsInterface.allCases {
+                    controller.removeScriptMessageHandler(forName: value.rawValue)
+                }
+            }
             wv.stopLoading()
             wv.uiDelegate = nil
             wv.navigationDelegate = nil
@@ -57,6 +46,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 
     private func clearAll() {
+        dlog("clearAll")
         clearWebView()
         payment = nil
         disposeBag = DisposeBag()
@@ -64,14 +54,11 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
 
     internal func setupWebView() {
 
-        clearWebView()
-
         if let wv = webview {
             wv.configuration.userContentController.do { controller in
-                controller.add(self, name: JsInterface.RECEIVED.rawValue)
-                controller.add(self, name: JsInterface.START_WORKING_SDK.rawValue)
-                controller.add(self, name: JsInterface.CUSTOM_CALL_BACK.rawValue)
-                controller.add(self, name: JsInterface.DEBUG_CONSOLE_LOG.rawValue)
+                for value in WebViewController.JsInterface.allCases {
+                    controller.add(self, name: value.rawValue)
+                }
             }
 
             wv.backgroundColor = UIColor.white
@@ -81,13 +68,15 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 
     internal func subscribePayment() {
+        dlog("webviewmode subscribePayment")
         let eventBus = EventBus.shared
 
-        // 외부 종료 시그널
-        eventBus.clearBus.subscribe { [weak self] in
-            print("clearBus")
-            self?.sdkFinish(nil) // data clear 는 viewWillDisappear 에서 처리
-        }.disposed(by: disposeBag)
+////         외부 종료 시그널
+//        eventBus.clearBus.subscribe { [weak self] in
+//            print("clearBus")
+//            self?.sdkFinish(nil) // data clear 는 viewWillDisappear 에서 처리
+////            self?.close()
+//        }.disposed(by: disposeBag)
 
         // 결제 데이터
         eventBus.webViewPaymentBus.subscribe { [weak self] event in
@@ -255,8 +244,8 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
 
 //        navigationController?.popViewController(animated: false)
 //        dismiss(animated: true) {
+        close()
         EventBus.shared.impResponseRelay.accept(iamPortResponse)
-//        close()
 //        }
     }
 
@@ -319,7 +308,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
      * 결제 요청 실행
      */
     private func openWebView() {
-        print("오픈! 웹뷰")
+        dlog("오픈! 웹뷰 webview mode")
 
         let myPG = payment?.iamPortRequest?.pgEnum
         let bundle = Bundle(for: type(of: self))
@@ -488,7 +477,7 @@ extension IamPortWebViewMode: WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         dlog("body \(message.body)")
 
-        if let jsMethod = JsInterface.convertJsInterface(s: message.name) {
+        if let jsMethod = WebViewController.JsInterface.convertJsInterface(s: message.name) {
             switch jsMethod {
             case .START_WORKING_SDK:
                 print("JS SDK 통한 결제 시작 요청")
@@ -524,7 +513,7 @@ extension IamPortWebViewMode: WKScriptMessageHandler {
                 }
 
             case .DEBUG_CONSOLE_LOG:
-                dlog("DEBUG_CONSOLE_LOG :: \(message)")
+                dlog("DEBUG_CONSOLE_LOG :: \(message.body)")
             }
         }
     }
