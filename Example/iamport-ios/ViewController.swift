@@ -160,7 +160,10 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
 
     // 결제 완료 후 콜백 함수 (예시)
     func paymentCallback(_ response: IamPortResponse?) {
+        print("------------------------------------------")
         print("결과 왔습니다~~")
+        print("Iamport Payment response: \(response)")
+        print("------------------------------------------")
         let resultVC = PaymentResultViewController()
         resultVC.impResponseRelay.accept(response)
         navigationController?.present(resultVC, animated: true)
