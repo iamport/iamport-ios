@@ -219,7 +219,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
             return
         }
 
-        viewModel.requestPayment(payment: it)
+        viewModel.requestPaymentIgnoreNativePG(payment: it)
     }
 
     /**

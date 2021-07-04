@@ -221,6 +221,13 @@ public class IamportSdk: Then {
             return
         }
 
+        // webview mode 라면 네이티브 연동 사용하지 않음
+        // 동작의 문제는 없으나 UI 에서 표현하기 애매함
+        if webview != nil {
+            viewModel.judgePayment(payment, ignoreNative: true)
+            return
+        }
+
         viewModel.judgePayment(payment)
     }
 
