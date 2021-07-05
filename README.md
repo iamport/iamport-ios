@@ -200,7 +200,7 @@ Iamport.payment 를 통해 결제 요청시 새로운 UIViewController 가 열�
 설명 : 결제페이지를 직접 생성하시고 iamport-sdk 에 WKWebView 를 넘겨 결제를 진행합니다.  
 ex) 직접 결제페이지를 꾸미기 원하는 분.
 
-반영방법 : 기존 위의 [Usage] 사항 과 같이 iamport-sdk 세팅을 합니다.  
+- 반영방법 : 기존 위의 [Usage] 사항 과 같이 iamport-sdk 세팅을 합니다.  
 Iamport.shared.paymentWebView 호출 파라미터 중 webview 에 WKWebView 를 넣어주시면 됩니다.
 그 외는 기존의 동작과 같습니다.
 
@@ -215,14 +215,56 @@ Iamport.shared.paymentWebView(webViewMode: wkWebView, /*이하 동일*/)
 설명 : 아임포트를 사용하는 Mobile 웹페이지가 load 된 webview 를 넘겨 결제 진행을 서포트 합니다.    
 ex) 이미 웹사이트에서 아임포트 js sdk 를 이용하고 있고, 본인 서비스를 app 으로만 감싸서 출시 하고자 하시는 분.
 
-반영방법 : 기존 위의 [Usage] 사항 과 같이 iamport-sdk 세팅을 합니다.  
+- 반영방법 Step1 : ios 앱에서 기존 위의 [Usage] 사항 과 같이 iamport-sdk 세팅을 합니다.  
 추가로 Iamport.shared.pluginMobileWebSupporter(webview) 를 호출하여 파라미터로 webview 를 전달합니다.  
 실제 결제 진행은 고객님의 웹사이트 내에서 진행됩니다.
+
 
 ```swift
 Iamport.shared.pluginMobileWebSupporter(mobileWebMode: wkWebView)
 ```
 
+- 반영방법 Step2 : 기존 js sdk 를 사용하는 웹 프론트엔드(html) 의  
+IMP.request_pay, IMP.certification 를 호출하는 곳 위에서 아래 코드를 추가합니다.  
+
+
+- 전달하는 데이터 형식
+```javascript
+// 1. IMP.request_pay 결제의 경우
+const params = {
+    userCode : userCode,                                   // 가맹점 식별코드
+    iamPortRequest : data,                                 // 결제 데이터
+};
+
+// 2. IMP.certification certification 경우
+const params = {
+    userCode : userCode,                                   // 가맹점 식별코드
+    iamPortCertification : data,                                 // 결제 데이터
+};
+
+```  
+
+- 예시코드
+```javascript
+// 예시
+// start of 추가되는 부분
+const isIOS = (/iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase()));
+if(isIOS) {
+    try {
+        const params = {
+          userCode : userCode,                                   // 가맹점 식별코드
+          iamPortRequest : data,                                 // 결제 데이터
+        };
+      window.webkit.messageHandlers.iamportmobilewebmode.postMessage(params)
+    } catch (error) {
+      console.error(error);
+    }
+}
+// End of 추가되는 부분
+
+// 기존의 js IMP.request_pay
+IMP.request_pay(data, ... // 생략
+```
 
 
 </details>
@@ -234,7 +276,9 @@ Iamport.shared.pluginMobileWebSupporter(mobileWebMode: wkWebView)
 <summary>펼쳐보기</summary>
 
 > SwiftUI 를 사용하시는 분들은 위의 WebViewMode 를 사용하시거나,   
-아래 코드를 참조하시어 UIViewContorller 를 구성해 사용하시기 바랍니다.
+아래 코드를 참조하시어 UIViewContorller 를 구성해 사용하시기 바랍니다.  
+
+> 또한 Example app 에 반영되어 있으니 참고하시기 바랍니다. 
 
 ```swift
 struct IamportPaymentView: UIViewControllerRepresentable {
