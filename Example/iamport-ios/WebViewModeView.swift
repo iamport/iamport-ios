@@ -10,7 +10,6 @@ struct WebViewModeView: UIViewControllerRepresentable {
     @EnvironmentObject var viewModel: ViewModel
 
     func makeUIViewController(context: Context) -> UIViewController {
-        print("생성이야????")
         viewModel.updateMerchantUid()
         let view = IamportPaymentWebViewModeController()
         view.viewModel = viewModel
@@ -89,12 +88,17 @@ class IamportPaymentWebViewModeController: UIViewController, WKNavigationDelegat
 
     // 아임포트 SDK 결제 요청
     func requestPayment() {
-        let userCode = "imp96304110" // iamport 에서 부여받은 가맹점 식별코드
-        if let request = viewModel?.createPaymentData() {
+        guard let vm = viewModel else {
+            print("viewModel 이 존재하지 않습니다.")
+            return
+        }
+
+        let userCode = vm.order.userCode // iamport 에서 부여받은 가맹점 식별코드
+        if let request = vm.createPaymentData() {
             dump(request)
 
             //WebView 사용
-            Iamport.shared.paymentWebView(webViewMode: wkWebView, userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+            Iamport.shared.paymentWebView(webViewMode: wkWebView, userCode: userCode.value, iamPortRequest: request) { [weak self] iamPortResponse in
                 self?.paymentCallback(iamPortResponse)
             }
         }
