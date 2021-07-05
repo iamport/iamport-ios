@@ -5,13 +5,13 @@ import WebKit
 import iamport_ios
 
 
-struct WebViewModeView: UIViewControllerRepresentable {
+struct PaymentWebViewModeView: UIViewControllerRepresentable {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @EnvironmentObject var viewModel: ViewModel
 
     func makeUIViewController(context: Context) -> UIViewController {
         viewModel.updateMerchantUid()
-        let view = IamportPaymentWebViewModeController()
+        let view = PaymentWebViewModeViewController()
         view.viewModel = viewModel
         view.presentationMode = presentationMode
         return view
@@ -22,7 +22,7 @@ struct WebViewModeView: UIViewControllerRepresentable {
 
 }
 
-class IamportPaymentWebViewModeController: UIViewController, WKNavigationDelegate {
+class PaymentWebViewModeViewController: UIViewController, WKNavigationDelegate {
     var viewModel: ViewModel? = nil
     var presentationMode: Binding<PresentationMode>?
 
@@ -86,6 +86,7 @@ class IamportPaymentWebViewModeController: UIViewController, WKNavigationDelegat
     }
 
 
+    
     // 아임포트 SDK 결제 요청
     func requestPayment() {
         guard let vm = viewModel else {
@@ -116,10 +117,10 @@ class IamportPaymentWebViewModeController: UIViewController, WKNavigationDelegat
 
 }
 
-struct IamportPaymentWebViewMode_Previews: PreviewProvider {
+struct PaymentWebViewModeView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            WebViewModeView()
+            PaymentWebViewModeView()
         }
     }
 }

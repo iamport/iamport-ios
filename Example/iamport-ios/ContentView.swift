@@ -17,14 +17,17 @@ struct ContentView: View {
 
     @State var orderInfoView: OrderInfoView = OrderInfoView()
     @State var iamportPaymentView: PaymentView = PaymentView()
-    @State var iamportPaymentWebViewMode: WebViewModeView = WebViewModeView()
-
+    @State var iamportPaymentWebViewMode: PaymentWebViewModeView = PaymentWebViewModeView()
 
     var body: some View {
 
         NavigationView {
             VStack {
                 Form {
+
+                    Image("logo_black").resizable()
+                            .aspectRatio(contentMode: .fit)
+
                     Section(header: Text("PG정보")) {
                         getNaviPickerView(itemType: .UserCode)
                         getNaviPickerView(itemType: .PG)
@@ -69,7 +72,7 @@ struct ContentView: View {
     }
 
 
-    // 웹뷰모드
+// 웹뷰모드
     private func buttonPaymentWebViewMode() -> some View {
         ZStack {
             Button(action: {
@@ -86,7 +89,7 @@ struct ContentView: View {
         }
     }
 
-    // 일반모드
+// 일반모드
     private func buttonPayment() -> some View {
 
         ZStack {
@@ -111,6 +114,7 @@ struct ContentView: View {
             }
         }
     }
+
 }
 
 

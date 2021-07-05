@@ -10,7 +10,7 @@ struct PaymentView: UIViewControllerRepresentable {
 
 
     func makeUIViewController(context: Context) -> UIViewController {
-        let view = IamportPaymentViewController()
+        let view = PaymentViewController()
         view.viewModel = viewModel
         return view
     }
@@ -20,7 +20,7 @@ struct PaymentView: UIViewControllerRepresentable {
 
 }
 
-class IamportPaymentViewController: UIViewController, WKNavigationDelegate {
+class PaymentViewController: UIViewController, WKNavigationDelegate {
     var viewModel: ViewModel? = nil
 
     override func viewDidLoad() {
@@ -79,7 +79,7 @@ class IamportPaymentViewController: UIViewController, WKNavigationDelegate {
 
 }
 
-struct IamportPaymentView_Previews: PreviewProvider {
+struct PaymentVieww_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             PaymentView()
