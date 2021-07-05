@@ -41,8 +41,6 @@ class IamPortMobileWebMode: IamPortWebViewMode {
 
     override func setupWebView() {
 
-        clearWebView()
-
         webview?.do { wv in
             wv.configuration.userContentController.do { controller in
                 for value in JsInterface.allCases {
