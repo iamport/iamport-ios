@@ -35,12 +35,15 @@ public class ViewModel: ObservableObject, Then {
     @Published var orderInfos: Array<(String, PubData)> = []
     @Published var isPayment = false
 
+    @Published var showPaymentResult: Bool = false
+    var iamPortResponse: IamPortResponse?
+
     init() {
         order = Order().then { order in
             order.userCode.value = Utils.SampleUserCode.iamport.rawValue
             order.price.value = "1000"
             order.orderName.value = "주문할건데요?"
-            order.name.value = "빙봉"
+            order.name.value = "박포트"
             order.pg.value = PG.html5_inicis.rawValue
             order.appScheme.value = "iamport"
         }

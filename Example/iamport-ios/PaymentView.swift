@@ -54,8 +54,14 @@ class PaymentViewController: UIViewController, WKNavigationDelegate {
 
     // 아임포트 SDK 결제 요청
     func requestPayment() {
-        let userCode = "imp96304110" // iamport 에서 부여받은 가맹점 식별코드
-        if let request = viewModel?.createPaymentData() {
+
+        guard let viewModel = viewModel else {
+            print("viewModel 이 존재하지 않습니다.")
+            return
+        }
+
+        let userCode = viewModel.order.userCode // iamport 에서 부여받은 가맹점 식별코드
+        if let request = viewModel.createPaymentData() {
             dump(request)
 
 //            WebViewContorller 용 닫기버튼 생성(PG "uplus(구 토스페이먼츠)" 는 자체취소 버튼이 없는 것으로 보임)
@@ -63,7 +69,7 @@ class PaymentViewController: UIViewController, WKNavigationDelegate {
 
 //         use for UIViewController
             Iamport.shared.payment(viewController: self,
-                    userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+                    userCode: userCode.value, iamPortRequest: request) { [weak self] iamPortResponse in
                 self?.paymentCallback(iamPortResponse)
             }
         }
@@ -75,6 +81,9 @@ class PaymentViewController: UIViewController, WKNavigationDelegate {
         print("결과 왔습니다~~")
         print("Iamport Payment response: \(response)")
         print("------------------------------------------")
+
+        viewModel?.iamPortResponse = response
+        viewModel?.showPaymentResult = true
     }
 
 }

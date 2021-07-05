@@ -20,34 +20,51 @@ struct ContentView: View {
     @State var iamportPaymentWebViewMode: PaymentWebViewModeView = PaymentWebViewModeView()
 
     var body: some View {
+        TabView {
+            NavigationView {
+                VStack {
+                    Form {
+                        Image("logo_black").resizable()
+                                .aspectRatio(contentMode: .fit)
 
-        NavigationView {
-            VStack {
-                Form {
+                        Section(header: Text("PG정보")) {
+                            getNaviPickerView(itemType: .UserCode)
+                            getNaviPickerView(itemType: .PG)
+                            getNaviPickerView(itemType: .PayMethod)
+                        }
 
-                    Image("logo_black").resizable()
-                            .aspectRatio(contentMode: .fit)
-
-                    Section(header: Text("PG정보")) {
-                        getNaviPickerView(itemType: .UserCode)
-                        getNaviPickerView(itemType: .PG)
-                        getNaviPickerView(itemType: .PayMethod)
-                    }
-
-                    Section(header: Text("주문정보")) {
-                        ForEach(viewModel.orderInfos, id: \.0) {
-                            getNaviOrderInfoView($0.0, $0.1.value)
+                        Section(header: Text("주문정보")) {
+                            ForEach(viewModel.orderInfos, id: \.0) {
+                                getNaviOrderInfoView($0.0, $0.1.value)
+                            }
                         }
                     }
+
+                    HStack(spacing: 30) {
+                        buttonPayment()
+                        Divider().frame(maxHeight: 20)
+                        buttonPaymentWebViewMode()
+                    }.padding()
+
                 }
+                        .navigationBarTitle(Text("아임포트로 결제~~"), displayMode: .inline)
+            }.tabItem {
+                Image(systemName: "list.dash")
+                Text("결제하기")
+                        .font(.title)
+                        .fontWeight(.heavy)
+            }
 
-                HStack(spacing: 30) {
-                    buttonPayment()
-                    Divider().frame(maxHeight: 30)
-                    buttonPaymentWebViewMode()
-                }.padding(.bottom, 30)
-
-            }.navigationBarTitle(Text("아임포트로 결제~~"), displayMode: .inline)
+            PaymentMobileViewModeView().tabItem {
+                Image(systemName: "heart")
+                Text("모바일웹 모드")
+                        .font(.title)
+                        .fontWeight(.heavy)
+            }
+        }.actionSheet(isPresented: $viewModel.showPaymentResult) {
+            ActionSheet(title: Text("결제 결과 도착~"),
+                    message: Text("\(String(describing: viewModel.iamPortResponse))"),
+                    buttons: [.default(Text("Dismiss"))])
         }
     }
 
@@ -83,29 +100,25 @@ struct ContentView: View {
                     EmptyView()
                 }
                 Text("웹뷰모드 결제")
-                        .font(.title)
-                        .fontWeight(.heavy)
-            }
+                        .font(.headline)
+            }.buttonStyle(GradientBackgroundStyle())
         }
     }
 
 // 일반모드
     private func buttonPayment() -> some View {
-
         ZStack {
-
             Button(action: {
                 isPayment = true
                 viewModel.updateMerchantUid()
             }) {
                 Text("결제하기")
-                        .font(.title)
-                        .fontWeight(.heavy)
+                        .font(.headline)
             }.onReceiveBackground {
                 isPayment = false
             }.onDisappear {
                 isPayment = false
-            }
+            }.buttonStyle(GradientBackgroundStyle())
 
             if isPayment {
                 // trick size & opacity

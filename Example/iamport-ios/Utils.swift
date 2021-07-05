@@ -146,3 +146,42 @@ extension Binding {
     }
 }
 
+struct GradientButtonStyle: ButtonStyle {
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+                .foregroundColor(Color.white)
+                .padding()
+                .background(LinearGradient(gradient: Gradient(colors: [Color.red, Color.orange]), startPoint: .leading, endPoint: .trailing))
+                .background(LinearGradient(gradient: Gradient(colors: [Color.red, Color.orange]), startPoint: .leading, endPoint: .trailing))
+                .cornerRadius(15.0)
+    }
+}
+
+struct OutlineButton: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration
+                .label
+                .foregroundColor(configuration.isPressed ? .gray : .accentColor)
+                .padding()
+                .background(
+                        RoundedRectangle(
+                                cornerRadius: 8,
+                                style: .continuous
+                        ).stroke(Color.accentColor)
+                )
+    }
+}
+
+struct GradientBackgroundStyle: ButtonStyle {
+
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+                .frame(minWidth: 0, maxWidth: .infinity)
+                .padding()
+                .foregroundColor(.white)
+                .background(configuration.isPressed ? Color.accentColor : Color.green)
+                .cornerRadius(20)
+//                .padding(.horizontal, 20)
+    }
+}
+

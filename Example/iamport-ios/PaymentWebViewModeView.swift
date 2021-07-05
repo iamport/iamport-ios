@@ -33,17 +33,16 @@ class PaymentWebViewModeViewController: UIViewController, WKNavigationDelegate {
         return view
     }()
 
-    private func setupWebView() {
-        print("setupWebView")
+    private func attachWebView() {
+        print("attachWebView")
         view.addSubview(wkWebView)
         wkWebView.frame = view.frame
 
-        let safeAreaInsets = view.safeAreaInsets
         wkWebView.translatesAutoresizingMaskIntoConstraints = false
-        wkWebView.topAnchor.constraint(equalTo: view.topAnchor, constant: safeAreaInsets.top).isActive = true
-        wkWebView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: safeAreaInsets.bottom).isActive = true
-        wkWebView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        wkWebView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        wkWebView.widthAnchor.constraint(equalTo:   view.widthAnchor  ).isActive = true
+        wkWebView.heightAnchor.constraint(equalTo:  view.heightAnchor ).isActive = true
+        wkWebView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        wkWebView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
     }
 
     private func removeWebView() {
@@ -56,37 +55,30 @@ class PaymentWebViewModeViewController: UIViewController, WKNavigationDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("IamportPaymentWebViewMode viewDidLoad")
+        print("PaymentWebViewModeView viewDidLoad")
 
         view.backgroundColor = UIColor.white
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        print("IamportPaymentWebViewMode viewWillAppear")
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("IamportPaymentWebViewMode viewDidAppear")
-        setupWebView()
+        print("PaymentWebViewModeView viewDidAppear")
+        attachWebView()
         requestPayment()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        print("IamportPaymentWebViewMode viewWillDisappear")
+        print("PaymentWebViewModeView viewWillDisappear")
         removeWebView()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        print("IamportPaymentWebViewMode viewDidDisappear")
+        print("PaymentWebViewModeView viewDidDisappear")
         Iamport.shared.close()
     }
 
-
-    
     // 아임포트 SDK 결제 요청
     func requestPayment() {
         guard let vm = viewModel else {
@@ -112,6 +104,8 @@ class PaymentWebViewModeViewController: UIViewController, WKNavigationDelegate {
         print("Iamport Payment response: \(response)")
         print("------------------------------------------")
 
+        viewModel?.iamPortResponse = response
+        viewModel?.showPaymentResult = true
         presentationMode?.wrappedValue.dismiss()
     }
 

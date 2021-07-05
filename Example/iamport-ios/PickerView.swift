@@ -55,17 +55,8 @@ struct PickerView: View {
                         .font(.title).frame(height: 50).multilineTextAlignment(.center)
                         .padding(10).border(Color.green, width: 1)
 
-            }.buttonStyle(NormalButtonStyle())
+            }.buttonStyle(OutlineButton())
         }
     }
 }
 
-struct NormalButtonStyle: ButtonStyle {
-    func makeBody(configuration: Self.Configuration) -> some View {
-        configuration.label
-                .frame(width: 230, height: 45)
-                .font(.system(size: 14))
-                .foregroundColor(Color.green)
-                .cornerRadius(6.0)
-    }
-}
