@@ -9,12 +9,13 @@
 /* Begin PBXBuildFile section */
 		383030A05FF34E8E3A9463B3 /* mobileweb.html in Resources */ = {isa = PBXBuildFile; fileRef = 3830307672EE7F19F5085998 /* mobileweb.html */; };
 		3830316BF48BE8DE698EEF3D /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3830343ACF27AC5A773E52D6 /* ViewModel.swift */; };
-		383031E1E49D66B2B8647C83 /* WebViewModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38303B89CFCEAC32E46C4E82 /* WebViewModeView.swift */; };
+		383031E1E49D66B2B8647C83 /* PaymentWebViewModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38303B89CFCEAC32E46C4E82 /* PaymentWebViewModeView.swift */; };
 		38303201DDC5691561A3FBD7 /* OrderInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383033854C85A41310FE16F7 /* OrderInfoView.swift */; };
-		38303231F46A6F2AC4253FC4 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38303F83919512638A49E57E /* Utils.swift */; };
 		38303232E23E1AEEE34E1BF8 /* Order.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38303EF62D6A327ABAE6A23F /* Order.swift */; };
 		383032FE80DA033836182A11 /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383038BE8BB3081F452CD271 /* PickerView.swift */; };
+		3830336869636CCC7415D978 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3830300649255D53099DF180 /* Utils.swift */; };
 		383035C28B00232E9AE5C5F0 /* PaymentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383032133C9B669A99B3A348 /* PaymentView.swift */; };
+		383037012C9BCABA6650B59D /* PaymentMobileWebMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 383038ECECAFD8922B39A4E6 /* PaymentMobileWebMode.swift */; };
 		38303A01B3CF5276E6457F7D /* BackToHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3830350A13A85B9A320BC2A5 /* BackToHomeView.swift */; };
 		38303C83F8DBF66B2286E8A1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38303D3F8BD1A2FF928CF4CF /* ContentView.swift */; };
 		38303C988C580BBD25FDAC63 /* PaymentResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38303E14877336A6CAEBCF79 /* PaymentResultViewController.swift */; };
@@ -41,17 +42,18 @@
 
 /* Begin PBXFileReference section */
 		08FFCB46A6C09E654DA2AAA6 /* Pods-iamport-ios_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iamport-ios_Example.debug.xcconfig"; path = "Target Support Files/Pods-iamport-ios_Example/Pods-iamport-ios_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		3830300649255D53099DF180 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		3830307672EE7F19F5085998 /* mobileweb.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = mobileweb.html; sourceTree = "<group>"; };
 		383032133C9B669A99B3A348 /* PaymentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentView.swift; sourceTree = "<group>"; };
 		383033854C85A41310FE16F7 /* OrderInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderInfoView.swift; sourceTree = "<group>"; };
 		3830343ACF27AC5A773E52D6 /* ViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		3830350A13A85B9A320BC2A5 /* BackToHomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackToHomeView.swift; sourceTree = "<group>"; };
 		383038BE8BB3081F452CD271 /* PickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickerView.swift; sourceTree = "<group>"; };
-		38303B89CFCEAC32E46C4E82 /* WebViewModeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebViewModeView.swift; sourceTree = "<group>"; };
+		383038ECECAFD8922B39A4E6 /* PaymentMobileWebMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentMobileWebMode.swift; sourceTree = "<group>"; };
+		38303B89CFCEAC32E46C4E82 /* PaymentWebViewModeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentWebViewModeView.swift; sourceTree = "<group>"; };
 		38303D3F8BD1A2FF928CF4CF /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		38303E14877336A6CAEBCF79 /* PaymentResultViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentResultViewController.swift; sourceTree = "<group>"; };
 		38303EF62D6A327ABAE6A23F /* Order.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Order.swift; sourceTree = "<group>"; };
-		38303F83919512638A49E57E /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		481ACCF3268B1A0C004A74C6 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* iamport-ios_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iamport-ios_Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -102,7 +104,6 @@
 				607FACD11AFB9204008FA782 /* Products */,
 				64112F59B9B73D5D215C84A5 /* Pods */,
 				77C13C9CED810C9DA90C9787 /* Frameworks */,
-				38303F83919512638A49E57E /* Utils.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -134,7 +135,9 @@
 				383038BE8BB3081F452CD271 /* PickerView.swift */,
 				3830343ACF27AC5A773E52D6 /* ViewModel.swift */,
 				3830350A13A85B9A320BC2A5 /* BackToHomeView.swift */,
-				38303B89CFCEAC32E46C4E82 /* WebViewModeView.swift */,
+				38303B89CFCEAC32E46C4E82 /* PaymentWebViewModeView.swift */,
+				3830300649255D53099DF180 /* Utils.swift */,
+				383038ECECAFD8922B39A4E6 /* PaymentMobileWebMode.swift */,
 			);
 			name = "Example for iamport-ios";
 			path = "iamport-ios";
@@ -421,9 +424,10 @@
 				38303201DDC5691561A3FBD7 /* OrderInfoView.swift in Sources */,
 				383032FE80DA033836182A11 /* PickerView.swift in Sources */,
 				3830316BF48BE8DE698EEF3D /* ViewModel.swift in Sources */,
-				38303231F46A6F2AC4253FC4 /* Utils.swift in Sources */,
 				38303A01B3CF5276E6457F7D /* BackToHomeView.swift in Sources */,
-				383031E1E49D66B2B8647C83 /* WebViewModeView.swift in Sources */,
+				383031E1E49D66B2B8647C83 /* PaymentWebViewModeView.swift in Sources */,
+				3830336869636CCC7415D978 /* Utils.swift in Sources */,
+				383037012C9BCABA6650B59D /* PaymentMobileWebMode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
