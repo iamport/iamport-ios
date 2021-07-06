@@ -30,7 +30,7 @@ end
 
 target 'iamport-ios_Example' do
   pod 'iamport-ios', :path => '../'
-  # pod 'iamport-ios', '~> 1.0.0-dev06'
+  # pod 'iamport-ios', '~> 1.0.0-dev07'
 
   use_frameworks!
 
