@@ -1,3 +1,4 @@
+
 <html>
 <head>
     <meta charset="utf-8"/>
@@ -63,6 +64,18 @@
                   IMP.init(userCode);
             });
 
+
+            function sendDataToNative(params) {
+                const isIOS = (/iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase()));
+                if(isIOS) {
+                    try {
+                        window.webkit.messageHandlers.iamportmobilewebmode.postMessage(params)
+                    } catch (error) {
+                        console.error(error);
+                    }
+                }
+            }
+
             function onClickPayment() {
 
                 const data = {
@@ -77,46 +90,46 @@
                       buyer_addr: '신사동 661-16',
                       buyer_postcode: '06018',
                       m_redirect_url: 'https://www.iamport.kr?orderId=order_uid_123456789#result',
-<!--                      m_redirect_url: 'https://httpstat.us/200',-->
+//                      m_redirect_url: 'https://httpstat.us/200',
                       app_scheme: 'iamport',
                   }
 
+                  const params = {
+                    userCode : userCode,                                   // 가맹점 식별코드
+                    iamPortRequest : data,                                 // 결제 데이터
+                  };
+                  sendDataToNative(params)
 
-                    const isIOS = (/iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase()));
-                    if(isIOS) {
-                        try {
-                            const params = {
-                              userCode : userCode,                                   // 가맹점 식별코드
-                              iamPortRequest : data,                                 // 결제 데이터
-                            };
-                          window.webkit.messageHandlers.iamportmobilewebmode.postMessage(params)
-                        } catch (error) {
-                          console.error(error);
-                        }
-                    }
 
                   IMP.request_pay(data, function(response) {
                     console.log(response);
+                    alert(`${response}`)
                   });
             }
 
             function onClickCertification() {
-                IMP.certification({
+
+                const data = {
                   merchant_uid: `mid_${new Date().getTime()}`,
                   // birth: '19921010',
                   carrier: '',
                   name: '',
                   phone: '',
                   company: '아임포트',
-                  // min_age: 14,
-                  // popup: false,
-                  // m_redirect_url: 'https://www.naver.com',
-                  // popup: true,
-                }, function(response) {
-                  alert(`${response.error_msg}`)
+                  }
+
+                const params = {
+                    userCode : userCode,                                   // 가맹점 식별코드
+                    iamPortCertification : data,                                 // 결제 데이터
+                };
+                sendDataToNative(params)
+
+                IMP.certification(data, function(response) {
                   console.log(response);
+                  alert(`${response}`)
                 });
             }
+
 
 
 </script>

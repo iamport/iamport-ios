@@ -14,6 +14,7 @@ import RxCocoa
 import RxSwift
 import RxViewController
 
+// TODO: UIKit 용
 class ViewController: UIViewController, UIGestureRecognizerDelegate {
     var disposeBag = DisposeBag()
 
