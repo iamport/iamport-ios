@@ -353,13 +353,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 ## 💡 샘플앱
 
 - SwiftUI 로 작성(Target iOS 13)  
-- [UIKit 에제](./Example/iamport-ios/ViewController.swift)
+- [UIKit 에제](./Example/iamport-ios/View/ViewController.swift)
 
 
 <p float="left">
-<img src="./img/ios_chai.webp">
-<img src="./img/ios_inicis.webp">
-<img src="./img/ios_cert.webp">
+<img src="./img/ios_chai.webp" width=33% >
+<img src="./img/ios_inicis.webp" width=33% >
+<img src="./img/ios_cert.webp" width=33% >
 </p>
 
 [앱 소스 확인 경로](./Example/iamport-ios)
