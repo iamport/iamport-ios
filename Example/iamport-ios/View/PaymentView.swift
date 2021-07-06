@@ -25,30 +25,30 @@ class PaymentViewController: UIViewController, WKNavigationDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("IamportPaymentViewController viewDidLoad")
+        print("PaymentView viewDidLoad")
 
         view.backgroundColor = UIColor.white
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("IamportPaymentViewController viewWillAppear")
+        print("PaymentView viewWillAppear")
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("IamportPaymentViewController viewDidAppear")
+        print("PaymentView viewDidAppear")
         requestPayment()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        print("IamportPaymentViewController viewWillDisappear")
+        print("PaymentView viewWillDisappear")
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        print("IamportPaymentViewController viewDidDisappear")
+        print("PaymentView viewDidDisappear")
     }
 
 
@@ -69,26 +69,15 @@ class PaymentViewController: UIViewController, WKNavigationDelegate {
 
 //         use for UIViewController
             Iamport.shared.payment(viewController: self,
-                    userCode: userCode.value, iamPortRequest: request) { [weak self] iamPortResponse in
-                self?.paymentCallback(iamPortResponse)
+                    userCode: userCode.value, iamPortRequest: request) { iamPortResponse in
+                viewModel.iamportCallback(iamPortResponse)
             }
         }
     }
 
-    // 결제 완료 후 콜백 함수 (예시)
-    func paymentCallback(_ response: IamPortResponse?) {
-        print("------------------------------------------")
-        print("결과 왔습니다~~")
-        print("Iamport Payment response: \(response)")
-        print("------------------------------------------")
-
-        viewModel?.iamPortResponse = response
-        viewModel?.showPaymentResult = true
-    }
-
 }
 
-struct PaymentVieww_Previews: PreviewProvider {
+struct PaymentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             PaymentView()

@@ -31,11 +31,13 @@ public class ViewModel: ObservableObject, Then {
     var payMethodList: Array<PayMethod> = [] // PayMethod 리스트
 
     @Published var order: Order // 옵저빙할 결제 데이터 객체
+    @Published var cert: Cert // 옵저빙할 본인인증 데이터 객체
     @Published var pgInfos: Array<(ItemType, PubData)> = []
     @Published var orderInfos: Array<(String, PubData)> = []
+    @Published var certInfos: Array<(String, PubData)> = []
     @Published var isPayment = false
 
-    @Published var showPaymentResult: Bool = false
+    @Published var showResult: Bool = false
     var iamPortResponse: IamPortResponse?
 
     init() {
@@ -46,6 +48,10 @@ public class ViewModel: ObservableObject, Then {
             order.name.value = "박포트"
             order.pg.value = PG.html5_inicis.rawValue
             order.appScheme.value = "iamport"
+        }
+
+        cert = Cert().then { cert in
+            cert.userCode.value = Utils.SampleUserCode.iamport.rawValue
         }
 
         updateMerchantUid()
@@ -64,10 +70,18 @@ public class ViewModel: ObservableObject, Then {
             ("주문번호", order.merchantUid),
         ]
 
+        certInfos = [
+            ("주문번호", cert.merchantUid),
+            ("(선택)통신사", cert.carrier),
+            ("(선택)이름", cert.name),
+            ("(선택)휴대폰번호", cert.phone),
+            ("(선택)최소나이", cert.minAge),
+        ]
+
         updatePayMethodList(pg: order.pg.value)
     }
 
-//        아임포트 결제 데이터 생성
+    // 아임포트 결제 데이터 생성
     func createPaymentData() -> IamPortRequest? {
         guard let payMethod = PayMethod.convertPayMethod(order.payMethod.value) else {
             print("미지원 PayMethod : \(order.payMethod.value)")
@@ -85,6 +99,30 @@ public class ViewModel: ObservableObject, Then {
         }
     }
 
+
+    // 결제 완료 후 콜백 함수 (예시)
+    func iamportCallback(_ response: IamPortResponse?) {
+        print("------------------------------------------")
+        print("결과 왔습니다~~")
+        if let res = response {
+            print("Iamport response: \(res)")
+        }
+        print("------------------------------------------")
+
+        iamPortResponse = response
+        showResult = true
+    }
+
+    // 아임포트 본인인증 데이터 생성
+    func createCertificationData() -> IamPortCertification {
+        IamPortCertification(merchant_uid: cert.merchantUid.value).then {
+            $0.min_age = Int(cert.minAge.value)
+            $0.name = cert.name.value
+            $0.phone = cert.phone.value
+            $0.carrier = cert.carrier.value
+        }
+    }
+
     func updatePayMethodList(pg: String) {
         setPayMethodList(pg: pg)
         initPayMethod()
@@ -93,6 +131,7 @@ public class ViewModel: ObservableObject, Then {
     func updateMerchantUid() {
 //        order.merchantUid.value = "muid_ios_\(Int(Date().timeIntervalSince1970))"
         order.merchantUid.value = UUID().uuidString
+        cert.merchantUid.value = UUID().uuidString
     }
 
     private func initPayMethod() {

@@ -111,6 +111,7 @@ struct DeferView<Content: View>: View {
     init(@ViewBuilder _ content: @escaping () -> Content) {
         self.content = content
     }
+
     var body: some View {
         content()          // << everything is created here
     }
@@ -123,9 +124,20 @@ extension View {
             closure()
         }
     }
+
     func onReceiveBackground(_ closure: @escaping () -> Void) -> some View {
         onReceive(NotificationCenter.default.publisher(for: UIScene.willDeactivateNotification)) { _ in
             print("Moving to the background!")
+            closure()
+        }
+    }
+
+    func onBackgroundDisappear(_ closure: @escaping () -> Void) -> some View {
+        onReceiveBackground {
+            print("onBackgroundDisappear :: onReceiveBackground!")
+            closure()
+        }.onDisappear {
+            print("onBackgroundDisappear :: onDisappear!")
             closure()
         }
     }
@@ -181,7 +193,6 @@ struct GradientBackgroundStyle: ButtonStyle {
                 .foregroundColor(.white)
                 .background(configuration.isPressed ? Color.accentColor : Color.green)
                 .cornerRadius(20)
-//                .padding(.horizontal, 20)
     }
 }
 

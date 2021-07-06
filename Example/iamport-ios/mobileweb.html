@@ -64,7 +64,7 @@
                   IMP.init(userCode);
             });
 
-
+            // web -> ios 결제 데이터를 전달
             function sendDataToNative(params) {
                 const isIOS = (/iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase()));
                 if(isIOS) {
@@ -74,7 +74,7 @@
                         console.error(error);
                     }
                 }
-            }
+}
 
             function onClickPayment() {
 
@@ -95,8 +95,8 @@
                   }
 
                   const params = {
-                    userCode : userCode,                                   // 가맹점 식별코드
-                    iamPortRequest : data,                                 // 결제 데이터
+                    userCode : userCode,                 // 가맹점 식별코드
+                    iamPortRequest : data,              // 결제 데이터
                   };
                   sendDataToNative(params)
 
@@ -119,8 +119,8 @@
                   }
 
                 const params = {
-                    userCode : userCode,                                   // 가맹점 식별코드
-                    iamPortCertification : data,                                 // 결제 데이터
+                    userCode : userCode,               // 가맹점 식별코드
+                    iamPortCertification : data,       // 본인인증 데이터
                 };
                 sendDataToNative(params)
 

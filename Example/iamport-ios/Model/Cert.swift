@@ -7,13 +7,11 @@ import Foundation
 import Then
 import SwiftUI
 
-class Order: ObservableObject, Then {
+class Cert: ObservableObject, Then {
     var userCode = PubData()
-    var payMethod = PubData()
-    var pg = PubData()
-    var orderName = PubData()
-    var price = PubData()
+    var carrier = PubData() // 통신사
     var name = PubData()
-    var appScheme = PubData()
+    var phone = PubData()
+    var minAge = PubData()
     var merchantUid = PubData()
 }

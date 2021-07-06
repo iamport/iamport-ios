@@ -9,21 +9,21 @@ import SwiftUI
 
 struct OrderInfoView: View {
     @EnvironmentObject var viewModel: ViewModel
+    @Binding var infos: Array<(String, PubData)>
 
     var body: some View {
         NavigationView {
             Form {
-                let orderInfos = viewModel.orderInfos
-                ForEach(0..<orderInfos.count) { i in
-                    let item = orderInfos[i]
+                ForEach(0..<infos.count) { i in
+                    let item = infos[i]
                     Section(header: Text("\(item.0)")) {
-                        TextField("\(item.0) 입력", text: $viewModel.orderInfos[i].1.value)
+                        TextField("\(item.0) 입력", text: $infos[i].1.value)
                                 .frame(height: 45)
                                 .textFieldStyle(PlainTextFieldStyle())
 
                     }
                 }
-            }.navigationBarTitle(Text("주문정보"), displayMode: .inline)
+            }.navigationBarTitle(Text("입력정보"), displayMode: .inline)
         }
     }
 }

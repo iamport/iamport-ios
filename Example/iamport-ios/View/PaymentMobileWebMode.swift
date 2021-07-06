@@ -6,13 +6,10 @@ import iamport_ios
 
 
 struct PaymentMobileViewModeView: UIViewControllerRepresentable {
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @EnvironmentObject var viewModel: ViewModel
 
     func makeUIViewController(context: Context) -> UIViewController {
-        viewModel.updateMerchantUid()
         let view = PaymentMobileViewModeViewController()
-        view.presentationMode = presentationMode
         return view
     }
 
@@ -22,7 +19,6 @@ struct PaymentMobileViewModeView: UIViewControllerRepresentable {
 }
 
 class PaymentMobileViewModeViewController: UIViewController, WKNavigationDelegate {
-    var presentationMode: Binding<PresentationMode>?
 
     private lazy var wkWebView: WKWebView = {
         var view = WKWebView()
