@@ -26,13 +26,28 @@ class IamPortMobileWebMode: IamPortWebViewMode {
         }
     }
 
+
+    override func clearWebView() {
+        if let wv = webview {
+            wv.configuration.userContentController.do { controller in
+                for value in JsInterface.allCases {
+                    controller.removeScriptMessageHandler(forName: value.rawValue)
+                }
+            }
+        }
+        super.clearWebView()
+    }
+
+
     override func setupWebView() {
 
         clearWebView()
 
         webview?.do { wv in
             wv.configuration.userContentController.do { controller in
-                controller.add(self, name: JsInterface.IAMPORT_MOBILE_WEB_MODE.rawValue)
+                for value in JsInterface.allCases {
+                    controller.add(self, name: value.rawValue)
+                }
             }
 
             wv.backgroundColor = UIColor.white
