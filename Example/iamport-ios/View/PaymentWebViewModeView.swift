@@ -76,6 +76,7 @@ class PaymentWebViewModeViewController: UIViewController, WKNavigationDelegate {
         super.viewDidDisappear(animated)
         print("PaymentWebViewModeView viewDidDisappear")
         Iamport.shared.close()
+        presentationMode?.wrappedValue.dismiss()
     }
 
     // 아임포트 SDK 결제 요청
