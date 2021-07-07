@@ -133,6 +133,8 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 iamport-ios is available through [CocoaPods](https://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
+[[최신버전 확인]](https://github.com/iamport/iamport-ios/releases)
+
 ```ruby
 pod 'iamport-ios', '~> 1.0.0-dev.8'
 ```
@@ -353,8 +355,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 ## 💡 샘플앱
 
 - SwiftUI 로 작성(Target iOS 13)  
-- [UIKit 에제](./Example/iamport-ios/View/ViewController.swift)
-
 
 <p float="left">
 <img src="./img/ios_chai.webp" width=33% >
@@ -364,14 +364,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 [앱 소스 확인 경로](./Example/iamport-ios)
 
-
 실행방법 
 
 1. git clone 
 2. Xcode project open
 3. connect iPhone via USB Cable(or use Simulator)
 4. build [Example app](./Example)
-
+  
+- [UIKit 예제는 링크를 참조하세요](./Example/iamport-ios/View/ViewController.swift)
 
 
 ## Author
