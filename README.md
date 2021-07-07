@@ -134,7 +134,7 @@ iamport-ios is available through [CocoaPods](https://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'iamport-ios', '~> 1.0.0-dev06'
+pod 'iamport-ios', '~> 1.0.0-dev.8'
 ```
 
 ## Usage
@@ -193,7 +193,7 @@ pod 'iamport-ios', '~> 1.0.0-dev06'
 Iamport.payment 를 통해 결제 요청시 새로운 UIViewController 가 열리고,   
 내부적으로 WebView 를 생성하여 전달해주신 parameters 를 통해 결제창을 열고 있습니다.
 
-그러나 요청에 따라 개발의 자유도를 드리기 위해 WebView Mode, MobileWeb Mode 두가지가 추가되었습니다. ( <= 1.0.0-dev06 )
+그러나 요청에 따라 개발의 자유도를 드리기 위해 WebView Mode, MobileWeb Mode 두가지가 추가되었습니다. ( <= 1.0.0-dev08 )
 
 ### 1. WebView Mode
 
