@@ -31,15 +31,15 @@ internal class WebViewModel {
         }
     }
 
-    /**
-     * WebMode Only 결제 요청
-     */
-    func requestPaymentIgnoreNativePG(payment: Payment) {
-        dlog("뷰모델에 결제 요청했니 IgnoreNativePG ")
-        DispatchQueue.main.async {
-            self.repository.getWebViewStrategy(payment).doWork(payment)
-        }
-    }
+//    /**
+//     * WebMode Only 결제 요청
+//     */
+//    func requestPaymentIgnoreNativePG(payment: Payment) {
+//        dlog("뷰모델에 결제 요청했니 IgnoreNativePG ")
+//        DispatchQueue.main.async {
+//            self.repository.getWebViewStrategy(payment).doWork(payment)
+//        }
+//    }
 
     /**
      * 본인인증 요청
