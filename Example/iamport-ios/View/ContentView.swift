@@ -12,8 +12,6 @@ struct ContentView: View {
 
     @EnvironmentObject var viewModel: ViewModel
 
-    @State var isPayment: Bool = false
-    @State var isCert: Bool = false
     @State var buttonTag: Int? = nil
 
     @State var paymentView: PaymentView = PaymentView()
@@ -36,6 +34,11 @@ struct ContentView: View {
                         Section(header: Text("주문정보")) {
                             ForEach(viewModel.orderInfos, id: \.0) {
                                 getNaviOrderInfoView($0.0, $0.1.value)
+                            }
+                            if viewModel.isDigital {
+                                Toggle(isOn: $viewModel.order.digital.flag) {
+                                    Text("휴대폰소액결제 digital")
+                                }.padding()
                             }
                         }
                     }
@@ -60,6 +63,7 @@ struct ContentView: View {
                 VStack {
                     Form {
                         Section(header: Text("본인인증 정보")) {
+                            getNaviPickerView(itemType: .Carrier)
                             ForEach(viewModel.certInfos, id: \.0) {
                                 getNaviCertInfoView($0.0, $0.1.value)
                             }
@@ -68,7 +72,7 @@ struct ContentView: View {
                     buttonCertification()
                 }
             }.tabItem {
-                Image(systemName: "cpu")
+                Image(systemName: "gift")
                 Text("본인인증")
                         .font(.title)
                         .fontWeight(.heavy)
@@ -82,10 +86,11 @@ struct ContentView: View {
                         .font(.title)
                         .fontWeight(.heavy)
             }
+
         }.actionSheet(isPresented: $viewModel.showResult) {
             ActionSheet(title: Text("결제 결과 도착~"),
                     message: Text("\(String(describing: viewModel.iamPortResponse))"),
-                    buttons: [.default(Text("Dismiss"))])
+                    buttons: [.default(Text("닫기"))])
         }
     }
 
@@ -99,7 +104,7 @@ struct ContentView: View {
 
     private func getNaviPickerView(itemType: ItemType) -> some View {
         NavigationLink(destination: PickerView(itemType: itemType)) {
-            listItem(itemType.name, viewModel.pgInfos[itemType.rawValue].1.value)
+            listItem(itemType.name, viewModel.iamportInfos[itemType.rawValue].1.value)
         }
     }
 
@@ -136,16 +141,16 @@ struct ContentView: View {
     private func buttonPayment() -> some View {
         ZStack {
             Button(action: {
-                isPayment = true
+                viewModel.isPayment = true
                 viewModel.updateMerchantUid()
             }) {
                 Text("결제하기")
                         .font(.headline)
             }.onBackgroundDisappear {
-                isPayment = false
+                viewModel.clearButton()
             }.buttonStyle(GradientBackgroundStyle())
 
-            if isPayment {
+            if viewModel.isPayment {
                 // trick size & opacity
                 paymentView
                         .frame(width: 0, height: 0).opacity(0)
@@ -157,16 +162,16 @@ struct ContentView: View {
     private func buttonCertification() -> some View {
         ZStack {
             Button(action: {
-                isCert = true
+                viewModel.isCert = true
                 viewModel.updateMerchantUid()
             }) {
                 Text("본인인증")
                         .font(.headline)
             }.onBackgroundDisappear {
-                isCert = false
+                viewModel.clearButton()
             }.buttonStyle(GradientBackgroundStyle())
 
-            if isCert {
+            if viewModel.isCert {
                 // trick size & opacity
                 CertificationView()
                         .frame(width: 0, height: 0).opacity(0)

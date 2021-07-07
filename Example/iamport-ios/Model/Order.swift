@@ -16,4 +16,5 @@ class Order: ObservableObject, Then {
     var name = PubData()
     var appScheme = PubData()
     var merchantUid = PubData()
+    var digital = PubData()
 }

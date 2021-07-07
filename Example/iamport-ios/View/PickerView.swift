@@ -5,6 +5,7 @@
 
 import Foundation
 import SwiftUI
+import iamport_ios
 
 struct PickerView: View {
     @EnvironmentObject var viewModel: ViewModel
@@ -13,8 +14,8 @@ struct PickerView: View {
     @State private var isPresent = false
 
     private func getPicker() -> some View {
-        Picker(selection: $viewModel.pgInfos[itemType.rawValue].1.value.onUpdate {
-            updatePayMethodList()
+        Picker(selection: $viewModel.iamportInfos[itemType.rawValue].1.value.onUpdate {
+            update()
         }, label: Text("\(itemType.rawValue)")) {
             ForEach(viewModel.getItemList(type: itemType), id: \.0) {
                 Text("\($0.0)  \($0.1)")
@@ -22,18 +23,32 @@ struct PickerView: View {
         }
     }
 
+    private func update() {
+        updatePayMethodList()
+        updateHiddenItem()
+    }
+
     private func updatePayMethodList() {
-        print("updated! \(itemType)")
+        print("updatePayMethodList! \(itemType)")
         if (itemType == ItemType.PG) {
             print(viewModel.order.pg.value)
             viewModel.updatePayMethodList(pg: viewModel.order.pg.value)
         }
     }
 
+    private func updateHiddenItem() {
+        print("updateHiddenItem! \(viewModel.order.payMethod.value)")
+        if (PayMethod.phone == PayMethod.convertPayMethod(viewModel.order.payMethod.value)) {
+            viewModel.isDigital = true
+            return
+        }
+        viewModel.isDigital = false
+    }
+
     var body: some View {
         VStack {
 
-            Text("적용할 \(itemType.name) 값 :\(viewModel.pgInfos[itemType.rawValue].1.value)")
+            Text("적용할 \(itemType.name) 값 :\(viewModel.iamportInfos[itemType.rawValue].1.value)")
                     .padding(.top, 120).frame(height: 30).font(.headline)
                     .multilineTextAlignment(.leading)
 
@@ -49,8 +64,8 @@ struct PickerView: View {
                         .fontWeight(.heavy).multilineTextAlignment(.center).padding(.bottom, 20)
             }.popover(isPresented: $isPresent) {
                 Text("아래에 입력하세요")
-                TextField("입력하세요", text: $viewModel.pgInfos[itemType.rawValue].1.value.onUpdate {
-                    updatePayMethodList()
+                TextField("입력하세요", text: $viewModel.iamportInfos[itemType.rawValue].1.value.onUpdate {
+                    update()
                 })
                         .font(.title).frame(height: 50).multilineTextAlignment(.center)
                         .padding(10).border(Color.green, width: 1)

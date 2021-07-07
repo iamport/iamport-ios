@@ -10,7 +10,7 @@ import iamport_ios
 
 
 public enum ItemType: Int, CaseIterable {
-    case UserCode, PG, PayMethod
+    case UserCode, PG, PayMethod, Carrier
 
     public var name: String {
         switch self {
@@ -20,6 +20,8 @@ public enum ItemType: Int, CaseIterable {
             return "PG"
         case .PayMethod:
             return "결제수단"
+        case .Carrier:
+            return "(선택)통신사"
         }
     }
 }
@@ -29,14 +31,18 @@ public class ViewModel: ObservableObject, Then {
     var userCodeList = Utils.getUserCodeList() // 유저코드 리스트(예제용)
     var pgList = PG.allCases // PG 리스트
     var payMethodList: Array<PayMethod> = [] // PayMethod 리스트
+    var carrierList: Array<String> = ["SKT", "KTF", "LGT", "MVNO"] // PayMethod 리스트
 
     @Published var order: Order // 옵저빙할 결제 데이터 객체
     @Published var cert: Cert // 옵저빙할 본인인증 데이터 객체
-    @Published var pgInfos: Array<(ItemType, PubData)> = []
+
+    @Published var iamportInfos: Array<(ItemType, PubData)> = []
     @Published var orderInfos: Array<(String, PubData)> = []
     @Published var certInfos: Array<(String, PubData)> = []
-    @Published var isPayment = false
 
+    @Published var isDigital = false
+    @Published var isPayment: Bool = false
+    @Published var isCert: Bool = false
     @Published var showResult: Bool = false
     var iamPortResponse: IamPortResponse?
 
@@ -57,10 +63,11 @@ public class ViewModel: ObservableObject, Then {
         updateMerchantUid()
 
         // pub data init
-        pgInfos = [
+        iamportInfos = [
             (.UserCode, order.userCode),
             (.PG, order.pg),
-            (.PayMethod, order.payMethod)
+            (.PayMethod, order.payMethod),
+            (.Carrier, cert.carrier)
         ]
 
         orderInfos = [
@@ -72,7 +79,7 @@ public class ViewModel: ObservableObject, Then {
 
         certInfos = [
             ("주문번호", cert.merchantUid),
-            ("(선택)통신사", cert.carrier),
+//            ("(선택)통신사", cert.carrier),
             ("(선택)이름", cert.name),
             ("(선택)휴대폰번호", cert.phone),
             ("(선택)최소나이", cert.minAge),
@@ -88,6 +95,8 @@ public class ViewModel: ObservableObject, Then {
             return nil
         }
 
+        print("order.digital.flag \(order.digital.flag)")
+
         return IamPortRequest(
                 pg: order.pg.value,
                 merchant_uid: order.merchantUid.value,
@@ -95,6 +104,7 @@ public class ViewModel: ObservableObject, Then {
             $0.pay_method = payMethod
             $0.name = order.orderName.value
             $0.buyer_name = order.name.value
+            $0.digital = order.digital.flag
             $0.app_scheme = order.appScheme.value
         }
     }
@@ -111,6 +121,12 @@ public class ViewModel: ObservableObject, Then {
 
         iamPortResponse = response
         showResult = true
+        clearButton()
+    }
+
+    func clearButton() {
+        isPayment = false
+        isCert = false
     }
 
     // 아임포트 본인인증 데이터 생성
@@ -129,7 +145,6 @@ public class ViewModel: ObservableObject, Then {
     }
 
     func updateMerchantUid() {
-//        order.merchantUid.value = "muid_ios_\(Int(Date().timeIntervalSince1970))"
         order.merchantUid.value = UUID().uuidString
         cert.merchantUid.value = UUID().uuidString
     }
@@ -160,6 +175,11 @@ public class ViewModel: ObservableObject, Then {
         case .PayMethod:
             return payMethodList.map {
                 ($0.rawValue, $0.name)
+            }
+
+        case .Carrier:
+            return carrierList.map {
+                ($0, "")
             }
         }
     }
