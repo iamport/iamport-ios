@@ -104,7 +104,9 @@ public class ViewModel: ObservableObject, Then {
             $0.pay_method = payMethod
             $0.name = order.orderName.value
             $0.buyer_name = order.name.value
-            $0.digital = order.digital.flag
+            if (payMethod == PayMethod.phone) {
+                $0.digital = order.digital.flag
+            }
             $0.app_scheme = order.appScheme.value
         }
     }
