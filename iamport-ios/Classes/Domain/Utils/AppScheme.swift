@@ -29,6 +29,7 @@ enum AppScheme: CaseIterable {
     case kbauth // 국민 본인인증
     case hyundaicardappcardid // 현대 본인인증
     case lguthepayxpay // 페이나우
+    case liivbank // Liiv 국민
 
     var scheme: String {
         switch self {
@@ -79,6 +80,8 @@ enum AppScheme: CaseIterable {
             return "com.wooricard.wcard"
         case .lguthepayxpay:
             return "lguthepay-xpay"
+        case .liivbank:
+            return "liivbank"
         }
     }
 
@@ -131,6 +134,8 @@ enum AppScheme: CaseIterable {
             return "id1499598869"
         case .lguthepayxpay:
             return "id760098906"
+        case .liivbank:
+            return "id1126232922"
         }
     }
 

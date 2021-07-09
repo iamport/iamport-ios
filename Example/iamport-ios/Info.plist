@@ -63,6 +63,7 @@
 		<string>com.wooricard.wcard</string>
 		<string>lmslpay</string>
 		<string>lguthepay-xpay</string>
+		<string>liivbank</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
