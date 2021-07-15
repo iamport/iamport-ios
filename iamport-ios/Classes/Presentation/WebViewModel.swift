@@ -8,7 +8,8 @@ import Foundation
 
 internal class WebViewModel {
 
-    let repository = StrategyRepository() // TODO dependency inject
+    let repository = StrategyRepository()
+    let iamPortWKWebViewDelegate = IamPortWKWebViewDelegate()
 
 //    func clear() {
 //        repository.clear()

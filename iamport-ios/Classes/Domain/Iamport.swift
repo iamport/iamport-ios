@@ -4,6 +4,8 @@
 
 import Foundation
 import WebKit
+import RxSwift
+import RxCocoa
 
 // 머천트에서 직접 가져다가 쓰는 부분
 open class Iamport {
@@ -73,6 +75,10 @@ open class Iamport {
 
         paymentStart(sdk: IamportSdk(webViewMode: webViewMode), userCode: userCode, tierCode: tierCode, iamPortRequest: iamPortRequest, approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
     }
+
+
+    // (외부로 나가는 용도) webview 에 업데이트 되는 현재 url
+    public var updateWebViewUrl = PublishRelay<URL>()
 
     /**
      Mobile Web Mode 를 사용합니다. (WKWebView 를 넘기고, 결제요청 또한 JS 에서 사용)
