@@ -363,20 +363,19 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
         dlog("openThirdPartyApp \(url)")
         let result = Utils.openAppWithCanOpen(url) // 앱 열기
         if (!result) {
-            if let scheme = url.scheme,
-               let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
-               let url = URL(string: urlString) {
-                Utils.justOpenApp(url) // 앱스토어로 이동
-            } else {
 
-                guard let pay = payment else {
-                    sdkFinish(nil)
-                    return
+            // 한번 더 열어보고 취소시 앱스토어 이동
+            Utils.justOpenApp(url) { [weak self] in
+                if let scheme = url.scheme,
+                   let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
+                   let url = URL(string: urlString) {
+                    Utils.justOpenApp(url) // 앱스토어로 이동
+                } else {
+                    guard (self?.payment) != nil else {
+                        self?.sdkFinish(nil)
+                        return
+                    }
                 }
-
-//                let response = IamPortResponse.makeFail(payment: pay, msg: "지원하지 않는 App Scheme \(String(describing: url.scheme)) 입니다")
-//                sdkFinish(response)
-                Utils.justOpenApp(url) // 걍 열엇
             }
         }
     }

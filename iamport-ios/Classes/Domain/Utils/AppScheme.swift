@@ -155,7 +155,7 @@ enum AppScheme: CaseIterable {
         let appScheme = findAppScheme(scheme)
 
         guard let appId = appScheme?.appID else {
-            print("지원하지 않는 App Scheme 입니다.")
+            print("지원하지 않는 App Scheme [\(scheme)] 입니다.")
             return nil
         }
 

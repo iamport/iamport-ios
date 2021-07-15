@@ -125,12 +125,13 @@ class Utils {
         return nil
     }
 
-    static func justOpenApp(_ url: URL) {
-        UIApplication.shared.do { app in
-            if #available(iOS 10.0, *) {
-                app.open(url, options: [:], completionHandler: nil)
-            } else {
-                app.openURL(url)
+    static func justOpenApp(_ url: URL, moveAppStore: (() -> Void)? = nil) {
+        return UIApplication.shared.open(url, options: [:]) { openApp in
+            if (!openApp) {
+                if let move = moveAppStore {
+                    dlog("앱스토어로 이동")
+                    move()
+                }
             }
         }
     }

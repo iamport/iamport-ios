@@ -181,13 +181,12 @@ public class IamportSdk: Then {
         // 취소? 타임아웃 연장? 그대로 진행? ... 등
         // 어차피 앱 재설치시, 다시 차이 결제 페이지로 진입할 방법이 없음
         if (!result) {
-            if let scheme = appAddress.scheme,
-               let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
-               let url = URL(string: urlString) {
-                Utils.justOpenApp(url) // 앱스토어 이동
-            } else {
-//                sdkFinish(IamPortResponse.makeFail(payment: payment, msg: "지원하지 않는 App Scheme \(String(describing: appAddress.scheme)) 입니다"))
-                Utils.justOpenApp(appAddress)
+            Utils.justOpenApp(appAddress) {
+                if let scheme = appAddress.scheme,
+                   let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
+                   let url = URL(string: urlString) {
+                    Utils.justOpenApp(url) // 앱스토어 이동
+                }
             }
         }
     }
