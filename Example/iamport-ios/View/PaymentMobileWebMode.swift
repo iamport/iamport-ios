@@ -84,8 +84,8 @@ class PaymentMobileViewModeViewController: UIViewController, WKUIDelegate, WKNav
           setup I'mport WKUIDelegate & WKNavigationDelegate
           url 을 통해 업데이트 하는 로직이 있을 경우에 [IamPortWKWebViewDelegate] 사용
          */
-        wkWebView.uiDelegate = webViewDelegate as? WKUIDelegate
-        wkWebView.navigationDelegate = webViewDelegate as? WKNavigationDelegate
+        wkWebView.uiDelegate = webViewDelegate as WKUIDelegate
+        wkWebView.navigationDelegate = webViewDelegate as WKNavigationDelegate
 
         let bundle = Bundle(for: type(of: self))
         guard let url = bundle.url(forResource: "mobileweb", withExtension: "html") else {
