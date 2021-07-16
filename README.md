@@ -58,8 +58,8 @@ iOS에서 아임포트 결제연동 모듈을 사용하기 위해서는 아래 3
 3rd party앱(예) 간편결제 앱)을 실행할 수 있도록 외부 앱 리스트를 등록해야합니다. 
 
 1. `[프로젝트 폴더]/ios/[프로젝트 이름]/info.plist` 파일을 오픈합니다.
-2. [LSApplicationQueriesSchemes](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/TP40009250-SW14)속성을 추가하고 아래에 외부 앱 리스트를 등록합니다.
-
+2. [LSApplicationQueriesSchemes](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/TP40009250-SW14) 속성을 추가하고 아래에 외부 앱 리스트를 등록합니다.
+- [예제 info.plist 참조](./Example/iamport-ios/info.plist)
 ```html
 <key>LSApplicationQueriesSchemes</key>
 <array>
@@ -101,6 +101,7 @@ iOS에서 아임포트 결제연동 모듈을 사용하기 위해서는 아래 3
   <string>liivbank</string>  <!-- Liiv 국민 -->
 </array>
 ```
+
 
 
 #### 3. App Transport Security 설정
@@ -206,7 +207,8 @@ ex) 직접 결제페이지를 꾸미기 원하는 분.
 - 반영방법 : 기존 위의 [Usage] 사항 과 같이 iamport-sdk 세팅을 합니다.  
 Iamport.shared.paymentWebView 호출 파라미터 중 webview 에 WKWebView 를 넣어주시면 됩니다.
 그 외는 기존의 동작과 같습니다.
-
+> [PaymentWebViewModeView.swift 참조](./Example/iamport-ios/View/PaymentWebViewModeView.swift)
+> 
 ```swift
 Iamport.shared.paymentWebView(webViewMode: wkWebView, /*이하 동일*/)
 ```    
@@ -214,21 +216,21 @@ Iamport.shared.paymentWebView(webViewMode: wkWebView, /*이하 동일*/)
 
 
 ### 2. MobileWeb Mode
-
-설명 : 아임포트를 사용하는 Mobile 웹페이지가 load 된 webview 를 넘겨 결제 진행을 서포트 합니다.    
+- 설명 : 아임포트를 사용하는 Mobile 웹페이지가 load 된 webview 를 넘겨 결제 진행을 서포트 합니다.    
 ex) 이미 웹사이트에서 아임포트 js sdk 를 이용하고 있고, 본인 서비스를 app 으로만 감싸서 출시 하고자 하시는 분.
 
 - 반영방법 Step1 : ios 앱에서 기존 위의 [Usage] 사항 과 같이 iamport-sdk 세팅을 합니다.  
 추가로 Iamport.shared.pluginMobileWebSupporter(webview) 를 호출하여 파라미터로 webview 를 전달합니다.  
-실제 결제 진행은 고객님의 웹사이트 내에서 진행됩니다.
-
+실제 결제 진행은 고객님의 웹사이트 내에서 진행됩니다.  
+> [mobileweb.html 참조](./Example/iamport-ios/mobileweb.html) (예시이며 실제로는 고객님의 Front-End 가 됩니다.)  
+> [PaymentMobileWebMode.swift 참조](./Example/iamport-ios/View/PaymentMobileWebMode.swift)
 
 ```swift
 Iamport.shared.pluginMobileWebSupporter(mobileWebMode: wkWebView)
 ```
 
 - 반영방법 Step2 : 기존 js sdk 를 사용하는 웹 프론트엔드(html) 의  
-IMP.request_pay, IMP.certification 를 호출하는 곳 위에서 아래 코드를 추가합니다.  
+IMP.request_pay, IMP.certification 를 호출하는 곳 위에서, 아래의 코드를 추가합니다.  
 
 
 - 전달하는 데이터 형식
@@ -248,7 +250,7 @@ const params = {
 ```  
 
 - 예시코드
-```javascript
+~~~javascript
 // 예시
 // start of 추가되는 부분
 const isIOS = (/iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase()));
@@ -267,6 +269,46 @@ if(isIOS) {
 
 // 기존의 js IMP.request_pay
 IMP.request_pay(data, ... // 생략
+~~~
+
+  
+
+- Custom WKWebViewDelegate 의 사용
+
+```swift
+
+/**
+ webview url 을 통해 처리하는 로직이 있을 경우에 
+ [IamPortWKWebViewDelegate] 상속하여 사용 하시거나,
+ [Iamport.shared.updateWebViewUrl] 의 subscribe 을 통해 변경되는 url 을 체크 가능합니다.
+ */
+// CASE1 : IamPortWKWebViewDelegate 상속
+class MyWKWebViewDelegate: IamPortWKWebViewDelegate {
+    override func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        if let url = navigationAction.request.url {
+            // TODO : write your logic
+            print("MyWKNavigationDelegate received url : \(url)")
+        }
+
+        super.webView(webView, decidePolicyFor: navigationAction, decisionHandler: decisionHandler)
+    }
+}
+
+let webViewDelegate = MyWKWebViewDelegate()
+
+class MyView: UIViewController {
+    override func viewDidAppear(_ animated: Bool) {
+        ..
+        // IamPortWKWebViewDelegate 사용
+        wkWebView.navigationDelegate = webViewDelegate as WKNavigationDelegate
+        
+//       CASE2 : [Iamport.shared.updateWebViewUrl] 사용
+        Iamport.shared.updateWebViewUrl.subscribe { [weak self] url in
+            print("updateWebViewUrl received url : \(url.element)")
+        }.disposed(by: disposeBag)
+    }
+}
+
 ```
 
 
@@ -281,7 +323,8 @@ IMP.request_pay(data, ... // 생략
 > SwiftUI 를 사용하시는 분들은 위의 WebViewMode 를 사용하시거나,   
 아래 코드를 참조하시어 UIViewContorller 를 구성해 사용하시기 바랍니다.  
 
-> 또한 Example app 에 반영되어 있으니 참고하시기 바랍니다. 
+> 또한 Example app 에 반영되어 있으니 참고하시기 바랍니다.   
+> [PaymentView.swift 참조](./Example/iamport-ios/View/PaymentView.swift)
 
 ```swift
 struct IamportPaymentView: UIViewControllerRepresentable {
@@ -334,8 +377,8 @@ class IamportPaymentViewController: UIViewController {
 
 > iOS 13 부터는 기존의 AppDelegate 으로 부터 UILifecycle 관리가 분리되면서    
 > SceneDelegate 가 추가되었습니다.   
-> AppDelegate 사용 코드 대신 아래 코드를 참조해서 반영하시기 바랍니다.
-
+> AppDelegate 사용 코드 대신 아래 코드를 참조해서 반영하시기 바랍니다.  
+> [SceneDelegate.swift 참조](./Example/iamport-ios/SceneDelegate.swift)
 
 ```swift
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
