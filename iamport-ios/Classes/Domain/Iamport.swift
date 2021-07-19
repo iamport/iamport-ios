@@ -4,6 +4,8 @@
 
 import Foundation
 import WebKit
+import RxSwift
+import RxCocoa
 
 // 머천트에서 직접 가져다가 쓰는 부분
 open class Iamport {
@@ -12,6 +14,8 @@ open class Iamport {
 
     private var sdk: IamportSdk?
     private var paymentResult: ((IamPortResponse?) -> Void)? // 결제 결과 callback
+    private var animate = true
+    private var useNaviButton = false
 
     init() {
         // WebView 쿠키 enable 위해 추가
@@ -27,6 +31,8 @@ open class Iamport {
     private func paymentStart(sdk: IamportSdk, userCode: String, tierCode: String? = nil, iamPortRequest: IamPortRequest, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamPortResponse?) -> Void) {
         paymentResult = paymentResultCallback
         self.sdk = sdk
+        sdk.animate = animate
+        sdk.useNaviButton = useNaviButton
         sdk.initStart(payment: Payment(userCode: userCode, tierCode: tierCode, iamPortRequest: iamPortRequest), approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
     }
 
@@ -34,6 +40,8 @@ open class Iamport {
     private func certStart(sdk: IamportSdk, userCode: String, tierCode: String? = nil, iamPortCertification: IamPortCertification, certificationResultCallback: @escaping (IamPortResponse?) -> Void) {
         paymentResult = certificationResultCallback
         self.sdk = sdk
+        sdk.animate = animate
+        sdk.useNaviButton = useNaviButton
         sdk.initStart(payment: Payment(userCode: userCode, tierCode: tierCode, iamPortCertification: iamPortCertification), certificationResultCallback: certificationResultCallback)
     }
 
@@ -68,6 +76,10 @@ open class Iamport {
         paymentStart(sdk: IamportSdk(webViewMode: webViewMode), userCode: userCode, tierCode: tierCode, iamPortRequest: iamPortRequest, approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
     }
 
+
+    // (외부로 나가는 용도) webview 에 업데이트 되는 현재 url
+    public var updateWebViewUrl = PublishRelay<URL>()
+
     /**
      Mobile Web Mode 를 사용합니다. (WKWebView 를 넘기고, 결제요청 또한 JS 에서 사용)
      - Parameter mobileWebMode: url 을 로드한 WKWebView 파라미터
@@ -77,6 +89,14 @@ open class Iamport {
         clear()
 
         sdk = IamportSdk(mobileWebMode: mobileWebMode) // 생성 및 mobileWebMode 실행
+    }
+
+    public func setAnimate(animate: Bool) {
+        self.animate = animate
+    }
+
+    public func useNaviButton(enable: Bool) {
+        useNaviButton = enable
     }
 
     /**
@@ -122,7 +142,7 @@ open class Iamport {
     }
 
     public func close() {
-        print("IamPort SDK close")
+        print("IamPort SDK clear")
         clear()
     }
 }

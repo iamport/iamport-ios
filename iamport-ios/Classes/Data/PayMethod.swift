@@ -4,7 +4,7 @@
 
 import Foundation
 
-public enum PayMethod: String, Codable {
+public enum PayMethod: String, CaseIterable, Codable {
     case card
     case trans
     case vbank
@@ -28,7 +28,7 @@ public enum PayMethod: String, Codable {
     case molpay
     case paysbuy
 
-    var name: String {
+    public var name: String {
         switch self {
         case .card:
             return "신용카드"
@@ -75,5 +75,15 @@ public enum PayMethod: String, Codable {
         case .paysbuy:
             return "태국 paysbuy"
         }
+    }
+
+    public static func convertPayMethod(_ payMethodString: String) -> PayMethod? {
+        for value in self.allCases {
+            if (payMethodString == value.rawValue) {
+                return value
+            }
+        }
+
+        return nil
     }
 }

@@ -8,7 +8,8 @@ import Foundation
 
 internal class WebViewModel {
 
-    let repository = StrategyRepository() // TODO dependency inject
+    let repository = StrategyRepository()
+    let iamPortWKWebViewDelegate = IamPortWKWebViewDelegate()
 
 //    func clear() {
 //        repository.clear()
@@ -30,6 +31,16 @@ internal class WebViewModel {
             self.repository.getWebViewStrategy(payment).doWork(payment)
         }
     }
+
+//    /**
+//     * WebMode Only 결제 요청
+//     */
+//    func requestPaymentIgnoreNativePG(payment: Payment) {
+//        dlog("뷰모델에 결제 요청했니 IgnoreNativePG ")
+//        DispatchQueue.main.async {
+//            self.repository.getWebViewStrategy(payment).doWork(payment)
+//        }
+//    }
 
     /**
      * 본인인증 요청

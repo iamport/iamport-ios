@@ -4,7 +4,7 @@ import RxBus
 import RxSwift
 import RxRelay
 
-class WebViewController: UIViewController, WKUIDelegate {
+class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate {
 
     // for communicate WebView
     enum JsInterface: String, CaseIterable {
@@ -30,6 +30,10 @@ class WebViewController: UIViewController, WKUIDelegate {
     var popupWebView: WKWebView?//window.open()으로 열리는 새창
     var payment: Payment?
 
+    var useNaviButton = false
+    var naviHeight: CGFloat = 0
+    var safeArea: CGFloat = 0
+
     // Disappear
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -51,10 +55,39 @@ class WebViewController: UIViewController, WKUIDelegate {
 
         view.backgroundColor = UIColor.white
 
+        if (useNaviButton) {
+            setTopNaviBar()
+        }
+
         DispatchQueue.main.async { [weak self] in
             self?.setupWebView()
             self?.subscribePayment()
         }
+    }
+
+    // 버튼 생성
+    private func setTopNaviBar() {
+        safeArea = statusBarHeight()
+        naviHeight = 45 // FIXME: 실제 ui 만큼 사이즈를 가져올 수 없음
+
+        let navbar = UINavigationBar(frame: CGRect(x: 0, y: safeArea, width: UIScreen.main.bounds.width, height: naviHeight))
+        navbar.backgroundColor = UIColor.white
+        navbar.delegate = self
+
+        let navItem = UINavigationItem()
+        navItem.leftBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(buttonClose(sender:)))
+
+        navbar.items = [navItem]
+        dlog("safeArea \(safeArea)")
+        dlog("navbar.frame.height \(navbar.frame.height)")
+
+        view.addSubview(navbar)
+    }
+
+    @objc
+    private func buttonClose(sender: UIBarButtonItem) {
+        navigationController?.popViewController(animated: false)
+        dismiss(animated: true)
     }
 
     private func clearWebView() {
@@ -80,6 +113,11 @@ class WebViewController: UIViewController, WKUIDelegate {
         disposeBag = DisposeBag()
     }
 
+    func statusBarHeight() -> CGFloat {
+        let statusBarSize = UIApplication.shared.statusBarFrame.size
+        return Swift.min(statusBarSize.width, statusBarSize.height)
+    }
+
     private func setupWebView() {
 
         clearWebView()
@@ -94,7 +132,13 @@ class WebViewController: UIViewController, WKUIDelegate {
 
         webView = WKWebView.init(frame: view.frame, configuration: config).then { (wv: WKWebView) in
             wv.backgroundColor = UIColor.white
-            wv.frame = view.bounds
+
+            // navi top bar 쓸 때
+            if (useNaviButton) {
+                wv.frame = CGRect(x: 0, y: safeArea + naviHeight, width: UIScreen.main.bounds.width, height: (UIScreen.main.bounds.height - naviHeight - safeArea))
+            } else {
+                wv.frame = view.bounds
+            }
 
             view.addSubview(wv)
 
@@ -319,20 +363,19 @@ class WebViewController: UIViewController, WKUIDelegate {
         dlog("openThirdPartyApp \(url)")
         let result = Utils.openAppWithCanOpen(url) // 앱 열기
         if (!result) {
-            if let scheme = url.scheme,
-               let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
-               let url = URL(string: urlString) {
-                Utils.justOpenApp(url) // 앱스토어로 이동
-            } else {
 
-                guard let pay = payment else {
-                    sdkFinish(nil)
-                    return
+            // 한번 더 열어보고 취소시 앱스토어 이동
+            Utils.justOpenApp(url) { [weak self] in
+                if let scheme = url.scheme,
+                   let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
+                   let url = URL(string: urlString) {
+                    Utils.justOpenApp(url) // 앱스토어로 이동
+                } else {
+                    guard (self?.payment) != nil else {
+                        self?.sdkFinish(nil)
+                        return
+                    }
                 }
-
-//                let response = IamPortResponse.makeFail(payment: pay, msg: "지원하지 않는 App Scheme \(String(describing: url.scheme)) 입니다")
-//                sdkFinish(response)
-                Utils.justOpenApp(url) // 걍 열엇
             }
         }
     }
