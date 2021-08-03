@@ -120,7 +120,8 @@ class ChaiStrategy: BaseStrategy {
         }
     }
 
-    func pollingChaiStatus() {
+    func checkRemoteChaiStatus() {
+
         guard let prepare = prepareData,
               prepare.subscriptionId != nil || prepare.paymentId != nil else {
             print("prepareData 정보 찾을 수 없음")
@@ -193,17 +194,20 @@ class ChaiStrategy: BaseStrategy {
         if (isTimeOut()) {
             guard let payment = payment, let prepareData = prepareData else {
                 print("isTimeOut 이나, payment : \(self.payment), prepareData : \(self.prepareData)")
-                sdkFinish(nil)
+//                sdkFinish(nil)
+                clear()
                 return
             }
 
-            failureFinish(payment: payment, prepareData: prepareData, msg: "I'mport : 타임아웃으로 인해 결제를 진행하지 않습니다")
+//            failureFinish(payment: payment, prepareData: prepareData, msg: "I'mport : 타임아웃으로 인해 결제를 진행하지 않습니다")
+            print("[\(CONST.TIME_OUT_MIN)] 분 이상 결제되지 않아 미결제 처리합니다. 결제를 재시도 해주세요.")
+            clear()
             return
         }
 
         Utils.delay(bySeconds: Double(CONST.POLLING_DELAY), dispatchLevel: .userInteractive) {
             print("폴링!!")
-            self.pollingChaiStatus()
+            self.checkRemoteChaiStatus()
         }
     }
 
@@ -430,7 +434,7 @@ class ChaiStrategy: BaseStrategy {
         timeOutTime = DispatchTime.now() + Double(CONST.TIME_OUT)
         dlog("set timeOutTime \(String(describing: timeOutTime))")
 
-        pollingChaiStatus()
+        checkRemoteChaiStatus()
     }
 
 }

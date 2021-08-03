@@ -181,7 +181,10 @@ public class IamportSdk: Then {
         // 취소? 타임아웃 연장? 그대로 진행? ... 등
         // 어차피 앱 재설치시, 다시 차이 결제 페이지로 진입할 방법이 없음
         if (!result) {
-            Utils.justOpenApp(appAddress) {
+            Utils.justOpenApp(appAddress) { [weak self] in
+
+                self?.viewModel.stopChaiStrategy()
+
                 if let scheme = appAddress.scheme,
                    let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
                    let url = URL(string: urlString) {

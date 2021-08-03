@@ -73,4 +73,12 @@ class MainViewModel {
         repository.chaiStrategy.requestApprovePayments(approve: approve)
     }
 
+    /**
+     * 차이 앱 없으므로 폴링 stop
+     */
+    func stopChaiStrategy() {
+        print("차이 앱 없으므로 폴링 stop")
+        repository.chaiStrategy.clear()
+    }
+
 }
