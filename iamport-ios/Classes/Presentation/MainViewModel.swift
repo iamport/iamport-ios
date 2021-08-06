@@ -55,7 +55,9 @@ class MainViewModel {
         switch judge.0 {
         case .CHAI:
             judge.1?.do { userData in
-                repository.chaiStrategy.doWork(userData.pg_id, judge.2)
+                if let pgId = userData.pg_id {
+                    repository.chaiStrategy.doWork(pgId, judge.2)
+                }
             }
         case .WEB, .CERT:
             EventBus.shared.paymentRelay.accept(judge.2) // 웹뷰 컨트롤러 열기

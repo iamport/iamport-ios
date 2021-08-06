@@ -99,6 +99,7 @@ iOS에서 아임포트 결제연동 모듈을 사용하기 위해서는 아래 3
   <string>lmslpay</string>  <!-- 롯데 L페이 -->
   <string>lguthepay-xpay</string>  <!-- 페이나우 -->
   <string>liivbank</string>  <!-- Liiv 국민 -->
+  <string>supertoss</string>   <!-- 토스 -->
 </array>
 ```
 
