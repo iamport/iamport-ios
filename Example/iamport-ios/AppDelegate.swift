@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        Iamport.shared.receivedURL(url)
+//        Iamport.shared.receivedURL(url) // SwiftUI 사용으로 인해 SceneDelegate로 이관
         return true
     }
 

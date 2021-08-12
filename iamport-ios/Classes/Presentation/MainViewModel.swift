@@ -15,14 +15,14 @@ class MainViewModel {
         disposeBag = DisposeBag()
     }
 
-    func judgePayment(_ payment: Payment) {
+    func judgePayment(_ payment: Payment, ignoreNative: Bool = false) {
 
         subscribe()
 
         DispatchQueue.main.async { [weak self] in
 
             Payment.validator(payment) { valid, desc in
-                print("Payment validator valid :: \(valid), valid :: \(desc)")
+                print("one more Payment validator valid :: \(valid), valid :: \(desc)")
                 if (!valid) {
                     IamPortResponse.makeFail(payment: payment, msg: desc).do { it in
                         self?.clear()
@@ -32,7 +32,7 @@ class MainViewModel {
             }
 
             // 판단 시작
-            self?.repository.judgeStrategy.doWork(payment)
+            self?.repository.judgeStrategy.doWork(payment, ignoreNative: ignoreNative)
         }
     }
 
@@ -55,7 +55,9 @@ class MainViewModel {
         switch judge.0 {
         case .CHAI:
             judge.1?.do { userData in
-                repository.chaiStrategy.doWork(userData.pg_id, judge.2)
+                if let pgId = userData.pg_id {
+                    repository.chaiStrategy.doWork(pgId, judge.2)
+                }
             }
         case .WEB, .CERT:
             EventBus.shared.paymentRelay.accept(judge.2) // 웹뷰 컨트롤러 열기
@@ -71,6 +73,14 @@ class MainViewModel {
     func requestApprovePayments(approve: IamPortApprove) {
         print("차이 최종 결제 요청")
         repository.chaiStrategy.requestApprovePayments(approve: approve)
+    }
+
+    /**
+     * 차이 앱 없으므로 폴링 stop
+     */
+    func stopChaiStrategy() {
+        print("차이 앱 없으므로 폴링 stop")
+        repository.chaiStrategy.clear()
     }
 
 }

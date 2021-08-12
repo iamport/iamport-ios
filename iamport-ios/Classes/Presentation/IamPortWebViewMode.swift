@@ -16,7 +16,6 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     let viewModel = WebViewModel()
 
     var webview: WKWebView?
-    var popupWebView: WKWebView? ///window.open()으로 열리는 새창
     var payment: Payment?
 
     func start(webview: WKWebView) {
@@ -62,21 +61,16 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
             }
 
             wv.backgroundColor = UIColor.white
-            wv.uiDelegate = self
-            wv.navigationDelegate = self
+            viewModel.iamPortWKWebViewDelegate.do { delegate in
+                wv.uiDelegate = delegate
+                wv.navigationDelegate = delegate
+            }
         }
     }
 
     internal func subscribePayment() {
         dlog("webviewmode subscribePayment")
         let eventBus = EventBus.shared
-
-////         외부 종료 시그널
-//        eventBus.clearBus.subscribe { [weak self] in
-//            print("clearBus")
-//            self?.sdkFinish(nil) // data clear 는 viewWillDisappear 에서 처리
-////            self?.close()
-//        }.disposed(by: disposeBag)
 
         // 결제 데이터
         eventBus.webViewPaymentBus.subscribe { [weak self] event in
@@ -286,20 +280,19 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
         dlog("openThirdPartyApp \(url)")
         let result = Utils.openAppWithCanOpen(url) // 앱 열기
         if (!result) {
-            if let scheme = url.scheme,
-               let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
-               let url = URL(string: urlString) {
-                Utils.justOpenApp(url) // 앱스토어로 이동
-            } else {
 
-                guard let pay = payment else {
-                    sdkFinish(nil)
-                    return
+            // 한번 더 열어보고 취소시 앱스토어 이동
+            Utils.justOpenApp(url) { [weak self] in
+                if let scheme = url.scheme,
+                   let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
+                   let url = URL(string: urlString) {
+                    Utils.justOpenApp(url) // 앱스토어로 이동
+                } else {
+                    guard (self?.payment) != nil else {
+                        self?.sdkFinish(nil)
+                        return
+                    }
                 }
-
-//                let response = IamPortResponse.makeFail(payment: pay, msg: "지원하지 않는 App Scheme \(String(describing: url.scheme)) 입니다")
-//                sdkFinish(response)
-                Utils.justOpenApp(url) // 걍 열엇
             }
         }
     }
@@ -349,117 +342,6 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
             }
         }
     }
-}
-
-extension IamPortWebViewMode: WKNavigationDelegate {
-
-    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        let frame = UIScreen.main.bounds
-        popupWebView = WKWebView(frame: frame, configuration: configuration)
-        if let popup = popupWebView {
-            popup.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            popup.navigationDelegate = self
-            popup.uiDelegate = self
-            webView.superview?.addSubview(popup)
-            return popup
-        }
-
-        return nil
-    }
-
-    func webViewDidClose(_ webView: WKWebView) {
-        if webView == popupWebView {
-            popupWebView?.removeFromSuperview()
-            popupWebView = nil
-        }
-    }
-
-    @available(iOS 8.0, *)
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        // url 변경 시점
-
-        if let url = navigationAction.request.url {
-
-            RxBus.shared.post(event: EventBus.WebViewEvents.UpdateUrl(url: url))
-
-            let policy = Utils.getActionPolicy(url)
-            decisionHandler(policy ? .cancel : .allow)
-        } else {
-            decisionHandler(.cancel)
-            failFinish(errMsg: "URL 을 찾을 수 없습니다")
-        }
-    }
-
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        print("didFail \(error.localizedDescription)")
-//        failFinish(errMsg: "탐색중 에러가 발생하였습니다 ::  \(error.localizedDescription)")
-    }
-
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        print("didFailProvisionalNavigation \(error.localizedDescription)")
-//        failFinish(errMsg: "컨텐츠 로드중 에러가 발생하였습니다 :: \(error.localizedDescription)")
-    }
-
-    private func presentAlert(webView: WKWebView, alertController: UIAlertController) {
-        DispatchQueue.main.async {
-            guard let controller = webView.superview?.viewController else {
-                print("viewController 를 찾을 수 없습니다.")
-                return
-            }
-            controller.present(alertController, animated: true, completion: nil)
-        }
-    }
-
-    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo,
-                 completionHandler: @escaping () -> Void) {
-        let completionHandlerWrapper = CompletionHandlerWrapper(completionHandler: completionHandler, defaultValue: Void())
-
-        let alertController = UIAlertController(title: "", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { (action) in
-            completionHandlerWrapper.respondHandler(Void())
-        }))
-        presentAlert(webView: webView, alertController: alertController)
-    }
-
-    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo,
-                 completionHandler: @escaping (Bool) -> Void) {
-
-        let completionHandlerWrapper = CompletionHandlerWrapper(completionHandler: completionHandler, defaultValue: false)
-
-        let alertController = UIAlertController(title: "", message: message, preferredStyle: .alert)
-
-        alertController.addAction(UIAlertAction(title: "취소", style: .cancel, handler: { (action) in
-            completionHandlerWrapper.respondHandler(false)
-        }))
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { (action) in
-            completionHandlerWrapper.respondHandler(true)
-        }))
-
-        presentAlert(webView: webView, alertController: alertController)
-    }
-
-    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo,
-                 completionHandler: @escaping (String?) -> Void) {
-        let completionHandlerWrapper = CompletionHandlerWrapper(completionHandler: completionHandler, defaultValue: "")
-        let alertController = UIAlertController(title: "", message: prompt, preferredStyle: .alert)
-        alertController.addTextField { (textField) in
-            textField.text = defaultText
-        }
-
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { (action) in
-            if let text = alertController.textFields?.first?.text {
-                completionHandlerWrapper.respondHandler(text)
-            } else {
-                completionHandlerWrapper.respondHandler(defaultText)
-            }
-        }))
-
-        alertController.addAction(UIAlertAction(title: "취소", style: .default, handler: { (action) in
-            completionHandlerWrapper.respondHandler(nil)
-        }))
-
-        presentAlert(webView: webView, alertController: alertController)
-    }
 
     func failFinish(errMsg: String) {
         if let pay = payment {
@@ -470,8 +352,8 @@ extension IamPortWebViewMode: WKNavigationDelegate {
             sdkFinish(nil)
         }
     }
-
 }
+
 
 extension IamPortWebViewMode: WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
@@ -550,3 +432,4 @@ extension IamPortWebViewMode: WKScriptMessageHandler {
     }
 
 }
+

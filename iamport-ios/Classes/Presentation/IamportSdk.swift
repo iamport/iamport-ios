@@ -23,6 +23,9 @@ public class IamportSdk: Then {
     var iamPortMobileWebMode: IamPortMobileWebMode?
     var disposeBag = DisposeBag()
 
+    var animate = true
+    var useNaviButton = false
+
     public init(naviController: UINavigationController) {
         initController()
         self.naviController = naviController
@@ -178,13 +181,15 @@ public class IamportSdk: Then {
         // 취소? 타임아웃 연장? 그대로 진행? ... 등
         // 어차피 앱 재설치시, 다시 차이 결제 페이지로 진입할 방법이 없음
         if (!result) {
-            if let scheme = appAddress.scheme,
-               let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
-               let url = URL(string: urlString) {
-                Utils.justOpenApp(url) // 앱스토어 이동
-            } else {
-//                sdkFinish(IamPortResponse.makeFail(payment: payment, msg: "지원하지 않는 App Scheme \(String(describing: appAddress.scheme)) 입니다"))
-                Utils.justOpenApp(appAddress)
+            Utils.justOpenApp(appAddress) { [weak self] in
+
+                self?.viewModel.stopChaiStrategy()
+
+                if let scheme = appAddress.scheme,
+                   let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
+                   let url = URL(string: urlString) {
+                    Utils.justOpenApp(url) // 앱스토어 이동
+                }
             }
         }
     }
@@ -218,6 +223,13 @@ public class IamportSdk: Then {
             return
         }
 
+        // webview mode 라면 네이티브 연동 사용하지 않음
+        // 동작의 문제는 없으나 UI 에서 표현하기 애매함
+        if webview != nil {
+            viewModel.judgePayment(payment, ignoreNative: true)
+            return
+        }
+
         viewModel.judgePayment(payment)
     }
 
@@ -246,12 +258,14 @@ public class IamportSdk: Then {
 
             let wvc = WebViewController()
 
-            self?.naviController?.pushViewController(wvc, animated: true)
+            self?.naviController?.pushViewController(wvc, animated: self?.animate ?? true)
 //            self?.naviController.present(WebViewController(), animated: true)
 
 //            wvc.modalPresentationStyle = UIModalPresentationStyle.currentContext
 //            wvc.modalTransitionStyle = UIModalTransitionStyle.coverVertical
-            self?.viewController?.present(wvc, animated: true)
+            wvc.modalPresentationStyle = .fullScreen
+            wvc.useNaviButton = self?.useNaviButton ?? false
+            self?.viewController?.present(wvc, animated: self?.animate ?? true)
 
             dlog("check viewController :: \(String(describing: self?.viewController))")
             dlog("check navigationController :: \(String(describing: self?.naviController))")

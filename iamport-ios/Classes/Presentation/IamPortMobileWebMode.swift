@@ -34,14 +34,13 @@ class IamPortMobileWebMode: IamPortWebViewMode {
                     controller.removeScriptMessageHandler(forName: value.rawValue)
                 }
             }
+            wv.stopLoading()
         }
-        super.clearWebView()
+//        super.clearWebView()
     }
 
 
     override func setupWebView() {
-
-        clearWebView()
 
         webview?.do { wv in
             wv.configuration.userContentController.do { controller in
@@ -51,8 +50,23 @@ class IamPortMobileWebMode: IamPortWebViewMode {
             }
 
             wv.backgroundColor = UIColor.white
-            wv.uiDelegate = self
-            wv.navigationDelegate = self
+
+            dlog("wv.uiDelegate : \(wv.uiDelegate)")
+            if ((wv.uiDelegate is IamPortWKWebViewDelegate) == false) {
+                dlog("새로 할당 uiDelegate")
+                wv.uiDelegate = viewModel.iamPortWKWebViewDelegate
+            } else {
+                dlog("기존꺼 사용 uiDelegate")
+            }
+
+            dlog("wv.navigationDelegate : \(wv.navigationDelegate)")
+            if ((wv.navigationDelegate is IamPortWKWebViewDelegate) == false) {
+                dlog("새로 할당 navigationDelegate")
+                wv.navigationDelegate = viewModel.iamPortWKWebViewDelegate
+            } else {
+                dlog("기존꺼 사용 navigationDelegate")
+            }
+
         }
     }
 
@@ -97,22 +111,6 @@ class IamPortMobileWebMode: IamPortWebViewMode {
         requestPayment(payment)
     }
 
-    override func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        // url 변경 시점
-        dlog("change the url \(navigationAction.request.url)")
-
-        if let url = navigationAction.request.url {
-
-            RxBus.shared.post(event: EventBus.WebViewEvents.UpdateUrl(url: url))
-
-            let policy = Utils.getActionPolicy(url)
-            decisionHandler(policy ? .cancel : .allow)
-        } else {
-            decisionHandler(.cancel)
-            failFinish(errMsg: "URL 을 찾을 수 없습니다")
-        }
-    }
-
     override func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
 
         dlog("body \(message.body)")
@@ -141,4 +139,3 @@ class IamPortMobileWebMode: IamPortWebViewMode {
     }
 
 }
-

@@ -19,11 +19,6 @@ class NiceTransWebViewStrategy: WebViewStrategy {
             bankTid = (queryParams[NiceBankpay.USER_KEY] as? String)
             niceTransUrl = (queryParams[NiceBankpay.CALLBACKPARAM] as? String)
 
-//            if let bankPayData = makeBankPayData(url) {
-//                 뱅크페이 앱 열기
-//                RxBus.shared.post(event: EventBus.WebViewEvents.NiceTransRequestParam(niceTransRequestParam: bankPayData))
-//            }
-
             // 이미 스킴과 같이 url 이 내려오므로 url 을 따로 구성할 필요 없음
             RxBus.shared.post(event: EventBus.WebViewEvents.NiceTransRequestParam(niceTransRequestParam: url.absoluteString))
             return
@@ -80,21 +75,17 @@ class NiceTransWebViewStrategy: WebViewStrategy {
                 dlog(code.desc)
                 if let it = payment {
                     failureFinish(payment: it, msg: code.desc)
+                    return
                 }
+
+                print("payment 가 없으므로 sdk 종료")
+                sdkFinish(nil)
             }
         } else {
             print("알 수 없는 에러 code : \(resPair.0)")
         }
 
     }
-
-//    private func makeBankPayData(_ uri: URL) -> String? {
-//        let prefix = ProvidePgScheme.BANKPAY.getNiceBankPayPrefix()
-//        let index = prefix.index(prefix.startIndex, offsetBy: prefix.count)
-//        let returnString = uri.absoluteString.substring(from: index).removingPercentEncoding
-//        dlog("makeBankPayData :: \(String(describing: returnString))")
-//        return returnString
-//    }
 
     private func isNiceTransScheme(_ uri: URL) -> Bool {
         uri.scheme == ProvidePgScheme.BANKPAY.rawValue

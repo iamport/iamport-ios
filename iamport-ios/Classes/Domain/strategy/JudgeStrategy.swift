@@ -14,6 +14,13 @@ public class JudgeStrategy: BaseStrategy {
         case CHAI, WEB, CERT, ERROR
     }
 
+    var ignoreNative = false
+
+    func doWork(_ payment: Payment, ignoreNative: Bool) {
+        self.ignoreNative = ignoreNative
+        doWork(payment)
+    }
+
     override func doWork(_ payment: Payment) {
         super.doWork(payment)
 
@@ -128,7 +135,11 @@ public class JudgeStrategy: BaseStrategy {
         if let pgProvider = user.pg_provider, let pg = PG.convertPG(pgString: pgProvider) {
             switch pg {
             case .chai:
+                if (ignoreNative) { // ignoreNative 인 경우 webview strategy 가 동작하기 위하여
+                    return (JudgeKinds.WEB, user, payment)
+                }
                 return (JudgeKinds.CHAI, user, payment)
+
             default:
                 return (JudgeKinds.WEB, user, payment)
             }
