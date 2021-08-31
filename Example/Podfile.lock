@@ -1,8 +1,8 @@
 PODS:
   - Alamofire (5.4.3)
-  - iamport-ios (1.0.0-dev.11):
+  - iamport-ios (1.0.0):
     - Alamofire (~> 5.1)
-    - RxBus (~> 1.3.1)
+    - RxBus
     - RxCocoa
     - RxOptional
     - RxRelay
@@ -10,25 +10,25 @@ PODS:
     - RxViewController
     - Swinject
     - Then
-  - RxBlocking (5.1.1):
-    - RxSwift (~> 5)
-  - RxBus (1.3.1):
-    - RxSwift (~> 5.0)
-  - RxCocoa (5.1.1):
-    - RxRelay (~> 5)
-    - RxSwift (~> 5)
-  - RxOptional (4.1.0):
-    - RxCocoa (~> 5)
-    - RxSwift (~> 5)
-  - RxRelay (5.1.1):
-    - RxSwift (~> 5)
-  - RxSwift (5.1.2)
-  - RxTest (5.1.2):
-    - RxSwift (~> 5)
-  - RxViewController (1.0.0):
-    - RxCocoa (~> 5.0)
-    - RxSwift (~> 5.0)
-  - Swinject (2.7.1)
+  - RxBlocking (6.2.0):
+    - RxSwift (= 6.2.0)
+  - RxBus (1.0.0):
+    - RxSwift
+  - RxCocoa (6.2.0):
+    - RxRelay (= 6.2.0)
+    - RxSwift (= 6.2.0)
+  - RxOptional (5.0.2):
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - RxRelay (6.2.0):
+    - RxSwift (= 6.2.0)
+  - RxSwift (6.2.0)
+  - RxTest (6.2.0):
+    - RxSwift (= 6.2.0)
+  - RxViewController (2.0.0):
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - Swinject (2.8.0)
   - Then (2.7.0)
 
 DEPENDENCIES:
@@ -64,16 +64,16 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: e447a2774a40c996748296fa2c55112fdbbc42f9
-  iamport-ios: cbbaa6e38858a4a01750593347d7947225e7051e
-  RxBlocking: 5f700a78cad61ce253ebd37c9a39b5ccc76477b4
-  RxBus: ee5cb413fe4e0853712144c9ed20705d9e8e03cd
-  RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
-  RxOptional: b1fcd60856807a564c0215c2184b8d33e7826dc2
-  RxRelay: d77f7d771495f43c556cbc43eebd1bb54d01e8e9
-  RxSwift: 1e2e1f9570186967f617e49128ed26ccf1bafc8e
-  RxTest: 274549b747dca56f47c52c8991ec5cf797ecfe40
-  RxViewController: 7330a46e5c31cd680db169da4c9fc8676e975a81
-  Swinject: ddf78b8486dd9b71a667b852cad919ab4484478e
+  iamport-ios: fdc18c3e04759dd1c9a4d1713b51c7fe21c6e764
+  RxBlocking: 0b29f7d2079109a8de49c411381bed7c33ef1eeb
+  RxBus: ab41084293c769c29c81216c76db1fcf1cfa90e0
+  RxCocoa: 4baf94bb35f2c0ab31bc0cb9f1900155f646ba42
+  RxOptional: 3664964c96b69dd20c9cf78bdfe546615e26eca8
+  RxRelay: e72dbfd157807478401ef1982e1c61c945c94b2f
+  RxSwift: d356ab7bee873611322f134c5f9ef379fa183d8f
+  RxTest: 0c692fa672b694373ba86d2b00033595297a2831
+  RxViewController: 56486fa0afd629a1d6b5ba077f3b8cd9dc31b5d2
+  Swinject: db795b8d6d78559b25fbebb0170d2635be1176e2
   Then: acfe0be7e98221c6204e12f8161459606d5d822d
 
 PODFILE CHECKSUM: b199e5098079af6793f2cfb3624d14044aa8c87c
