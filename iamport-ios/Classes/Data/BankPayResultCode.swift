@@ -26,15 +26,15 @@ enum BankPayResultCode: String, CaseIterable {
         case .OK:
             return "000"
         case .CANCEL:
-            return "000"
+            return "091"
         case .TIME_OUT:
-            return "000"
+            return "060"
         case .FAIL_SIGN:
-            return "000"
+            return "050"
         case .FAIL_OTP:
-            return "000"
+            return "040"
         case .FAIL_CERT_MODULE_INIT:
-            return "000"
+            return "030"
         }
     }
 
