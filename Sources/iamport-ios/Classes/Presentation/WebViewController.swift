@@ -387,8 +387,17 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
         print("오픈! 웹뷰 vc")
 
         let myPG = payment?.iamPortRequest?.pgEnum
-        let bundle = Bundle(for: type(of: self))
 
+//        let bundle = Bundle(for: type(of: self))
+        func bundle() -> Bundle {
+            let spmBundle = Bundle.module // spm 에서 리소스 가져오는 방법임, 에러처럼 보이지만 xcode 빌드시 정상 동작(cmd + b)
+            guard let _ = spmBundle.url(forResource: CONST.CDN_FILE_NAME, withExtension: CONST.CDN_FILE_EXTENSION) else {
+                return Bundle(for: type(of: self)) // use for cocoapods
+            }
+            return spmBundle // use for swift package manager
+        }
+
+        let bundle = bundle()
         var urlRequest: URLRequest? = nil // for webView load
         var htmlContents: String? = nil // for webView loadHtml(smilepay 자동 로그인)
 

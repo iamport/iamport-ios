@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -23,6 +23,8 @@
 		38303D111C23D0AD1F787411 /* PaymentWebViewModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38303449BF3F9738025BEDE9 /* PaymentWebViewModeView.swift */; };
 		38303F45CA84E61D146E9F1F /* PaymentResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38303BD589C1362D777B0527 /* PaymentResultViewController.swift */; };
 		481ACCF4268B1A0C004A74C6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 481ACCF3268B1A0C004A74C6 /* SceneDelegate.swift */; };
+		48480F5126DF175800544729 /* iamport-ios in Resources */ = {isa = PBXBuildFile; fileRef = 48480F5026DF175800544729 /* iamport-ios */; };
+		48C8844326DF80D200D0E1F3 /* iamport-ios in Frameworks */ = {isa = PBXBuildFile; productRef = 48C8844226DF80D200D0E1F3 /* iamport-ios */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
@@ -60,6 +62,9 @@
 		38303E153A4F346B16BD779E /* Cert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cert.swift; sourceTree = "<group>"; };
 		38303FD24C053EF24C2D63CF /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		481ACCF3268B1A0C004A74C6 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		48480F4826DF13D700544729 /* iamport-ios */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "iamport-ios"; path = ..; sourceTree = "<group>"; };
+		48480F5026DF175800544729 /* iamport-ios */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "iamport-ios"; path = ..; sourceTree = "<group>"; };
+		48480F5426DF185500544729 /* RxBus-swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "RxBus-swift"; path = "/Users/bingbong/Library/Developer/Xcode/DerivedData/iamport-ios-gpozheyhpvspvbfurvhzboghldej/SourcePackages/checkouts/RxBus-swift"; sourceTree = "<absolute>"; };
 		607FACD01AFB9204008FA782 /* iamport-ios_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iamport-ios_Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -75,7 +80,7 @@
 		AE6AB4CDCBAEE3FF2DEAE0D8 /* Pods-iamport-ios_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iamport-ios_Tests.release.xcconfig"; path = "Target Support Files/Pods-iamport-ios_Tests/Pods-iamport-ios_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		B512228E67DB6516AA34A458 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		C5D2384CF3E87A54AE0BEA0E /* Pods-iamport-ios_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iamport-ios_Example.release.xcconfig"; path = "Target Support Files/Pods-iamport-ios_Example/Pods-iamport-ios_Example.release.xcconfig"; sourceTree = "<group>"; };
-		E43CD40D3CAF1047B48244CB /* iamport-ios.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = "iamport-ios.podspec"; path = "../iamport-ios.podspec"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		E43CD40D3CAF1047B48244CB /* iamport-ios.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = "iamport-ios.podspec"; path = "../iamport-ios.podspec"; sourceTree = "<group>"; };
 		F7A18D80D66312537941CE29 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -85,6 +90,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A9FA86725F829DBF79343B6C /* Pods_iamport_ios_Example.framework in Frameworks */,
+				48C8844326DF80D200D0E1F3 /* iamport-ios in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,6 +115,13 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		3830375999B918CF0DA527FE /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		38303E9BE57B937968661804 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -128,6 +141,7 @@
 		607FACC71AFB9204008FA782 = {
 			isa = PBXGroup;
 			children = (
+				48480F5026DF175800544729 /* iamport-ios */,
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
 				607FACD21AFB9204008FA782 /* Example for iamport-ios */,
 				607FACE81AFB9204008FA782 /* Tests */,
@@ -214,8 +228,11 @@
 		77C13C9CED810C9DA90C9787 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				48480F4826DF13D700544729 /* iamport-ios */,
+				48480F5426DF185500544729 /* RxBus-swift */,
 				ACA0A7EA7CB8536688E80C99 /* Pods_iamport_ios_Example.framework */,
 				A4F783463114142EA9E673A2 /* Pods_iamport_ios_Tests.framework */,
+				3830375999B918CF0DA527FE /* Resources */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -238,6 +255,9 @@
 			dependencies = (
 			);
 			name = "iamport-ios_Example";
+			packageProductDependencies = (
+				48C8844226DF80D200D0E1F3 /* iamport-ios */,
+			);
 			productName = "iamport-ios";
 			productReference = 607FACD01AFB9204008FA782 /* iamport-ios_Example.app */;
 			productType = "com.apple.product-type.application";
@@ -295,6 +315,9 @@
 				Base,
 			);
 			mainGroup = 607FACC71AFB9204008FA782;
+			packageReferences = (
+				48C8843C26DF4B2300D0E1F3 /* XCRemoteSwiftPackageReference "iamport-ios" */,
+			);
 			productRefGroup = 607FACD11AFB9204008FA782 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -313,6 +336,7 @@
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
+				48480F5126DF175800544729 /* iamport-ios in Resources */,
 				383030A05FF34E8E3A9463B3 /* mobileweb.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -334,14 +358,14 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iamport-ios_Tests/Pods-iamport-ios_Tests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/RxBlocking/RxBlocking.framework",
+				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/RxTest/RxTest.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxBlocking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxTest.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -401,28 +425,14 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iamport-ios_Example/Pods-iamport-ios_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
-				"${BUILT_PRODUCTS_DIR}/RxBus/RxBus.framework",
-				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
-				"${BUILT_PRODUCTS_DIR}/RxOptional/RxOptional.framework",
-				"${BUILT_PRODUCTS_DIR}/RxRelay/RxRelay.framework",
-				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
-				"${BUILT_PRODUCTS_DIR}/RxViewController/RxViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/Swinject/Swinject.framework",
 				"${BUILT_PRODUCTS_DIR}/Then/Then.framework",
-				"${BUILT_PRODUCTS_DIR}/iamport-ios/iamport_ios.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxBus.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxOptional.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxRelay.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Swinject.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Then.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/iamport_ios.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -587,7 +597,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -600,7 +611,10 @@
 				DEVELOPMENT_TEAM = 79DQDD2784;
 				INFOPLIST_FILE = "iamport-ios/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.iamport-ios-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -618,7 +632,10 @@
 				DEVELOPMENT_TEAM = 79DQDD2784;
 				INFOPLIST_FILE = "iamport-ios/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.iamport-ios-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -643,7 +660,11 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Tests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
@@ -663,7 +684,11 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Tests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
@@ -703,6 +728,24 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		48C8843C26DF4B2300D0E1F3 /* XCRemoteSwiftPackageReference "iamport-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/iamport/iamport-ios.git";
+			requirement = {
+				branch = feat/spm;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		48C8844226DF80D200D0E1F3 /* iamport-ios */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = "iamport-ios";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 607FACC81AFB9204008FA782 /* Project object */;
 }
