@@ -12,7 +12,7 @@ import Then
 import iamport_ios
 import RxCocoa
 import RxSwift
-import RxViewController
+
 
 // TODO: UIKit 용
 class ViewController: UIViewController, UIGestureRecognizerDelegate {

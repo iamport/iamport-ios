@@ -29,7 +29,7 @@ def rx_swift_pods
 end
 
 target 'iamport-ios_Example' do
-  pod 'iamport-ios', :path => '../'
+  # pod 'iamport-ios', :path => '../'
   # pod 'iamport-ios', '~> 1.0.0-dev.8'
 
   use_frameworks!
@@ -37,7 +37,7 @@ target 'iamport-ios_Example' do
   di_pods
   network_pods
   util_pods
-  rx_swift_pods
+  # rx_swift_pods
 
   target 'iamport-ios_Tests' do
     inherit! :search_paths
