@@ -11,15 +11,6 @@
         }
       },
       {
-        "package": "iamport-ios",
-        "repositoryURL": "https://github.com/iamport/iamport-ios.git",
-        "state": {
-          "branch": "feat/spm",
-          "revision": "fce8f3193b3a0653cf385a4ef00d726808988dcc",
-          "version": null
-        }
-      },
-      {
         "package": "RxBus",
         "repositoryURL": "https://github.com/ridi/RxBus-swift",
         "state": {
