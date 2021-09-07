@@ -19,7 +19,7 @@ public class IamPortRequest: Codable, Then {
     public var name: String?
     let amount: String // 없음안됨
     public var custom_data: String? // 명세상 불명확
-    public var tax_free: String?
+    public var tax_free: Float?
     public var currency: Currency? // default KRW 페이팔은 USD 이어야 함
     public var language: String? // default "ko"
     public var buyer_name: String?
