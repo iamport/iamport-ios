@@ -31,3 +31,6 @@ DerivedData
 
 # CocoaPods
 Pods
+
+# AppCode SPM by BingBong
+Example/.build
