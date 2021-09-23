@@ -33,7 +33,10 @@ let package = Package(
                                    "Then",
                                    .product(name: "RxCocoa",package: "RxSwift"),
                     ],
-                    resources: [.process("Assets")]
+                    resources: [.process("Assets")],
+                    swiftSettings: [
+                        .define("IAMPORTSPM")
+                    ]
             )
     ]
 )

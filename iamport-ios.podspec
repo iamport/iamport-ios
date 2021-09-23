@@ -44,24 +44,20 @@ Pod::Spec.new do |s|
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
    
-#     s.dependency 'Then'
+    s.dependency 'Then'
 
-#     s.dependency 'Swinject'
+    s.dependency 'Swinject'
        
     # 대표적인 네트워크 라이브러리입니다.
-#     s.dependency 'Alamofire', '~> 5.1'
-    # Alamofire를 사용할 때 상단 상태 바에 통신중일때 기본 인디케이터가 나타나도록 합니다.
-#    s.dependency 'AlamofireNetworkActivityIndicator', '~> 3.1'
-    # Alamofire를 이용할 때 로그를 쉽게 볼수 있습니다.
-#    s.dependency 'AlamoyireActivityLogger'
+    s.dependency 'Alamofire', '~> 5.1'
 
     # Pods for RxSwift+MVVM
     # 최신 1.3.2 대응 고민
-#     s.dependency 'RxBus', '~> 1.3.1'
-#     s.dependency 'RxSwift'
-#     s.dependency 'RxCocoa'
-#     s.dependency 'RxRelay'
-#     s.dependency 'RxOptional'
-#     s.dependency 'RxViewController'
+    s.dependency 'RxBus', '~> 1.3.1'
+    s.dependency 'RxSwift', '~> 5.1'
+    s.dependency 'RxCocoa'
+    s.dependency 'RxRelay'
+    s.dependency 'RxOptional'
+    s.dependency 'RxViewController'
 
 end
