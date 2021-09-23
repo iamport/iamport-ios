@@ -190,14 +190,6 @@ class Utils {
         return (isReachable && !needsConnection)
     }
 
-    static func getOrZeroString(value: String?) -> String {
-        if let result = value {
-            return !result.isEmpty ? result : "0"
-        }
-
-        return "0"
-    }
-
     static func getOrEmpty(value: String?) -> String {
         if let result = value {
             return !result.isEmpty ? result : CONST.EMPTY_STR

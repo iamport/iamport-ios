@@ -30,7 +30,8 @@ enum AppScheme: CaseIterable {
     case hyundaicardappcardid // 현대 본인인증
     case lguthepayxpay // 페이나우
     case liivbank // Liiv 국민
-    case supertoss // Liiv 국민
+    case supertoss // 토스
+    case newsmartpib // 우리WON뱅킹
 
     var scheme: String {
         switch self {
@@ -85,6 +86,8 @@ enum AppScheme: CaseIterable {
             return "liivbank"
         case .supertoss:
             return "supertoss"
+        case .newsmartpib:
+            return "newsmartpib"
         }
     }
 
@@ -141,13 +144,15 @@ enum AppScheme: CaseIterable {
             return "id1126232922"
         case .supertoss:
             return "id839333328"
+        case .newsmartpib:
+            return "id1470181651"
         }
     }
 
     private static func findAppScheme(_ scheme: String) -> AppScheme? {
 
         for value in AppScheme.allCases {
-            if (scheme == value.scheme) {
+            if (scheme.caseInsensitiveCompare(value.scheme) == .orderedSame) {
                 return value
             }
         }

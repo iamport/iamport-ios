@@ -12,7 +12,7 @@ class PrepareRequest: DictionaryEncodable, Then {
     var pay_method: PayMethod = PayMethod.trans //fixed
     var escrow: Bool? // true or false
     var amount: String // 결제금액
-    var tax_free: String? // 결제금액 중 면세공급가액
+    var tax_free: Float? // 결제금액 중 면세공급가액
     var name: String //주문명
     var merchant_uid: String // 가맹점 주문번호
     var customer_uid: String?
@@ -56,7 +56,7 @@ class PrepareRequest: DictionaryEncodable, Then {
                 pg_id: chaiId,
                 _extra: Extra(native: OS.ios, bypass: empty)).then {
             $0.escrow = false
-            $0.tax_free = Utils.getOrZeroString(value: request.tax_free)
+            $0.tax_free = request.tax_free
             $0.tier_code = empty
             $0.buyer_name = request.buyer_name
             $0.buyer_email = request.buyer_email
