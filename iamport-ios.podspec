@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'iamport-ios'
-  s.version          = '1.0.0'
+  s.version          = '1.1.0-dev03'
   s.summary          = 'iamport-ios will help develop for your iOS App payments'
 
 # This description is used to generate tags and improve search results.
@@ -32,13 +32,13 @@ Pod::Spec.new do |s|
   s.swift_versions = '5.0'
   s.ios.deployment_target = '10.0'
   
-  s.source_files = 'iamport-ios/Classes/**/*'
+  s.source_files = 'Sources/iamport-ios/Classes/**/*'
   
 #   s.resource_bundles = {
-#     'iamport-ios' => ['iamport-ios/Assets/**/*']
+#     'iamport-ios' => ['Sources/iamport-ios/Assets/**/*']
 #   }
 
-   s.resources = "iamport-ios/Assets/**/*"
+   s.resources = "Sources/iamport-ios/Assets/**/*"
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
@@ -50,15 +50,11 @@ Pod::Spec.new do |s|
        
     # 대표적인 네트워크 라이브러리입니다.
     s.dependency 'Alamofire', '~> 5.1'
-    # Alamofire를 사용할 때 상단 상태 바에 통신중일때 기본 인디케이터가 나타나도록 합니다.
-#    s.dependency 'AlamofireNetworkActivityIndicator', '~> 3.1'
-    # Alamofire를 이용할 때 로그를 쉽게 볼수 있습니다.
-#    s.dependency 'AlamoyireActivityLogger'
 
     # Pods for RxSwift+MVVM
     # 최신 1.3.2 대응 고민
     s.dependency 'RxBus', '~> 1.3.1'
-    s.dependency 'RxSwift'
+    s.dependency 'RxSwift', '~> 5.1'
     s.dependency 'RxCocoa'
     s.dependency 'RxRelay'
     s.dependency 'RxOptional'

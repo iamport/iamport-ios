@@ -3,8 +3,17 @@
 //
 
 import Foundation
+import UIKit
 import RxSwift
 import SystemConfiguration
+
+#if !IAMPORTSPM
+extension Bundle {
+    static var module: Bundle {
+        Bundle(identifier: "org.cocoapods.iamport-ios")!
+    }
+}
+#endif
 
 func dlog(_ log: Any...) {
     #if DEBUG
