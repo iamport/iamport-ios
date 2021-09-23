@@ -100,7 +100,7 @@ iOS에서 아임포트 결제연동 모듈을 사용하기 위해서는 아래 3
   <string>lguthepay-xpay</string>  <!-- 페이나우 -->
   <string>liivbank</string>  <!-- Liiv 국민 -->
   <string>supertoss</string>   <!-- 토스 -->
-  <string>NewSmartPib</string>   <!-- 우리WON뱅킹 -->
+  <string>newamartpib</string>   <!-- 우리WON뱅킹 -->
 </array>
 ```
 
@@ -139,8 +139,15 @@ it, simply add the following line to your Podfile:
 
 [[최신버전 확인]](https://github.com/iamport/iamport-ios/releases)
 
+- cocoapods 이용시 (RxSwift 5.x 사용)
 ```ruby
-pod 'iamport-ios', '~> 1.0.0-dev.8'
+pod 'iamport-ios', '~> 1.1.0'
+```
+
+
+- Swift Package Manager 이용시 (RxSwift 6.x 사용)
+```ruby
+iamport-ios 1.1.0 부터 지원
 ```
 
 ## Usage
