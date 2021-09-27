@@ -140,7 +140,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
                 pg: PG.html5_inicis.makePgRawName(pgId: ""),
                 merchant_uid: "muid_ios_\(Int(Date().timeIntervalSince1970))",
                 amount: "1000").then {
-            $0.pay_method = PayMethod.card
+            $0.pay_method = PayMethod.card.rawValue
             $0.name = "아임포트의 민족 주문~~"
             $0.buyer_name = "남궁안녕"
             $0.app_scheme = "iamport"

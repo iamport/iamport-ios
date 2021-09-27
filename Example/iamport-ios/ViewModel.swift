@@ -90,10 +90,11 @@ public class ViewModel: ObservableObject, Then {
 
     // 아임포트 결제 데이터 생성
     func createPaymentData() -> IamPortRequest? {
-        guard let payMethod = PayMethod.convertPayMethod(order.payMethod.value) else {
-            print("미지원 PayMethod : \(order.payMethod.value)")
-            return nil
-        }
+//        guard let payMethod = PayMethod.convertPayMethod(order.payMethod.value) else {
+//            print("미지원 PayMethod : \(order.payMethod.value)")
+//            return nil
+//        }
+        let payMethod = PayMethod.convertPayMethod(order.payMethod.value)
 
         print("order.digital.flag \(order.digital.flag)")
 
@@ -101,7 +102,7 @@ public class ViewModel: ObservableObject, Then {
                 pg: order.pg.value,
                 merchant_uid: order.merchantUid.value,
                 amount: order.price.value).then {
-            $0.pay_method = payMethod
+            $0.pay_method = payMethod.rawValue
             $0.name = order.orderName.value
             $0.buyer_name = order.name.value
             if (payMethod == PayMethod.phone) {

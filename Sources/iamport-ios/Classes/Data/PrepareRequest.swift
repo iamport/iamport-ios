@@ -9,7 +9,7 @@ class PrepareRequest: DictionaryEncodable, Then {
 
     var channel: String = CHAI.CHANNEL //fixed
     var provider: PG = PG.chai //fixed
-    var pay_method: PayMethod = PayMethod.trans //fixed
+    var pay_method: String = PayMethod.trans.rawValue //fixed
     var escrow: Bool? // true or false
     var amount: String // 결제금액
     var tax_free: Float? // 결제금액 중 면세공급가액

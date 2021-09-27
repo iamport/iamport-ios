@@ -53,19 +53,19 @@ struct Payment: Codable, Then {
 
             let payMethod = it.pay_method
 
-            if (payMethod == PayMethod.vbank) {
+            if (payMethod == PayMethod.vbank.rawValue) {
                 if (it.vbank_due.nilOrEmpty) {
                     validResult = (false, CONST.ERR_PAYMENT_VALIDATOR_VBANK)
                 }
             }
 
-            if (payMethod == PayMethod.phone) {
+            if (payMethod == PayMethod.phone.rawValue) {
                 if (it.digital == nil) {
                     validResult = (false, CONST.ERR_PAYMENT_VALIDATOR_PHONE)
                 }
             }
 
-            if (PG.convertPG(pgString: it.pg) == PG.danal_tpay && payMethod == PayMethod.vbank) {
+            if (PG.convertPG(pgString: it.pg) == PG.danal_tpay && payMethod == PayMethod.vbank.rawValue) {
                 if (it.biz_num.nilOrEmpty) {
                     validResult = (false, CONST.ERR_PAYMENT_VALIDATOR_DANAL_VBANK)
                 }

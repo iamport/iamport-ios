@@ -12,7 +12,7 @@ import Then
  */
 public class IamPortRequest: Codable, Then {
     var pg: String // 없음안됨
-    public var pay_method: PayMethod = PayMethod.card // 명세상 필수인지 불명확함 default card
+    public var pay_method: String = PayMethod.card.rawValue // 명세상 필수인지 불명확함 default card
     public var escrow: Bool? // default false
     public let merchant_uid: String // 없음안됨 // default "random"
     public var customer_uid: String?
@@ -20,7 +20,7 @@ public class IamPortRequest: Codable, Then {
     let amount: String // 없음안됨
     public var custom_data: String? // 명세상 불명확
     public var tax_free: Float?
-    public var currency: Currency? // default KRW 페이팔은 USD 이어야 함
+    public var currency: String? // default KRW 페이팔은 USD 이어야 함
     public var language: String? // default "ko"
     public var buyer_name: String?
     public var buyer_tel: String?

@@ -64,14 +64,26 @@ class PaymentViewController: UIViewController, WKNavigationDelegate {
         if let request = viewModel.createPaymentData() {
             dump(request)
 
+
+//        #case1 use for UIViewController
 //            WebViewContorller 용 닫기버튼 생성(PG "uplus(구 토스페이먼츠)" 는 자체취소 버튼이 없는 것으로 보임)
             Iamport.shared.useNaviButton(enable: true)
 
-//         use for UIViewController
             Iamport.shared.payment(viewController: self,
                     userCode: userCode.value, iamPortRequest: request) { iamPortResponse in
                 viewModel.iamportCallback(iamPortResponse)
             }
+
+//        #case2 use for navigationController
+//            guard let navController = navigationController else {
+//                print("navigationController 를 찾을 수 없습니다")
+//                return
+//            }
+//
+//            Iamport.shared.payment(navController: navController,
+//                    userCode: userCode.value, iamPortRequest: request) { iamPortResponse in
+//                viewModel.iamportCallback(iamPortResponse)
+//            }
         }
     }
 

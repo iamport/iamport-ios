@@ -24,7 +24,7 @@
 		38303F45CA84E61D146E9F1F /* PaymentResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38303BD589C1362D777B0527 /* PaymentResultViewController.swift */; };
 		481ACCF4268B1A0C004A74C6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 481ACCF3268B1A0C004A74C6 /* SceneDelegate.swift */; };
 		48480F5126DF175800544729 /* iamport-ios in Resources */ = {isa = PBXBuildFile; fileRef = 48480F5026DF175800544729 /* iamport-ios */; };
-		48CA914D26FC6DE8004E7313 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 48CA914C26FC6DE8004E7313 /* SwiftPackageProductDependency */; };
+		48CAEA3026FDC8C300BC1734 /* iamport-ios in Frameworks */ = {isa = PBXBuildFile; productRef = 48CAEA2F26FDC8C300BC1734 /* iamport-ios */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
@@ -90,7 +90,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A9FA86725F829DBF79343B6C /* Pods_iamport_ios_Example.framework in Frameworks */,
-				48CA914D26FC6DE8004E7313 /* BuildFile in Frameworks */,
+				48CAEA3026FDC8C300BC1734 /* iamport-ios in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,7 +256,7 @@
 			);
 			name = "iamport-ios_Example";
 			packageProductDependencies = (
-				48CA914C26FC6DE8004E7313 /* SwiftPackageProductDependency */,
+				48CAEA2F26FDC8C300BC1734 /* iamport-ios */,
 			);
 			productName = "iamport-ios";
 			productReference = 607FACD01AFB9204008FA782 /* iamport-ios_Example.app */;
@@ -316,7 +316,7 @@
 			);
 			mainGroup = 607FACC71AFB9204008FA782;
 			packageReferences = (
-				48CA914B26FC6DE8004E7313 /* RemoteSwiftPackageReference */,
+				48CAEA2E26FDC8C300BC1734 /* XCRemoteSwiftPackageReference "iamport-ios" */,
 			);
 			productRefGroup = 607FACD11AFB9204008FA782 /* Products */;
 			projectDirPath = "";
@@ -730,20 +730,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		48CA914B26FC6DE8004E7313 /* RemoteSwiftPackageReference */ = {
+		48CAEA2E26FDC8C300BC1734 /* XCRemoteSwiftPackageReference "iamport-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/iamport/iamport-ios.git";
+			repositoryURL = "https://github.com/iamport/iamport-ios";
 			requirement = {
-				branch = feat/spm;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		48CA914C26FC6DE8004E7313 /* SwiftPackageProductDependency */ = {
+		48CAEA2F26FDC8C300BC1734 /* iamport-ios */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 48CA914B26FC6DE8004E7313 /* RemoteSwiftPackageReference */;
+			package = 48CAEA2E26FDC8C300BC1734 /* XCRemoteSwiftPackageReference "iamport-ios" */;
 			productName = "iamport-ios";
 		};
 /* End XCSwiftPackageProductDependency section */
