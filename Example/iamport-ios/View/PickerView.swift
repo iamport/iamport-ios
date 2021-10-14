@@ -20,7 +20,7 @@ struct PickerView: View {
             ForEach(viewModel.getItemList(type: itemType), id: \.0) {
                 Text("\($0.0)  \($0.1)")
             }
-        }
+        }.pickerStyle(.wheel)
     }
 
     private func update() {

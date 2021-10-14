@@ -94,7 +94,8 @@ public class ViewModel: ObservableObject, Then {
 //            print("미지원 PayMethod : \(order.payMethod.value)")
 //            return nil
 //        }
-        let payMethod = PayMethod.convertPayMethod(order.payMethod.value)
+//        let payMethod = PayMethod.convertPayMethod(order.payMethod.value)
+        let payMethod = order.payMethod.value
 
         print("order.digital.flag \(order.digital.flag)")
 
@@ -102,13 +103,16 @@ public class ViewModel: ObservableObject, Then {
                 pg: order.pg.value,
                 merchant_uid: order.merchantUid.value,
                 amount: order.price.value).then {
-            $0.pay_method = payMethod.rawValue
+            $0.pay_method = payMethod
             $0.name = order.orderName.value
             $0.buyer_name = order.name.value
-            if (payMethod == PayMethod.phone) {
+            if (payMethod == PayMethod.phone.rawValue) {
                 $0.digital = order.digital.flag
+            } else if (payMethod == PayMethod.vbank.rawValue) {
+                $0.vbank_due = "20250101"
             }
             $0.app_scheme = order.appScheme.value
+
         }
     }
 
