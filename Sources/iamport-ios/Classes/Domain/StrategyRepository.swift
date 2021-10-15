@@ -48,7 +48,7 @@ class StrategyRepository {
         dlog(payment.iamPortRequest?.pgEnum)
 
         if let request = payment.iamPortRequest, let it = request.pgEnum {
-            let pair = (it, request.pay_method)
+            let pair = (it, PayMethod.convertPayMethod(request.pay_method))
 
             if (isChaiPayment(pgPair: pair)) {
                 return PaymentKinds.CHAI

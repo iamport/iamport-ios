@@ -24,3 +24,15 @@ struct Prepare: Codable, Then {
         self.data = data
     }
 }
+
+struct PrepareError: Codable, Then {
+    var code: Int
+    var msg: String
+    var data: PrepareDataError
+
+    public init(code: Int, msg: String, data: PrepareDataError) {
+        self.code = code
+        self.msg = msg
+        self.data = data
+    }
+}

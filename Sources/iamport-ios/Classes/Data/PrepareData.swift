@@ -27,3 +27,15 @@ struct PrepareData: Codable {
         self.isSbcr = isSbcr
     }
 }
+
+struct PrepareDataError: Codable {
+    let impUid: String
+    var errorCode: String? = nil
+    var errorMsg: String? = nil
+
+    init(impUid: String, errorCode: String?, errorMsg: String?) {
+        self.impUid = impUid
+        self.errorCode = errorCode
+        self.errorMsg = errorMsg
+    }
+}

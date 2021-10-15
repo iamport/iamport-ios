@@ -20,6 +20,7 @@ class Utils {
         case imp37739582
         case imp87936124
         case imp42284830
+        case imp02690184
 
         var name: String {
             switch self {
@@ -43,6 +44,8 @@ class Utils {
                 return "alipay 테스트"
             case .imp42284830:
                 return "payple 테스트"
+            case .imp02690184:
+                return "smartro 테스트"
             }
         }
     }
@@ -99,6 +102,8 @@ class Utils {
         case .jtnet, .nice, .danal_tpay, .kicc,
              .naverco, .naverpay:
             return defaultPayMethod
+        case .smartro:
+            return [PayMethod.card, PayMethod.vbank, PayMethod.trans]
         default:
             return PayMethod.allCases
         }

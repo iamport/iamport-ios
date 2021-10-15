@@ -58,7 +58,12 @@ class ChaiStrategy: BaseStrategy {
                     dlog(data)
                     let dataJson = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
                     dlog(dataJson)
-                    let getData = try JSONDecoder().decode(Prepare.self, from: dataJson)
+
+                    guard let getData = try? JSONDecoder().decode(Prepare.self, from: dataJson) else {
+                        let errorData = try JSONDecoder().decode(PrepareError.self, from: dataJson)
+                        self?.failureFinish(payment: payment, msg: "code : \(errorData.code), msg : \(String(describing: errorData.msg))")
+                        return
+                    }
 
                     guard getData.code == 0 else {
                         self?.failureFinish(payment: payment, msg: "code : \(getData.code), msg : \(String(describing: getData.msg))")

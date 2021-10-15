@@ -129,10 +129,9 @@ struct ContentView: View {
                 viewModel.updateMerchantUid()
             }) {
                 NavigationLink(destination: paymentWebViewMode, tag: 1, selection: $buttonTag) {
-                    EmptyView()
+                    Text("웹뷰모드 결제")
+                            .font(.headline)
                 }
-                Text("웹뷰모드 결제")
-                        .font(.headline)
             }.buttonStyle(GradientBackgroundStyle())
         }
     }
