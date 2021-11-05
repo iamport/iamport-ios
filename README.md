@@ -47,7 +47,7 @@ iOS에서 아임포트 결제연동 모듈을 사용하기 위해서는 아래 3
 #### 1. App Scheme 등록
 외부 결제 앱(예) 페이코, 신한 판 페이)에서 결제 후 돌아올 때 사용할 URL identifier를 설정해야합니다.
 
-![](https://github.com/iamport/iamport-react-native/blob/master/src/img/app-scheme-registry.gif)
+![](https://github.com/iamport/iamport-react-native/blob/master/manuals/assets/app-scheme-registry.gif)
 
 1. `[프로젝트 폴더]/ios/[프로젝트 이름]/Info.plist` 파일을 연 후 `URL types`속성을 추가합니다.
 2. item `0`를 확장하여 `URL schemes`를 선택합니다.
@@ -107,7 +107,7 @@ iOS에서 아임포트 결제연동 모듈을 사용하기 위해서는 아래 3
 
 
 #### 3. App Transport Security 설정
-![](https://github.com/iamport/iamport-react-native/blob/master/src/img/allow-arbitrary.gif)
+![](https://github.com/iamport/iamport-react-native/blob/master/manuals/assets/allow-arbitrary.gif)
 
 1. `[프로젝트 폴더]/ios/[프로젝트 이름]/Info.plist` 파일을 오픈합니다.
 2. `App Transport Security` 속성을 추가합니다.
@@ -163,7 +163,7 @@ iamport-ios 1.1.0 부터 지원
                 pg: PG.html5_inicis.getPgSting(pgId: ""), // PG 사
                 merchant_uid: "mid_123456",                   // 주문번호                
                 amount: "1000").then {                        // 가격
-                  $0.pay_method = PayMethod.card              // 결제수단
+                  $0.pay_method = "card"                      // 결제수단
                   $0.name = "샘플 머천트에서 주문~"                // 주문명
                   $0.buyer_name = "독고독"                     
                   $0.app_scheme = "iamport"                   // 결제 후 앱으로 복귀 위한 app scheme
@@ -365,7 +365,7 @@ class IamportPaymentViewController: UIViewController {
             pg: PG.html5_inicis.makePgRawName(pgId: ""),
             merchant_uid: "swiftui_ios_\(Int(Date().timeIntervalSince1970))",
             amount: "1000").then {
-      $0.pay_method = PayMethod.card
+      $0.pay_method = "card"
       $0.name = "SwiftUI 에서 주문입니다"
       $0.buyer_name = "SwiftUI"
       $0.app_scheme = "iamporttest" // 결제 후 돌아올 앱스킴
@@ -421,7 +421,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 1. git clone 
 2. Xcode project open
-3. connect iPhone via USB Cable(or use Simulator)
+3. connect iPhone via USB Cable(or use Simulator, Simulator 사용시 결제 확인은 불가능 합니다.)
 4. build [Example app](./Example)
   
 - [UIKit 예제는 링크를 참조하세요](./Example/iamport-ios/View/ViewController.swift)
@@ -429,7 +429,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 ## Author
 
-I'mport, support@chai.finance
+I'mport 기술지원, support@iamport.kr
 
 ## License
 
