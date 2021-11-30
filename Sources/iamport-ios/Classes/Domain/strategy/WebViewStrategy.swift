@@ -19,8 +19,11 @@ class WebViewStrategy: BaseWebViewStrategy {
     override func onUpdatedUrl(url: URL) {
         super.onUpdatedUrl(url: url)
 
+        if (url.scheme == CONST.ABOUT_BLANK_SCHEME) {
+            return // 이동하지 않음
+        }
+
         if (Utils.isAppUrl(url)) {
-            print("isAppUrl")
             RxBus.shared.post(event: EventBus.WebViewEvents.ThirdPartyUri(thirdPartyUri: url))
             return
         }

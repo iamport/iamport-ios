@@ -158,7 +158,7 @@ class Utils {
      */
     static func isAppUrl(_ uri: URL) -> Bool {
         if let it = uri.scheme {
-            return it != CONST.HTTP_SCHEME && it != CONST.HTTPS_SCHEME && it != CONST.ABOUT_SCHEME && it != CONST.ABOUT_BLANK_SCHEME && it != CONST.FILE_SCHEME;
+            return it != CONST.HTTP_SCHEME && it != CONST.HTTPS_SCHEME && it != CONST.ABOUT_BLANK_SCHEME && it != CONST.FILE_SCHEME;
         }
         return false
     }

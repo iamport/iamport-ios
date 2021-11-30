@@ -34,7 +34,7 @@ public class IamPortRequest: Codable, Then {
     private var m_redirect_url: String? = CONST.IAMPORT_DETECT_URL // 콜백
     public var app_scheme: String? // 명세상 nilable 이나 RN 에서 필수
     public var biz_num: String?
-    public var popup: Bool? // 명세상 없으나 RN 에 있음, 엑심베이일때 false 로 해야 열림
+    public var popup: Bool? // 엑심베이일때 false 로 해야 열림
     private var niceMobileV2: Bool? = true
 
 

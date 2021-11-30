@@ -71,6 +71,12 @@ struct Payment: Codable, Then {
                 }
             }
 
+            if (PG.convertPG(pgString: it.pg) == PG.eximbay) {
+                if (it.popup == nil || it.popup == true) {
+                    validResult = (false, CONST.ERR_PAYMENT_VALIDATOR_EXIMBAY)
+                }
+            }
+
         }
 
         validateResult(validResult)
