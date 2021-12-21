@@ -128,8 +128,8 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
                     controller.add(self, name: value.rawValue)
                 }
             }
+            configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
         }
-
         webView = WKWebView.init(frame: view.frame, configuration: config).then { (wv: WKWebView) in
             wv.backgroundColor = UIColor.white
 

@@ -26,6 +26,17 @@ struct ContentView: View {
                                 .aspectRatio(contentMode: .fit)
 
                         Section(header: Text("PG정보")) {
+
+                            Toggle(isOn: $viewModel.isCardDirect) {
+                                Text("카드 다이렉트")
+                            }.padding()
+
+                            if viewModel.isCardDirect {
+                                TextField("카드코드", text: $viewModel.order.cardCode.value)
+                                        .frame(height: 45)
+                                        .textFieldStyle(PlainTextFieldStyle())
+                            }
+
                             getNaviPickerView(itemType: .UserCode)
                             getNaviPickerView(itemType: .PG)
                             getNaviPickerView(itemType: .PayMethod)
