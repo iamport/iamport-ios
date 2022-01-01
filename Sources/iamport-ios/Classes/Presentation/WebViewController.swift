@@ -540,17 +540,23 @@ extension WebViewController: WKScriptMessageHandler {
                 }
                 ddump(pay)
 
-                let encoder = JSONEncoder()
-                // encoder.outputFormatting = .prettyPrinted
-
                 initSDK(userCode: pay.userCode, tierCode: pay.tierCode)
 
                 if (pay.isCertification()) {
-                    let jsonData = try? encoder.encode(pay.iamPortCertification)
+
+                    guard let iamPortCertification = pay.iamPortCertification else {
+                        print("iamPortCertification 를 찾을 수 없습니다.")
+                        return
+                    }
+
+                    let jsonData = try? JSONEncoder().encode(iamPortCertification)
                     certification(impCertificationJsonData: jsonData)
                 } else {
-                    let jsonData = try? encoder.encode(pay.iamPortRequest)
-                    requestPay(impRequestJsonData: jsonData)
+                    guard let iamPortRequest = pay.iamPortRequest else {
+                        print("iamPortRequest 를 찾을 수 없습니다.")
+                        return
+                    }
+                    requestPay(iamPortRequest: iamPortRequest)
                 }
 
             case .RECEIVED:
@@ -585,12 +591,47 @@ extension WebViewController: WKScriptMessageHandler {
         evaluateJS(method: jsInitMethod)
     }
 
-    private func requestPay(impRequestJsonData: Data?) {
-        if let json = impRequestJsonData,
-           let request = String(data: json, encoding: .utf8) {
-            dlog("requestPay request : '\(request)'")
-            evaluateJS(method: "requestPay('\(request)');")
+    private func requestPay(iamPortRequest: IamPortRequest) {
+
+        guard let impRequestJsonData = try? JSONEncoder().encode(iamPortRequest) else {
+            print("requestPay :: iamPortRequest 을 JSONEncoder encode 할 수 없습니다.")
+            return
         }
+
+        if let customData = iamPortRequest.custom_data {
+            requestPayWithCustomData(impRequestJsonData: impRequestJsonData, customData: customData)
+        } else {
+            requestPayNormal(impRequestJsonData: impRequestJsonData)
+        }
+    }
+
+
+    private func requestPayNormal(impRequestJsonData: Data) {
+
+        guard let request = String(data: impRequestJsonData, encoding: .utf8) else {
+            print("requestPayNormal :: impRequestJsonData 을 String 화 할 수 없습니다.")
+            return
+        }
+
+        dlog("requestPay request : '\(request)'")
+        evaluateJS(method: "requestPay('\(request)');")
+    }
+
+    private func requestPayWithCustomData(impRequestJsonData: Data, customData: String) {
+
+        guard let request = String(data: impRequestJsonData, encoding: .utf8) else {
+            print("requestPayWithCustomData :: impRequestJsonData 을 String 화 할 수 없습니다.")
+            return
+        }
+
+        guard let encodedCustomData = customData.getBase64Encode() else {
+            print("requestPayWithCustomData :: getBase64Encode 를 가져올 수 없어 requestPayNormal 실행")
+            requestPayNormal(impRequestJsonData: impRequestJsonData)
+            return
+        }
+
+        dlog("requestPayWithCustomData request : '\(request)', encodedCustomData : '\(encodedCustomData)'")
+        evaluateJS(method: "requestPayWithCustomData('\(request)', '\(encodedCustomData)');")
     }
 
     private func certification(impCertificationJsonData: Data?) {

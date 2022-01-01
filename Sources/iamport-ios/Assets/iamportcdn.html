@@ -15,7 +15,7 @@
         });
 
         function dLog(log) {
-            console.log(log)
+<!--            console.log(log)-->
             iosHandler.debugConsoleLog.postMessage(log)
         }
 
@@ -37,6 +37,22 @@
         function requestPay(impRequest) {
             dLog("requestPay :: " + impRequest)
             IMP.request_pay(JSON.parse(impRequest), callback);
+        }
+
+        function requestPayWithCustomData(impRequest, customData) {
+            var data = JSON.parse(impRequest)
+
+            var decodeCustom = decodeURIComponent(escape(window.atob(customData)))
+            dLog(decodeCustom)
+
+            try {
+                data.custom_data = JSON.parse(decodeCustom)
+            } catch (error) {
+                dLog(error.message)
+                data.custom_data = decodeCustom
+            }
+
+            IMP.request_pay(data, callback);
         }
 
         function certification(impCertification) {

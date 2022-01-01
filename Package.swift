@@ -22,7 +22,6 @@ let package = Package(
         .package(name: "RxBus", url: "https://github.com/ridi/RxBus-swift", .upToNextMajor(from: "1.3.2")),
         .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.4.0")),
         .package(url: "https://github.com/devxoul/Then.git", .upToNextMajor(from: "2.7.0")),
-        .package(name: "GenericJSON", url: "https://github.com/zoul/generic-json-swift", .upToNextMajor(from: "2.0.1")),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -32,7 +31,6 @@ let package = Package(
                                    "RxBus",
                                    "Alamofire",
                                    "Then",
-                                   "GenericJSON",
                                    .product(name: "RxCocoa",package: "RxSwift"),
                     ],
                     resources: [.process("Assets")],
