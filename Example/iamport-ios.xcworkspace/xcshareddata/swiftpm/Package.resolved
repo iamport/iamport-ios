@@ -12,7 +12,7 @@
       },
       {
         "package": "RxBus",
-        "repositoryURL": "https://github.com/ridi/RxBus-swift",
+        "repositoryURL": "https://github.com/ridi/RxBus-swift.git",
         "state": {
           "branch": null,
           "revision": "b154da5fffb4c5d0d17b7f46e9cd38f382e298e4",
