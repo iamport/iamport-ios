@@ -77,6 +77,7 @@ class PaymentMobileViewModeViewController: UIViewController, WKUIDelegate, WKNav
         Iamport.shared.close()
     }
 
+
     private func openWebView() {
         print("오픈! 샘플 웹뷰")
 
@@ -84,8 +85,11 @@ class PaymentMobileViewModeViewController: UIViewController, WKUIDelegate, WKNav
           setup I'mport WKUIDelegate & WKNavigationDelegate
           url 을 통해 업데이트 하는 로직이 있을 경우에 [IamPortWKWebViewDelegate] 사용
          */
-        wkWebView.uiDelegate = webViewDelegate as WKUIDelegate
-        wkWebView.navigationDelegate = webViewDelegate as WKNavigationDelegate
+//        wkWebView.uiDelegate = webViewDelegate as WKUIDelegate
+//        wkWebView.navigationDelegate = webViewDelegate as WKNavigationDelegate
+
+        wkWebView.uiDelegate = IamPortWKWebViewDelegate()
+        wkWebView.navigationDelegate = IamPortWKWebViewDelegate()
 
         let bundle = Bundle(for: type(of: self))
         guard let url = bundle.url(forResource: "mobileweb", withExtension: "html") else {

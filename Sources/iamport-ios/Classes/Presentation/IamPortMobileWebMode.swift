@@ -48,6 +48,7 @@ class IamPortMobileWebMode: IamPortWebViewMode {
                     controller.add(self, name: value.rawValue)
                 }
             }
+            wv.configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
 
             wv.backgroundColor = UIColor.white
 

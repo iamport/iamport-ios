@@ -41,9 +41,11 @@ public class ViewModel: ObservableObject, Then {
     @Published var certInfos: Array<(String, PubData)> = []
 
     @Published var isDigital = false
+    @Published var isCardDirect = false
     @Published var isPayment: Bool = false
     @Published var isCert: Bool = false
     @Published var showResult: Bool = false
+    @Published var CardDirectCode: String = "365"
     var iamPortResponse: IamPortResponse?
 
     init() {
@@ -90,16 +92,9 @@ public class ViewModel: ObservableObject, Then {
 
     // 아임포트 결제 데이터 생성
     func createPaymentData() -> IamPortRequest? {
-//        guard let payMethod = PayMethod.convertPayMethod(order.payMethod.value) else {
-//            print("미지원 PayMethod : \(order.payMethod.value)")
-//            return nil
-//        }
-//        let payMethod = PayMethod.convertPayMethod(order.payMethod.value)
         let payMethod = order.payMethod.value
 
-        print("order.digital.flag \(order.digital.flag)")
-
-        return IamPortRequest(
+        let req = IamPortRequest(
                 pg: order.pg.value,
                 merchant_uid: order.merchantUid.value,
                 amount: order.price.value).then {
@@ -112,8 +107,21 @@ public class ViewModel: ObservableObject, Then {
                 $0.vbank_due = "202501011530"
             }
             $0.app_scheme = order.appScheme.value
-
+            if (isCardDirect) {
+                $0.card = Card(direct: Direct(code: order.cardCode.value))
+            }
+            $0.custom_data = [
+                "num": 1,
+                "str": "baz",
+                "bool": true,
+                "obj": [
+                    ["foo": "jar"],
+                    ["bar": 1]
+                ]
+            ]
         }
+
+        return req
     }
 
 

@@ -4,6 +4,7 @@
 
 import Foundation
 import Then
+import GenericJSON
 
 /**
  app_scheme 에 대하여..
@@ -18,7 +19,7 @@ public class IamPortRequest: Codable, Then {
     public var customer_uid: String?
     public var name: String?
     let amount: String // 없음안됨
-    public var custom_data: String? // 명세상 불명확
+    public var custom_data: JSON?
     public var tax_free: Float?
     public var currency: String? // default KRW 페이팔은 USD 이어야 함
     public var language: String? // default "ko"
@@ -51,6 +52,7 @@ public class IamPortRequest: Codable, Then {
     public var cultureBenefit: Bool?
     public var naverInterface: NaverInterface?
 
+    public var card: Card? // 카드사 다이렉트 호출
 
     public init(pg: String, merchant_uid: String, amount: String) {
         self.pg = pg
@@ -80,4 +82,5 @@ extension IamPortRequest {
             m_redirect_url = Utils.getRedirectUrl(platformKey: platform)
         }
     }
+
 }

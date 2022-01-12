@@ -59,5 +59,7 @@ Pod::Spec.new do |s|
     s.dependency 'RxRelay'
     s.dependency 'RxOptional'
     s.dependency 'RxViewController'
+    
+    s.dependency 'GenericJSON'
 
 end
