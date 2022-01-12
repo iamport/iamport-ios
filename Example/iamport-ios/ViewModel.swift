@@ -45,7 +45,7 @@ public class ViewModel: ObservableObject, Then {
     @Published var isPayment: Bool = false
     @Published var isCert: Bool = false
     @Published var showResult: Bool = false
-    @Published var CardDirectCode: String = "365"
+    @Published var CardDirectCode: String = ""
     var iamPortResponse: IamPortResponse?
 
     init() {
