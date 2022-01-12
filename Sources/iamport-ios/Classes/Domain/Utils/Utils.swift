@@ -230,4 +230,11 @@ class Utils {
         }
     }
 
+
+}
+
+extension String {
+    func getBase64Encode() -> String? {
+        data(using: .utf8)?.base64EncodedString()
+    }
 }

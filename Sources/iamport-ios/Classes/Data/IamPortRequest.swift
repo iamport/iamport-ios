@@ -4,7 +4,6 @@
 
 import Foundation
 import Then
-import GenericJSON
 
 /**
  app_scheme 에 대하여..
@@ -19,7 +18,7 @@ public class IamPortRequest: Codable, Then {
     public var customer_uid: String?
     public var name: String?
     let amount: String // 없음안됨
-    public var custom_data: JSON?
+    public var custom_data: String?
     public var tax_free: Float?
     public var currency: String? // default KRW 페이팔은 USD 이어야 함
     public var language: String? // default "ko"
@@ -62,6 +61,10 @@ public class IamPortRequest: Codable, Then {
 
     func getRedirectUrl() -> String? {
         m_redirect_url
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case pg, pay_method, escrow, merchant_uid, customer_uid, name, amount, tax_free, currency, language, buyer_name, buyer_tel, buyer_email, buyer_addr, buyer_postcode, notice_url, display, digital, vbank_due, m_redirect_url, app_scheme, biz_num, popup, niceMobileV2, naverPopupMode, naverUseCfm, naverProducts, naverCultureBenefit, naverProductCode, naverActionType, cultureBenefit, naverInterface, card
     }
 }
 

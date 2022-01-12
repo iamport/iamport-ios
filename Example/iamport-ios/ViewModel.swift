@@ -45,7 +45,7 @@ public class ViewModel: ObservableObject, Then {
     @Published var isPayment: Bool = false
     @Published var isCert: Bool = false
     @Published var showResult: Bool = false
-    @Published var CardDirectCode: String = "365"
+    @Published var CardDirectCode: String = ""
     var iamPortResponse: IamPortResponse?
 
     init() {
@@ -110,15 +110,33 @@ public class ViewModel: ObservableObject, Then {
             if (isCardDirect) {
                 $0.card = Card(direct: Direct(code: order.cardCode.value))
             }
-            $0.custom_data = [
-                "num": 1,
-                "str": "baz",
-                "bool": true,
-                "obj": [
-                    ["foo": "jar"],
-                    ["bar": 1]
-                ]
-            ]
+            $0.custom_data = """
+                             {
+                               "employees": {
+                                 "employee": [
+                                   {
+                                     "id": "1",
+                                     "firstName": "Tom",
+                                     "lastName": "Cruise",
+                                     "photo": "https://jsonformatter.org/img/tom-cruise.jpg",
+                                     "cuppingnote": "[\\"일\\",\\"이\\",\\"삼\\",\\"사\\",\\"오\\",\\"육\\",\\"칠\\"]"
+                                   },
+                                   {
+                                     "id": "2",
+                                     "firstName": "Maria",
+                                     "lastName": "Sharapova",
+                                     "photo": "https://jsonformatter.org/img/Maria-Sharapova.jpg"
+                                   },
+                                   {
+                                     "id": "3",
+                                     "firstName": "Robert",
+                                     "lastName": "Downey Jr.",
+                                     "photo": "https://jsonformatter.org/img/Robert-Downey-Jr.jpg"
+                                   }
+                                 ]
+                               }
+                             }
+                             """
         }
 
         return req
