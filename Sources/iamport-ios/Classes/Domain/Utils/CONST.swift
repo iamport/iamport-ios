@@ -27,7 +27,7 @@ class CONST {
     static let IAMPORT_DETECT_URL = "\(IAMPORT_DETECT_SCHEME)\(IAMPORT_DETECT_ADDRESS)"
 
 //    static let IAMPORT_PROD_URL = "https://service.iamport.kr"
-    static let IAMPORT_PROD_URL = "http://16a0-119-196-232-74.ap.ngrok.io"
+    static let IAMPORT_PROD_URL = "https://16a0-119-196-232-74.ap.ngrok.io"
 
 //    static let IAMPORT_PROD_URL = "http://1b8309246be2.ngrok.io"
 //    static let IAMPORT_TEST_URL = "https://kicc.iamport.kr"
