@@ -104,7 +104,7 @@ public class ViewModel: ObservableObject, Then {
             if (payMethod == PayMethod.phone.rawValue) {
                 $0.digital = order.digital.flag
             } else if (payMethod == PayMethod.vbank.rawValue) {
-                $0.vbank_due = "202501011530"
+                $0.vbank_due = "20220301132535"
             }
             $0.app_scheme = order.appScheme.value
             if (isCardDirect) {
