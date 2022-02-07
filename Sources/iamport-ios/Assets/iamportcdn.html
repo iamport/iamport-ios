@@ -36,9 +36,9 @@
 
         function requestPay(impRequest) {
             dLog("requestPay :: " + impRequest)
-            
+            var data = JSON.parse(impRequest)
             data.pg = 'daou.CMP62777'
-            IMP.request_pay(JSON.parse(impRequest), callback);
+            IMP.request_pay(data, callback);
         }
 
         function requestPayWithCustomData(impRequest, customData) {
