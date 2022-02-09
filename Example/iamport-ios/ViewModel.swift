@@ -50,7 +50,7 @@ public class ViewModel: ObservableObject, Then {
 
     init() {
         order = Order().then { order in
-            order.userCode.value = Utils.SampleUserCode.imp77825694.rawValue
+            order.userCode.value = Utils.SampleUserCode.imp90223057.rawValue
             order.price.value = "1000"
             order.orderName.value = "주문할건데요?"
             order.name.value = "박포트"
