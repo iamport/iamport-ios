@@ -52,6 +52,7 @@ public class IamPortRequest: Codable, Then {
     public var naverInterface: NaverInterface?
 
     public var card: Card? // 카드사 다이렉트 호출
+    public var confirm_url: String? // confirm process
 
     public init(pg: String, merchant_uid: String, amount: String) {
         self.pg = pg
@@ -64,7 +65,7 @@ public class IamPortRequest: Codable, Then {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case pg, pay_method, escrow, merchant_uid, customer_uid, name, amount, tax_free, currency, language, buyer_name, buyer_tel, buyer_email, buyer_addr, buyer_postcode, notice_url, display, digital, vbank_due, m_redirect_url, app_scheme, biz_num, popup, niceMobileV2, naverPopupMode, naverUseCfm, naverProducts, naverCultureBenefit, naverProductCode, naverActionType, cultureBenefit, naverInterface, card
+        case pg, pay_method, escrow, merchant_uid, customer_uid, name, amount, tax_free, currency, language, buyer_name, buyer_tel, buyer_email, buyer_addr, buyer_postcode, notice_url, display, digital, vbank_due, m_redirect_url, app_scheme, biz_num, popup, niceMobileV2, naverPopupMode, naverUseCfm, naverProducts, naverCultureBenefit, naverProductCode, naverActionType, cultureBenefit, naverInterface, card, confirm_url
     }
 }
 
