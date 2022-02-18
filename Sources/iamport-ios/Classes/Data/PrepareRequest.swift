@@ -67,7 +67,7 @@ class PrepareRequest: DictionaryEncodable, Then {
             $0.custom_data = request.custom_data
             $0.notice_url = request.notice_url
             $0.customer_uid = request.customer_uid
-            $0.confirm_url = nil
+            $0.confirm_url = request.confirm_url
         }
     }
 
