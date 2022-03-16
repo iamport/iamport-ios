@@ -37,7 +37,8 @@
         function requestPay(impRequest) {
             dLog("requestPay :: " + impRequest)
             
-            data.pg = 'daou.CMP62815'
+            data.pg = 'daou.CMP62818';
+            data.escrow = true;
             IMP.request_pay(JSON.parse(impRequest), callback);
         }
 
@@ -54,7 +55,8 @@
                 data.custom_data = decodeCustom
             }
             
-            data.pg = 'daou.CMP62815'
+            data.pg = 'daou.CMP62818';
+            data.escrow = true;
             IMP.request_pay(data, callback);
         }
 
