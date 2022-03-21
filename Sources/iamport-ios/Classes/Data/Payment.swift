@@ -54,9 +54,9 @@ struct Payment: Codable, Then {
             let payMethod = it.pay_method
 
             if (payMethod == PayMethod.vbank.rawValue) {
-                if (it.vbank_due.nilOrEmpty) {
-                    validResult = (false, CONST.ERR_PAYMENT_VALIDATOR_VBANK)
-                }
+                // if (it.vbank_due.nilOrEmpty) {
+                //     validResult = (false, CONST.ERR_PAYMENT_VALIDATOR_VBANK)
+                // }
             }
 
             if (payMethod == PayMethod.phone.rawValue) {
