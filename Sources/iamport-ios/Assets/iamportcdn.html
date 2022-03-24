@@ -37,7 +37,7 @@
         function requestPay(impRequest) {
             dLog("requestPay :: " + impRequest)
             
-            data.pg = 'daou.CMP62815'
+            data.pg = 'daou.CTS17362'
             IMP.request_pay(JSON.parse(impRequest), callback);
         }
 
@@ -54,7 +54,7 @@
                 data.custom_data = decodeCustom
             }
             
-            data.pg = 'daou.CMP62815'
+            data.pg = 'daou.CTS17362'
             IMP.request_pay(data, callback);
         }
 
@@ -65,6 +65,6 @@
 
     </script>
     <script defer type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
-   <script defer type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+   <script defer type="text/javascript" src="https://pay3.iamport-dev.co/js/iamport.payment-1.2.0.js"></script>
 </body>
 </html>
