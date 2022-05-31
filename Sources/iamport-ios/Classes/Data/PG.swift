@@ -6,6 +6,7 @@ import Foundation
 
 public enum PG: String, CaseIterable, Codable {
 
+    case tosspayments
     case chai
     case kcp
     case html5_inicis // only for 결제
@@ -87,6 +88,8 @@ public enum PG: String, CaseIterable, Codable {
             return "스마트로"
 //        case .inicis:
 //            return "이니시스본인인증"
+        case .tosspayments:
+            return "토스페이먼츠 신모듈"
         }
     }
 

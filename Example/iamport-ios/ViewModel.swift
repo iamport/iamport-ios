@@ -50,16 +50,16 @@ public class ViewModel: ObservableObject, Then {
 
     init() {
         order = Order().then { order in
-            order.userCode.value = Utils.SampleUserCode.iamport.rawValue
+            order.userCode.value = Utils.SampleUserCode.imp55525921.rawValue
             order.price.value = "1000"
             order.orderName.value = "주문할건데요?"
             order.name.value = "박포트"
-            order.pg.value = PG.html5_inicis.rawValue
+            order.pg.value = PG.tosspayments.rawValue + "port-dev-test"
             order.appScheme.value = "iamport"
         }
 
         cert = Cert().then { cert in
-            cert.userCode.value = Utils.SampleUserCode.iamport.rawValue
+            cert.userCode.value = Utils.SampleUserCode.imp55525921.rawValue
         }
 
         updateMerchantUid()
@@ -77,6 +77,7 @@ public class ViewModel: ObservableObject, Then {
             ("가격", order.price),
             ("이름", order.name),
             ("주문번호", order.merchantUid),
+            ("customer_uid", order.customerUid),
         ]
 
         certInfos = [
@@ -101,42 +102,43 @@ public class ViewModel: ObservableObject, Then {
             $0.pay_method = payMethod
             $0.name = order.orderName.value
             $0.buyer_name = order.name.value
+            $0.customer_uid = order.customerUid.value
             if (payMethod == PayMethod.phone.rawValue) {
                 $0.digital = order.digital.flag
             } else if (payMethod == PayMethod.vbank.rawValue) {
                 $0.vbank_due = "202501011530"
             }
             $0.app_scheme = order.appScheme.value
-            if (isCardDirect) {
-                $0.card = Card(direct: Direct(code: order.cardCode.value))
-            }
-            $0.custom_data = """
-                             {
-                               "employees": {
-                                 "employee": [
-                                   {
-                                     "id": "1",
-                                     "firstName": "Tom",
-                                     "lastName": "Cruise",
-                                     "photo": "https://jsonformatter.org/img/tom-cruise.jpg",
-                                     "cuppingnote": "[\\"일\\",\\"이\\",\\"삼\\",\\"사\\",\\"오\\",\\"육\\",\\"칠\\"]"
-                                   },
-                                   {
-                                     "id": "2",
-                                     "firstName": "Maria",
-                                     "lastName": "Sharapova",
-                                     "photo": "https://jsonformatter.org/img/Maria-Sharapova.jpg"
-                                   },
-                                   {
-                                     "id": "3",
-                                     "firstName": "Robert",
-                                     "lastName": "Downey Jr.",
-                                     "photo": "https://jsonformatter.org/img/Robert-Downey-Jr.jpg"
-                                   }
-                                 ]
-                               }
-                             }
-                             """
+//            if (isCardDirect) {
+//                $0.card = Card(direct: Direct(code: order.cardCode.value))
+//            }
+//            $0.custom_data = """
+//                             {
+//                               "employees": {
+//                                 "employee": [
+//                                   {
+//                                     "id": "1",
+//                                     "firstName": "Tom",
+//                                     "lastName": "Cruise",
+//                                     "photo": "https://jsonformatter.org/img/tom-cruise.jpg",
+//                                     "cuppingnote": "[\\"일\\",\\"이\\",\\"삼\\",\\"사\\",\\"오\\",\\"육\\",\\"칠\\"]"
+//                                   },
+//                                   {
+//                                     "id": "2",
+//                                     "firstName": "Maria",
+//                                     "lastName": "Sharapova",
+//                                     "photo": "https://jsonformatter.org/img/Maria-Sharapova.jpg"
+//                                   },
+//                                   {
+//                                     "id": "3",
+//                                     "firstName": "Robert",
+//                                     "lastName": "Downey Jr.",
+//                                     "photo": "https://jsonformatter.org/img/Robert-Downey-Jr.jpg"
+//                                   }
+//                                 ]
+//                               }
+//                             }
+//                             """
         }
 
         return req

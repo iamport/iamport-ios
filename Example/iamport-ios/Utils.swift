@@ -10,45 +10,36 @@ import SwiftUI
 class Utils {
 
     enum SampleUserCode: String, CaseIterable {
-        case imp96304110
-        case iamport
-        case imp19424728
-        case imp10391932
-        case imp09350031
-        case imp60029475
-        case imp41073887
-        case imp49241793
-        case imp37739582
-        case imp87936124
-        case imp42284830
-        case imp02690184
+        case imp55525921
 
         var name: String {
             switch self {
-            case .iamport:
-                return "공식 default"
-            case .imp19424728:
-                return "default 테스트"
-            case .imp10391932:
-                return "kakao 테스트"
-            case .imp09350031:
-                return "paypal 테스트"
-            case .imp60029475:
-                return "mobilians 테스트"
-            case .imp41073887:
-                return "naverco, naverpay 테스트"
-            case .imp49241793:
-                return "smilepay 테스트"
-            case .imp37739582:
-                return "chai 테스트"
-            case .imp87936124:
-                return "alipay 테스트"
-            case .imp42284830:
-                return "payple 테스트"
-            case .imp02690184:
-                return "smartro 테스트"
-            case .imp96304110:
-                return "빙봉"
+//            case .iamport:
+//                return "공식 default"
+//            case .imp19424728:
+//                return "default 테스트"
+//            case .imp10391932:
+//                return "kakao 테스트"
+//            case .imp09350031:
+//                return "paypal 테스트"
+//            case .imp60029475:
+//                return "mobilians 테스트"
+//            case .imp41073887:
+//                return "naverco, naverpay 테스트"
+//            case .imp49241793:
+//                return "smilepay 테스트"
+//            case .imp37739582:
+//                return "chai 테스트"
+//            case .imp87936124:
+//                return "alipay 테스트"
+//            case .imp42284830:
+//                return "payple 테스트"
+//            case .imp02690184:
+//                return "smartro 테스트"
+//            case .imp96304110:
+//                return "빙봉"
+            case .imp55525921:
+                return "토스페이먼츠 신모듈 테스트"
             }
         }
     }
