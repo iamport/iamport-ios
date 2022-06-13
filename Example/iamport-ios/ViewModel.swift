@@ -50,7 +50,7 @@ public class ViewModel: ObservableObject, Then {
 
     init() {
         order = Order().then { order in
-            order.userCode.value = Utils.SampleUserCode.imp55525921.rawValue
+            order.userCode.value = Utils.SampleUserCode.imp89347847.rawValue
             order.price.value = "1000"
             order.orderName.value = "주문할건데요?"
             order.name.value = "박포트"
@@ -59,7 +59,7 @@ public class ViewModel: ObservableObject, Then {
         }
 
         cert = Cert().then { cert in
-            cert.userCode.value = Utils.SampleUserCode.imp55525921.rawValue
+            cert.userCode.value = Utils.SampleUserCode.imp89347847.rawValue
         }
 
         updateMerchantUid()
