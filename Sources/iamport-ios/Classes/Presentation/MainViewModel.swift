@@ -4,7 +4,7 @@
 
 import Foundation
 import RxSwift
-import RxBus
+import RxBusForPort
 
 class MainViewModel {
 

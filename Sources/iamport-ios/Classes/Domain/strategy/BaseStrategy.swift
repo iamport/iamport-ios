@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import RxBus
+import RxBusForPort
 import RxSwift
 
 public class BaseStrategy: IStrategy {
