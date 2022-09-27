@@ -19,7 +19,7 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.0.0")),
-        .package(name: "RxBusForPort", url: "https://github.com/iamport/RxBus-Swift", .exact("1.3.4-spm")),
+        .package(name: "RxBusForPort", url: "https://github.com/iamport/RxBus-Swift", .upToNextMinor(from: "1.3.0")),
         .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.4.0")),
         .package(url: "https://github.com/devxoul/Then.git", .upToNextMajor(from: "2.7.0")),
     ],
