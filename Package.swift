@@ -19,7 +19,7 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.0.0")),
-        .package(name: "RxBus", url: "https://github.com/ridi/RxBus-swift.git", .upToNextMinor(from: "1.3.0")),
+        .package(name: "RxBusForPort", url: "https://github.com/iamport/RxBus-Swift", .upToNextMinor(from: "1.3.0")),
         .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.4.0")),
         .package(url: "https://github.com/devxoul/Then.git", .upToNextMajor(from: "2.7.0")),
     ],
@@ -28,7 +28,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
             .target(name: "iamport-ios",
                     dependencies: ["RxSwift",
-                                   "RxBus",
+                                   "RxBusForPort",
                                    "Alamofire",
                                    "Then",
                                    .product(name: "RxCocoa",package: "RxSwift"),
