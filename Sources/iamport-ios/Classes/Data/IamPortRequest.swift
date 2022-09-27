@@ -12,7 +12,7 @@ import Then
  */
 public class IamPortRequest: Codable, Then {
     var pg: String // 없음안됨
-    public var pay_method: String = PayMethod.card.rawValue // 명세상 필수인지 불명확함 default card
+    public var pay_method: String = PayMethod.card.rawValue
     public var escrow: Bool? // default false
     public let merchant_uid: String // 없음안됨 // default "random"
     public var customer_uid: String?
@@ -54,6 +54,9 @@ public class IamPortRequest: Codable, Then {
     public var card: Card? // 카드사 다이렉트 호출
     public var confirm_url: String? // confirm process
 
+    // 이니시스 정기결제 제공기간
+    public var period: Period?
+
     public init(pg: String, merchant_uid: String, amount: String) {
         self.pg = pg
         self.merchant_uid = merchant_uid
@@ -65,7 +68,7 @@ public class IamPortRequest: Codable, Then {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case pg, pay_method, escrow, merchant_uid, customer_uid, name, amount, tax_free, currency, language, buyer_name, buyer_tel, buyer_email, buyer_addr, buyer_postcode, notice_url, display, digital, vbank_due, m_redirect_url, app_scheme, biz_num, popup, niceMobileV2, naverPopupMode, naverUseCfm, naverProducts, naverCultureBenefit, naverProductCode, naverActionType, cultureBenefit, naverInterface, card, confirm_url
+        case pg, pay_method, escrow, merchant_uid, customer_uid, name, amount, tax_free, currency, language, buyer_name, buyer_tel, buyer_email, buyer_addr, buyer_postcode, notice_url, display, digital, vbank_due, m_redirect_url, app_scheme, biz_num, popup, niceMobileV2, naverPopupMode, naverUseCfm, naverProducts, naverCultureBenefit, naverProductCode, naverActionType, cultureBenefit, naverInterface, card, confirm_url, period
     }
 }
 
