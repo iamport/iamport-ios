@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'iamport-ios'
-  s.version          = '1.3.0-hotfix01'
+  s.version          = '1.3.2'
   s.summary          = 'iamport-ios will help develop for your iOS App payments'
 
 # This description is used to generate tags and improve search results.
