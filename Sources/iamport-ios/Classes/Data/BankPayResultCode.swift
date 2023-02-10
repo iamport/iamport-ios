@@ -38,7 +38,7 @@ enum BankPayResultCode: String, CaseIterable {
         }
     }
 
-    var desc: String {
+    var description: String {
         switch self {
         case .OK:
             return "결제성공 하였습니다"

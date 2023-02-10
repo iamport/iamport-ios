@@ -65,5 +65,5 @@ class Constant {
     static let ERR_PAYMENT_VALIDATOR_VBANK = "\(PREFIX_ERR) 가상계좌 결제는 만료일자(vbank_due) 항목 필수입니다 (YYYYMMDDhhmm 형식)"
     static let ERR_PAYMENT_VALIDATOR_PHONE = "\(PREFIX_ERR) 휴대폰 소액결제는 digital 항목 필수입니다"
     static let ERR_PAYMENT_VALIDATOR_DANAL_VBANK = "\(PREFIX_ERR) 다날 가상계좌 결제는 사업자 등록번호(biz_num) 항목 필수입니다 (계약된 사업자등록번호 10자리)"
-    static let ERR_PAYMENT_VALIDATOR_EXIMBAY = "\(PREFIX_ERR) eximbay 는 모바일앱 결제시 IamPortRequest popup 파라미터를 false 로 지정해야 결제창이 열립니다."
+    static let ERR_PAYMENT_VALIDATOR_EXIMBAY = "\(PREFIX_ERR) eximbay 는 모바일앱 결제시 IamportRequest popup 파라미터를 false 로 지정해야 결제창이 열립니다."
 }

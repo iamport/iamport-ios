@@ -29,11 +29,11 @@ class ChaiStrategy: BaseStrategy {
      * 4. 백그라운드 chai 서버 폴링
      * 5. if(차이폴링 approve) IMP 최종승인 요청
      */
-    func doWork(_ pgId: String, _ payment: IamportRequest) {
-        super.doWork(payment)
+    func doWork(_ pgId: String, _ request: IamportRequest) {
+        super.doWork(request)
 
         chaiId = pgId
-        print("doWork! \(payment)")
+        print("doWork! \(request)")
 
         // * 2. IMP 서버에 결제시작 요청 (+ chai id)
 
@@ -41,7 +41,7 @@ class ChaiStrategy: BaseStrategy {
         let url = Constant.IAMPORT_PROD_URL + "/chai_payments/prepare"
         debug_log(url)
 
-        let prepareRequest = PrepareRequest.makeDictionary(chaiId: pgId, payment: payment)
+        let prepareRequest = PrepareRequest.makeDictionary(chaiId: pgId, payment: request)
         debug_log(prepareRequest ?? "not make prepareRequest")
 
         let doNetwork = Network.alamoFireManager.request(url, method: .post, parameters: prepareRequest, encoding: JSONEncoding.default, headers: headers)
@@ -57,12 +57,12 @@ class ChaiStrategy: BaseStrategy {
 
                     guard let getData = try? JSONDecoder().decode(Prepare.self, from: dataJson) else {
                         let errorData = try JSONDecoder().decode(PrepareError.self, from: dataJson)
-                        self?.failure(request: payment, msg: "code : \(errorData.code), msg : \(String(describing: errorData.msg))")
+                        self?.failure(request: request, msg: "code : \(errorData.code), msg : \(String(describing: errorData.msg))")
                         return
                     }
 
                     guard getData.code == 0 else {
-                        self?.failure(request: payment, msg: "code : \(getData.code), msg : \(String(describing: getData.msg))")
+                        self?.failure(request: request, msg: "code : \(getData.code), msg : \(String(describing: getData.msg))")
                         return
                     }
                     debug_log(getData)
@@ -70,10 +70,10 @@ class ChaiStrategy: BaseStrategy {
                     self?.processPrepare(getData.data)
 
                 } catch {
-                    self?.failure(request: payment, msg: "success but \(error.localizedDescription)")
+                    self?.failure(request: request, msg: "success but \(error.localizedDescription)")
                 }
             case let .failure(error):
-                self?.failure(request: payment, msg: "네트워크 연결실패 \(error.localizedDescription)")
+                self?.failure(request: request, msg: "네트워크 연결실패 \(error.localizedDescription)")
             }
         }
     }
@@ -172,7 +172,7 @@ class ChaiStrategy: BaseStrategy {
                         case .user_canceled, .canceled, .failed, .timeout, .inactive, .churn:
                             print("결제취소 \(status.rawValue)")
 //                            self?.failureFinish(payment: payment, prepareData: prepareData, msg: "결제취소 \(status.rawValue)")
-                            IamPortApprove.make(payment: payment, prepareData: prepareData, status: status).do {
+                            IamportApprove.make(payment: payment, prepareData: prepareData, status: status).do {
                                 self?.requestApprovePayments(approve: $0)
                             }
                         }
@@ -218,7 +218,7 @@ class ChaiStrategy: BaseStrategy {
     }
 
     private func confirmMerchant(payment: IamportRequest, prepareData: PrepareData, status: ChaiPaymentStatus) {
-        IamPortApprove.make(payment: payment, prepareData: prepareData, status: status).do {
+        IamportApprove.make(payment: payment, prepareData: prepareData, status: status).do {
             RxBus.shared.post(event: EventBus.MainEvents.AskApproveFromChai(approve: $0))
         }
 
@@ -235,7 +235,7 @@ class ChaiStrategy: BaseStrategy {
         return false
     }
 
-    private func isSubscription(approve: IamPortApprove) -> Bool {
+    private func isSubscription(approve: IamportApprove) -> Bool {
         guard approve.subscriptionId == nil else {
             return true
         }
@@ -245,7 +245,7 @@ class ChaiStrategy: BaseStrategy {
 //    /**
 //     * 현재 결제중인 데이터와 머천트앱으로부터 전달받은 데이터가 동일한가 비교
 //     */
-//    private func matchApproveData(approve: IamPortApprove) -> Bool {
+//    private func matchApproveData(approve: IamportApprove) -> Bool {
 //        payment?.userCode == approve.userCode
 //                && payment?.getMerchantUid() == approve.merchantUid
 //                && payment?.getCustomerUid() == approve.customerUid
@@ -256,7 +256,7 @@ class ChaiStrategy: BaseStrategy {
 //                && prepareData?.publicAPIKey == approve.publicAPIKey
 //    }
 
-    func requestApprovePayments(approve: IamPortApprove) {
+    func requestApprovePayments(approve: IamportApprove) {
         // 어차피 밖에서 수정하지 못함
 //        if (!matchApproveData(approve: approve)) {
 //            print("결제 데이터 매칭 실패로 최종결제하지 않습니다.")
@@ -272,7 +272,7 @@ class ChaiStrategy: BaseStrategy {
         processApprovePayments(approve: approve)
     }
 
-    private func processApprovePayments(approve: IamPortApprove) {
+    private func processApprovePayments(approve: IamportApprove) {
         print("일반결제 최종 승인 요청")
 
         let headers: HTTPHeaders = ["Content-Type": "application/json"]
@@ -335,7 +335,7 @@ class ChaiStrategy: BaseStrategy {
         }
     }
 
-    private func processApprovePaymentsSubscription(approve: IamPortApprove) {
+    private func processApprovePaymentsSubscription(approve: IamportApprove) {
         print("정기결제 최종 승인 요청")
 
         let headers: HTTPHeaders = ["Content-Type": "application/json"]

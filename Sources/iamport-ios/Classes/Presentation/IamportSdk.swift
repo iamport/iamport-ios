@@ -15,11 +15,11 @@ public class IamportSdk: Then {
     private var navController: UINavigationController?
     private var webview: WKWebView?
 
-    var chaiApproveCallBack: ((IamPortApprove) -> Void)? // 차이 결제 확인 콜백
+    var chaiApproveCallBack: ((IamportApprove) -> Void)? // 차이 결제 확인 콜백
     var resultCallBack: ((IamportResponse?) -> Void)? // 결제 결과 콜백
 
-    var iamportWebViewMode: IamPortWebViewMode?
-    var iamportMobileWebMode: IamPortMobileWebMode?
+    var iamportWebViewMode: IamportWebViewMode?
+    var iamportMobileWebMode: IamportMobileWebMode?
     var disposeBag = DisposeBag()
 
     var animate = true
@@ -35,7 +35,7 @@ public class IamportSdk: Then {
       */
     public init(webViewMode: WKWebView) {
         webview = webViewMode
-        iamportWebViewMode = IamPortWebViewMode()
+        iamportWebViewMode = IamportWebViewMode()
     }
 
     /**
@@ -44,7 +44,7 @@ public class IamportSdk: Then {
      */
     public init(mobileWebMode: WKWebView) {
         webview = mobileWebMode
-        iamportMobileWebMode = IamPortMobileWebMode().then { mode in
+        iamportMobileWebMode = IamportMobileWebMode().then { mode in
             mode.start(webview: mobileWebMode)
         }
     }
@@ -72,7 +72,7 @@ public class IamportSdk: Then {
         resultCallBack?(iamportResponse)
     }
 
-    internal func initStart(request: IamportRequest, approveCallback: ((IamPortApprove) -> Void)?, paymentResultCallback: @escaping (IamportResponse?) -> Void) {
+    internal func initStart(request: IamportRequest, approveCallback: ((IamportApprove) -> Void)?, paymentResultCallback: @escaping (IamportResponse?) -> Void) {
         print("IamportSdk :: initStart(payment)")
 
         chaiApproveCallBack = approveCallback
@@ -179,7 +179,7 @@ public class IamportSdk: Then {
     }
 
     // approveCallBack 이 있으면, 머천트의 컨펌을 받음
-    private func askApproveFromChai(approve: IamPortApprove) {
+    private func askApproveFromChai(approve: IamportApprove) {
         if let cb = chaiApproveCallBack {
             cb(approve)
         } else {
@@ -188,7 +188,7 @@ public class IamportSdk: Then {
     }
 
     // 차이 최종 결제 요청
-    public func requestApprovePayments(approve: IamPortApprove) {
+    public func requestApprovePayments(approve: IamportApprove) {
         viewModel.requestApprovePayments(approve: approve)
     }
 

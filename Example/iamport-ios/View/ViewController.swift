@@ -63,9 +63,9 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         }
 
         // use for UIViewController
-//        Iamport.shared.certification(viewController: self, userCode: userCode, iamPortCertification: request) { [weak self] iamPortResponse in
-//            self?.paymentCallback(iamPortResponse)
-//        }
+        // Iamport.shared.certification(viewController: self, userCode: userCode, certification: certification) { [weak self] iamPortResponse in
+        //     self?.paymentCallback(iamPortResponse)
+        // }
     }
 
     // 아임포트 SDK 결제 요청
@@ -74,44 +74,40 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         let request = createPaymentData()
         dump(request)
 
-//        guard let navController = navigationController else {
-//            print("navigationController 를 찾을 수 없습니다")
-//            return
-//        }
-
-        // case 1
-//        Iamport.shared.payment(navController: navController,
-//                userCode: userCode, iamPortRequest: request,
-//                approveCallback: { approve in
-//                    self.approveCallback(iamPortApprove: approve)
-//                },
-//                paymentResultCallback: { [weak self] iamPortResponse in
-//                    self?.paymentCallback(iamPortResponse)
-//                })
+        // 결제요청 case 1
+        // Iamport.shared.payment(navController: navController,
+        //     userCode: userCode, iamPortRequest: request,
+        //     approveCallback: { approve in
+        //         self.approveCallback(iamPortApprove: approve)
+        //     },
+        //     paymentResultCallback: { [weak self] iamPortResponse in
+        //         self?.paymentCallback(iamPortResponse)
+        //     }
+        // )
 
         // 결제요청 case 2
-//        Iamport.shared.payment(navController: navigationController,
-//                userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
-//            self?.paymentCallback(iamPortResponse)
-//        }
+        // Iamport.shared.payment(navController: navigationController,
+        //     userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+        //     self?.paymentCallback(iamPortResponse)
+        // }
 
         // use for UIViewController
-//        Iamport.shared.payment(viewController: self,
-//                userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
-//            self?.paymentCallback(iamPortResponse)
-//        }
+        // Iamport.shared.payment(viewController: self,
+        //     userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+        //     self?.paymentCallback(iamPortResponse)
+        // }
 
         if #available(iOS 11.0, *) {
             setupWebView()
-        } else {
-        }
+        } else {}
+        
         Iamport.shared.paymentWebView(webViewMode: wkWebView,
                 userCode: userCode, payment: request) { [weak self] iamPortResponse in
             self?.paymentCallback(iamPortResponse)
         }
 
-//        openWebView()
-//        Iamport.shared.pluginMobileWebSupporter(mobileWebMode: wkWebView)
+        // openWebView()
+        // Iamport.shared.pluginMobileWebSupporter(mobileWebMode: wkWebView)
     }
 
 
@@ -177,7 +173,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
      *  CONST.CHAI_FINAL_PAYMENT_TIME_OUT_SEC 만큼 타임아웃 후 결제 데이터가
      *  초기화 되기 때문에 타임아웃 시간 안에 Iamport.chaiPayment 함수를 호출해주셔야 합니다.
      */
-    private func approveCallback(iamPortApprove: IamPortApprove) {
+    private func approveCallback(iamPortApprove: IamportApprove) {
         print("재고확인 합니다~~")
 
         let delaySec = Double(1)

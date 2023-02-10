@@ -108,7 +108,7 @@ public class ViewModel: ObservableObject, Then {
             }
             $0.app_scheme = order.appScheme.value
             if (isCardDirect) {
-                $0.card = Card(direct: Direct(code: order.cardCode.value))
+                $0.card = Card(direct: CardDirect(code: order.cardCode.value))
             }
             $0.custom_data = """
                              {

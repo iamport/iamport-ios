@@ -5,13 +5,13 @@
 import Foundation
 
 public class Card: Codable {
-    var direct: Direct
-    public init(direct: Direct) {
+    var direct: CardDirect
+    public init(direct: CardDirect) {
         self.direct = direct
     }
 }
 
-public class Direct: Codable {
+public class CardDirect: Codable {
     var code: String
     var quota: Int?
     public init(code: String) {

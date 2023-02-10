@@ -8,7 +8,7 @@ import RxSwift
 
 internal class WebViewModel {
     let repository = StrategyRepository()
-    let iamPortWKWebViewDelegate = IamPortWKWebViewDelegate()
+    let delegate = IamportWKWebViewDelegate()
 
     /**
      * 뱅크페이 결과 처리

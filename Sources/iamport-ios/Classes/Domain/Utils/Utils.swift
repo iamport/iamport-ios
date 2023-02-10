@@ -17,7 +17,7 @@ import UIKit
 
 func debug_log(_ log: Any..., file: String = #file, line: UInt = #line, column: UInt = #column, function: String = #function) {
     #if DEBUG
-        debugPrint("\(file)(\(function)):\(line):\(column) \(log)")
+    debugPrint("\((file as NSString).lastPathComponent)(\(function)):\(line):\(column) \(log)")
     #endif
 }
 
@@ -123,7 +123,7 @@ enum Utils {
             debug_log(url.queryParams().toJsonString())
         #endif
         let data = url.queryParams().toJsonData()
-        if let impStruct = try? JSONDecoder().decode(IamPortResponseStruct.self, from: data) {
+        if let impStruct = try? JSONDecoder().decode(IamportResponseStruct.self, from: data) {
             return IamportResponse.structToClass(impStruct)
         }
         return nil

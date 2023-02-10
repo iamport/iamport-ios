@@ -159,7 +159,7 @@ iamport-ios 1.1.0 부터 지원
 
 ```swift
   // 결제 요청 데이터 구성 
-  let request = IamPortRequest(
+  let request = IamportRequest(
                 pg: PG.html5_inicis.getPgSting(pgId: ""), // PG 사
                 merchant_uid: "mid_123456",                   // 주문번호                
                 amount: "1000").then {                        // 가격
@@ -288,11 +288,11 @@ IMP.request_pay(data, ... // 생략
 
 /**
  webview url 을 통해 처리하는 로직이 있을 경우에 
- [IamPortWKWebViewDelegate] 상속하여 사용 하시거나,
+ [IamportWKWebViewDelegate] 상속하여 사용 하시거나,
  [Iamport.shared.updateWebViewUrl] 의 subscribe 을 통해 변경되는 url 을 체크 가능합니다.
  */
-// CASE1 : IamPortWKWebViewDelegate 상속
-class MyWKWebViewDelegate: IamPortWKWebViewDelegate {
+// CASE1 : IamportWKWebViewDelegate 상속
+class MyWKWebViewDelegate: IamportWKWebViewDelegate {
     override func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         if let url = navigationAction.request.url {
             // TODO : write your logic
@@ -308,7 +308,7 @@ let webViewDelegate = MyWKWebViewDelegate()
 class MyView: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         ..
-        // IamPortWKWebViewDelegate 사용
+        // IamportWKWebViewDelegate 사용
         wkWebView.navigationDelegate = webViewDelegate as WKNavigationDelegate
         
 //       CASE2 : [Iamport.shared.updateWebViewUrl] 사용
@@ -360,8 +360,8 @@ class IamportPaymentViewController: UIViewController {
   }
 
   // 아임포트 결제 데이터 생성
-  func createPaymentData() -> IamPortRequest {
-    return IamPortRequest(
+  func createPaymentData() -> IamportRequest {
+    return IamportRequest(
             pg: PG.html5_inicis.makePgRawName(pgId: ""),
             merchant_uid: "swiftui_ios_\(Int(Date().timeIntervalSince1970))",
             amount: "1000").then {

@@ -533,7 +533,7 @@ extension WebViewController: WKScriptMessageHandler {
             case .CUSTOM_CALL_BACK:
                 print("Received payment callback")
                 if let data = (message.body as? String)?.data(using: .utf8),
-                   let impStruct = try? JSONDecoder().decode(IamPortResponseStruct.self, from: data)
+                   let impStruct = try? JSONDecoder().decode(IamportResponseStruct.self, from: data)
                 {
                     let response = IamportResponse.structToClass(impStruct)
                     sdkFinish(response)

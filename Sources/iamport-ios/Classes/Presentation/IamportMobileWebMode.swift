@@ -9,7 +9,7 @@ import RxSwift
 import UIKit
 import WebKit
 
-class IamPortMobileWebMode: IamPortWebViewMode {
+class IamportMobileWebMode: IamportWebViewMode {
     // for communicate WebView
     enum JsInterface: String, CaseIterable {
         case IAMPORT_MOBILE_WEB_MODE = "iamportmobilewebmode"
@@ -46,13 +46,13 @@ class IamPortMobileWebMode: IamPortWebViewMode {
 
             wv.backgroundColor = UIColor.white
 
-            if !(wv.uiDelegate is IamPortWKWebViewDelegate) {
+            if !(wv.uiDelegate is IamportWKWebViewDelegate) {
                 debug_log("setUpWebView :: UIDelegate is not IamportWKWebViewDelegate, assigned new one")
-                wv.uiDelegate = viewModel.iamPortWKWebViewDelegate
+                wv.uiDelegate = viewModel.delegate
             }
-            if !(wv.navigationDelegate is IamPortWKWebViewDelegate) {
+            if !(wv.navigationDelegate is IamportWKWebViewDelegate) {
                 debug_log("setUpWebView :: NavigationDelegate is not IamportWKWebViewDelegate, assigned new one")
-                wv.navigationDelegate = viewModel.iamPortWKWebViewDelegate
+                wv.navigationDelegate = viewModel.delegate
             }
         }
     }

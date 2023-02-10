@@ -51,7 +51,7 @@ class EventBus {
 
         // 머천트에게 최종 컨펌 받기 위한 요청
         struct AskApproveFromChai: BusEvent {
-            let approve: IamPortApprove
+            let approve: IamportApprove
         }
     }
 

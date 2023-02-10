@@ -10,7 +10,7 @@ import Then
 import UIKit
 import WebKit
 
-open class IamPortWKWebViewDelegate: NSObject, WKNavigationDelegate {
+open class IamportWKWebViewDelegate: NSObject, WKNavigationDelegate {
     var popupWebView: WKWebView? /// window.open()으로 열리는 새창
 
     @available(iOS 8.0, *)
@@ -28,7 +28,7 @@ open class IamPortWKWebViewDelegate: NSObject, WKNavigationDelegate {
     }
 }
 
-extension IamPortWKWebViewDelegate: WKUIDelegate {
+extension IamportWKWebViewDelegate: WKUIDelegate {
     public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for _: WKNavigationAction, windowFeatures _: WKWindowFeatures) -> WKWebView? {
         let frame = UIScreen.main.bounds
         popupWebView = WKWebView(frame: frame, configuration: configuration)

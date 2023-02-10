@@ -10,7 +10,7 @@ import Then
 import UIKit
 import WebKit
 
-class IamPortWebViewMode: UIView, WKUIDelegate {
+class IamportWebViewMode: UIView, WKUIDelegate {
     var disposeBag = DisposeBag()
     let viewModel = WebViewModel()
 
@@ -18,7 +18,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     var request: IamportRequest?
 
     func start(webview: WKWebView) {
-        debug_log("IamPortWebViewMode :: start")
+        debug_log("IamportWebViewMode :: start")
         clearAll()
         self.webview = webview
         setupWebView()
@@ -26,7 +26,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 
     func close() {
-        debug_log("IamPortWebViewMode :: close")
+        debug_log("IamportWebViewMode :: close")
         clearAll()
     }
 
@@ -44,7 +44,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 
     private func clearAll() {
-        debug_log("IamPortWebViewMode :: clearAll")
+        debug_log("IamportWebViewMode :: clearAll")
         clearWebView()
         request = nil
         disposeBag = DisposeBag()
@@ -59,7 +59,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
             }
 
             wv.backgroundColor = UIColor.white
-            viewModel.iamPortWKWebViewDelegate.do { delegate in
+            viewModel.delegate.do { delegate in
                 wv.uiDelegate = delegate
                 wv.navigationDelegate = delegate
             }
@@ -67,13 +67,13 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 
     internal func subscribePayment() {
-        debug_log("IamPortWebViewMode :: subscribePayment")
+        debug_log("IamportWebViewMode :: subscribePayment")
         let eventBus = EventBus.shared
 
         // 결제 데이터
         eventBus.webViewPaymentBus.subscribe { [weak self] event in
             guard let elem = event.element, let payment = elem else {
-                print("IamPortWebViewMode :: Error not found PaymentEvent")
+                print("IamportWebViewMode :: Error not found PaymentEvent")
                 return
             }
 
@@ -83,37 +83,37 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
 
     // isCertification 에 따라 bind 할 항목이 달라짐
     internal func subscribe(_ payment: IamportRequest) {
-        debug_log("IamPortWebViewMode :: subscribe")
+        debug_log("IamportWebViewMode :: subscribe")
         request = payment
         if payment.isCertification {
-            debug_log("IamPortWebViewMode :: subscribeCertification")
+            debug_log("IamportWebViewMode :: subscribeCertification")
             subscribeCertification(payment)
         } else {
-            debug_log("IamPortWebViewMode :: subscribePayment")
+            debug_log("IamportWebViewMode :: subscribePayment")
             subscribePayment(payment)
         }
     }
 
     // 본인인증 데이터가 있을때 처리 할 이벤트들
     internal func subscribeCertification(_ payment: IamportRequest) {
-        debug_log("IamPortWebViewMode :: subscribeCertification")
+        debug_log("IamportWebViewMode :: subscribeCertification")
 
         let bus = RxBus.shared
         let webViewEvents = EventBus.WebViewEvents.self
 
         bus.asObservable(event: webViewEvents.ImpResponse.self).subscribe { [weak self] event in
             guard let el = event.element else {
-                print("IamPortWebViewMode :: Cannot find ImpResponse")
+                print("IamportWebViewMode :: Cannot find ImpResponse")
                 return
             }
 
-            print("IamPortWebViewMode :: ImpResponse received")
+            print("IamportWebViewMode :: ImpResponse received")
             self?.sdkFinish(el.impResponse)
         }.disposed(by: disposeBag)
 
         bus.asObservable(event: webViewEvents.OpenWebView.self).subscribe { [weak self] event in
             guard event.element != nil else {
-                print("IamPortWebViewMode :: Error not found OpenWebView")
+                print("IamportWebViewMode :: Error not found OpenWebView")
                 return
             }
             self?.openWebView()
@@ -121,7 +121,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
 
         bus.asObservable(event: webViewEvents.ThirdPartyUri.self).subscribe { [weak self] event in
             guard let el = event.element else {
-                print("IamPortWebViewMode :: Error not found ThirdPartyUri")
+                print("IamportWebViewMode :: Error not found ThirdPartyUri")
                 return
             }
             self?.openThirdPartyApp(el.thirdPartyUri)
@@ -132,24 +132,24 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
 
     // 결제 데이터가 있을때 처리 할 이벤트들
     internal func subscribePayment(_ payment: IamportRequest) {
-        debug_log("IamPortWebViewMode :: subscribePayment")
+        debug_log("IamportWebViewMode :: subscribePayment")
 
         let bus = RxBus.shared
         let webViewEvents = EventBus.WebViewEvents.self
 
         bus.asObservable(event: webViewEvents.ImpResponse.self).subscribe { [weak self] event in
             guard let el = event.element else {
-                print("IamPortWebViewMode :: Cannot find ImpResponse")
+                print("IamportWebViewMode :: Cannot find ImpResponse")
                 return
             }
 
-            print("IamPortWebViewMode :: receive ImpResponse")
+            print("IamportWebViewMode :: receive ImpResponse")
             self?.sdkFinish(el.impResponse)
         }.disposed(by: disposeBag)
 
         bus.asObservable(event: webViewEvents.OpenWebView.self).subscribe { [weak self] event in
             guard event.element != nil else {
-                print("IamPortWebViewMode :: Cannot find OpenWebView")
+                print("IamportWebViewMode :: Cannot find OpenWebView")
                 return
             }
             self?.openWebView()
@@ -157,7 +157,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
 
         bus.asObservable(event: webViewEvents.ThirdPartyUri.self).subscribe { [weak self] event in
             guard let el = event.element else {
-                print("IamPortWebViewMode :: Error not found ThirdPartyUri")
+                print("IamportWebViewMode :: Error not found ThirdPartyUri")
                 return
             }
             self?.openThirdPartyApp(el.thirdPartyUri)
@@ -252,7 +252,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
      */
     func finalProcessBankPayPayment(_ url: URL) {
         debug_log("finalProcessBankPayPayment :: \(url)")
-        var request = URLRequest(url: url)
+        let request = URLRequest(url: url)
         /// request.httpMethod = "POST" 해보니까 굳이 post 날릴 필요 없는 것 같음
         DispatchQueue.main.async { [weak self] in
             self?.webview?.load(request)
@@ -346,7 +346,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 }
 
-extension IamPortWebViewMode: WKScriptMessageHandler {
+extension IamportWebViewMode: WKScriptMessageHandler {
     func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
         debug_log("body \(message.body)")
 
@@ -381,7 +381,7 @@ extension IamPortWebViewMode: WKScriptMessageHandler {
             case .CUSTOM_CALL_BACK:
                 print("Received payment callback")
                 if let data = (message.body as? String)?.data(using: .utf8),
-                   let impStruct = try? JSONDecoder().decode(IamPortResponseStruct.self, from: data)
+                   let impStruct = try? JSONDecoder().decode(IamportResponseStruct.self, from: data)
                 {
                     let response = IamportResponse.structToClass(impStruct)
                     sdkFinish(response)
@@ -398,7 +398,7 @@ extension IamPortWebViewMode: WKScriptMessageHandler {
     }
 
     private func initSDK(userCode: String, tierCode: String? = nil) {
-        debug_log("userCode : '\(userCode)', tierCode : '\(tierCode)'")
+        debug_log("userCode : '\(userCode)', tierCode : '\(tierCode ?? "-")'")
 
         var jsInitMethod = "init('\(userCode)');" // IMP.init
         if !tierCode.nilOrEmpty {

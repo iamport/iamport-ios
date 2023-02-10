@@ -13,7 +13,7 @@ public class IamportResponse: Encodable, Then {
     public var error_msg: String?
     public var error_code: String?
 
-    static func structToClass(_ impStruct: IamPortResponseStruct) -> IamportResponse {
+    static func structToClass(_ impStruct: IamportResponseStruct) -> IamportResponse {
         IamportResponse().then { it in
             it.imp_success = impStruct.imp_success
             it.success = impStruct.success
@@ -54,7 +54,7 @@ extension IamportResponse: CustomStringConvertible {
             return responseJson
         } else {
             return """
-            IamPortResponse ::
+            IamportResponse ::
                 imp_success: \(String(describing: imp_success))
                 success: \(String(describing: success))
                 imp_uid: \(String(describing: imp_uid))
@@ -66,7 +66,7 @@ extension IamportResponse: CustomStringConvertible {
     }
 }
 
-public struct IamPortResponseStruct {
+public struct IamportResponseStruct {
     var imp_success: Bool? = false
     var success: Bool? = false
     var imp_uid: String?
@@ -79,7 +79,7 @@ public struct IamPortResponseStruct {
     }
 }
 
-extension IamPortResponseStruct: Decodable {
+extension IamportResponseStruct: Decodable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let decodeImp_success = try? values.decode(String.self, forKey: .imp_success)

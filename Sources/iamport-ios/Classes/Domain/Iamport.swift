@@ -21,7 +21,7 @@ open class Iamport {
         HTTPCookieStorage.shared.cookieAcceptPolicy = HTTPCookie.AcceptPolicy.always
     }
 
-    private func startPayment(sdk: IamportSdk, userCode: String, tierCode: String? = nil, payment: IamportPayment, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamportResponse?) -> Void) {
+    private func startPayment(sdk: IamportSdk, userCode: String, tierCode: String? = nil, payment: IamportPayment, approveCallback: ((IamportApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamportResponse?) -> Void) {
         paymentResult = paymentResultCallback
         self.sdk = sdk
         sdk.animate = animate
@@ -46,20 +46,20 @@ open class Iamport {
        - paymentResultCallback: 결제 후 콜백 함수
      */
 
-    public func payment(navController: UINavigationController, userCode: String, tierCode: String? = nil, payment: IamportPayment, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamportResponse?) -> Void) {
-        print("IamPort SDK payment for navController mode")
+    public func payment(navController: UINavigationController, userCode: String, tierCode: String? = nil, payment: IamportPayment, approveCallback: ((IamportApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamportResponse?) -> Void) {
+        print("Iamport SDK payment for navController mode")
 
         startPayment(sdk: IamportSdk(navController: navController), userCode: userCode, tierCode: tierCode, payment: payment, approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
     }
 
-    public func payment(viewController: UIViewController, userCode: String, tierCode: String? = nil, payment: IamportPayment, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamportResponse?) -> Void) {
-        print("IamPort SDK payment for viewController mode")
+    public func payment(viewController: UIViewController, userCode: String, tierCode: String? = nil, payment: IamportPayment, approveCallback: ((IamportApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamportResponse?) -> Void) {
+        print("Iamport SDK payment for viewController mode")
 
         startPayment(sdk: IamportSdk(viewController: viewController), userCode: userCode, tierCode: tierCode, payment: payment, approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
     }
 
-    public func paymentWebView(webViewMode: WKWebView, userCode: String, tierCode: String? = nil, payment: IamportPayment, approveCallback: ((IamPortApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamportResponse?) -> Void) {
-        print("IamPort SDK payment for webview mode")
+    public func paymentWebView(webViewMode: WKWebView, userCode: String, tierCode: String? = nil, payment: IamportPayment, approveCallback: ((IamportApprove) -> Void)? = nil, paymentResultCallback: @escaping (IamportResponse?) -> Void) {
+        print("Iamport SDK payment for webview mode")
 
         startPayment(sdk: IamportSdk(webViewMode: webViewMode), userCode: userCode, tierCode: tierCode, payment: payment, approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
     }
@@ -72,7 +72,7 @@ open class Iamport {
      - Parameter mobileWebMode: url 을 로드한 WKWebView 파라미터
      */
     public func pluginMobileWebSupporter(mobileWebMode: WKWebView) {
-        print("IamPort SDK payment for mobileweb mode")
+        print("Iamport SDK payment for mobileweb mode")
 
         sdk = IamportSdk(mobileWebMode: mobileWebMode) // 생성 및 mobileWebMode 실행
     }
@@ -94,33 +94,33 @@ open class Iamport {
        - paymentResultCallback: 결제 후 콜백 함수
      */
     public func certification(navController: UINavigationController, userCode: String, tierCode: String? = nil, certification: IamportCertification, certificationResultCallback: @escaping (IamportResponse?) -> Void) {
-        print("IamPort SDK certification")
+        print("Iamport SDK certification")
 
         startCertification(sdk: IamportSdk(navController: navController), userCode: userCode, tierCode: tierCode, certification: certification, certificationResultCallback: certificationResultCallback)
     }
 
     public func certification(viewController: UIViewController, userCode: String, tierCode: String? = nil, iamPortCertification: IamportCertification, certificationResultCallback: @escaping (IamportResponse?) -> Void) {
-        print("IamPort SDK certification")
+        print("Iamport SDK certification")
 
         startCertification(sdk: IamportSdk(viewController: viewController), userCode: userCode, tierCode: tierCode, certification: iamPortCertification, certificationResultCallback: certificationResultCallback)
     }
 
     public func certification(webview: WKWebView, userCode: String, tierCode: String? = nil, certification: IamportCertification, certificationResultCallback: @escaping (IamportResponse?) -> Void) {
-        print("IamPort SDK certification")
+        print("Iamport SDK certification")
 
         startCertification(sdk: IamportSdk(webViewMode: webview), userCode: userCode, tierCode: tierCode, certification: certification, certificationResultCallback: certificationResultCallback)
     }
 
     // 외부 앱 종료후 AppDelegate 에서 받은 URL
     public func receivedURL(_ url: URL) {
-        print("IamPort SDK receivedURL")
+        print("Iamport SDK receivedURL")
         sdk?.postReceivedURL(url)
     }
 
     /**
      * 외부에서 차이 최종결제 요청
      */
-    public func approvePayment(approve: IamPortApprove) {
+    public func approvePayment(approve: IamportApprove) {
         sdk?.requestApprovePayments(approve: approve)
     }
 

@@ -90,7 +90,7 @@ class PaymentWebViewModeViewController: UIViewController, WKNavigationDelegate {
         if let payment = viewModel.createPaymentData() {
             dump(payment)
 
-            //WebView 사용
+            // WebView 사용
             Iamport.shared.paymentWebView(webViewMode: wkWebView, userCode: userCode.value, payment: payment) { [weak self] iamPortResponse in
                 viewModel.iamportCallback(iamPortResponse)
                 self?.presentationMode?.wrappedValue.dismiss()

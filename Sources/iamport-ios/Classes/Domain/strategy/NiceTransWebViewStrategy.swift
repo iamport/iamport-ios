@@ -69,9 +69,9 @@ class NiceTransWebViewStrategy: WebViewStrategy {
                     RxBus.shared.post(event: EventBus.WebViewEvents.FinalBankPayProcess(url: url))
                 }
             case .CANCEL, .TIME_OUT, .FAIL_SIGN, .FAIL_OTP, .FAIL_CERT_MODULE_INIT:
-                debug_log(code.desc)
+                debug_log(code.description)
                 if let it = request {
-                    failure(request: it, msg: code.desc)
+                    failure(request: it, msg: code.description)
                     return
                 }
 

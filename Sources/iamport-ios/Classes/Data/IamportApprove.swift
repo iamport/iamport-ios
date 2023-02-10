@@ -5,7 +5,7 @@
 import Foundation
 import Then
 
-public class IamPortApprove: Then {
+public class IamportApprove: Then {
     var userCode: String
     var merchantUid: String
     var customerUid: String?
@@ -33,8 +33,8 @@ public class IamPortApprove: Then {
         self.status = status
     }
 
-    static func make(payment: IamportRequest, prepareData: PrepareData, status: ChaiPaymentStatus) -> IamPortApprove {
-        IamPortApprove(userCode: payment.userCode,
+    static func make(payment: IamportRequest, prepareData: PrepareData, status: ChaiPaymentStatus) -> IamportApprove {
+        IamportApprove(userCode: payment.userCode,
                        merchantUid: payment.getMerchantUid(),
                        paymentId: prepareData.paymentId,
                        impUid: prepareData.impUid,
