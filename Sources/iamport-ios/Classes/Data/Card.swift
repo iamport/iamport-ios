@@ -6,7 +6,7 @@ import Foundation
 
 public class Card: Codable {
     var direct: Direct
-    public init(direct: Direct)  {
+    public init(direct: Direct) {
         self.direct = direct
     }
 }

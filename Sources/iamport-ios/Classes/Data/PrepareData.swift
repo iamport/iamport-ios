@@ -12,12 +12,13 @@ struct PrepareData: Codable {
     let returnUrl: String
     let publicAPIKey: String
     var mode: String? = nil
-    var isSbcr: Bool? // FIXME : 서버 배포 후 non nullable 로 수정해야댐
+    var isSbcr: Bool? // FIXME: 서버 배포 후 non nullable 로 수정해야댐
 
     init(impUid: String, paymentId: String? = nil,
          subscriptionId: String? = nil, idempotencyKey: String,
          returnUrl: String, publicAPIKey: String,
-         isSbcr: Bool?) {
+         isSbcr: Bool?)
+    {
         self.impUid = impUid
         self.paymentId = paymentId
         self.subscriptionId = subscriptionId

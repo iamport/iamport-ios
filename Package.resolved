@@ -12,7 +12,7 @@
       },
       {
         "package": "RxBus",
-        "repositoryURL": "https://github.com/ridi/RxBus-swift",
+        "repositoryURL": "https://github.com/iamport/RxBus-Swift",
         "state": {
           "branch": null,
           "revision": "b154da5fffb4c5d0d17b7f46e9cd38f382e298e4",
@@ -26,6 +26,15 @@
           "branch": null,
           "revision": "7c17a6ccca06b5c107cfa4284e634562ddaf5951",
           "version": "6.2.0"
+        }
+      },
+      {
+        "package": "SwiftFormat",
+        "repositoryURL": "https://github.com/nicklockwood/SwiftFormat",
+        "state": {
+          "branch": null,
+          "revision": "ae4d0b672cd7094ae513097c617951a5ac714418",
+          "version": "0.50.8"
         }
       },
       {

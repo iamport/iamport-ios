@@ -61,8 +61,8 @@ class PaymentViewController: UIViewController, WKNavigationDelegate {
         }
 
         let userCode = viewModel.order.userCode // iamport 에서 부여받은 가맹점 식별코드
-        if let request = viewModel.createPaymentData() {
-            dump(request)
+        if let payment = viewModel.createPaymentData() {
+            dump(payment)
 
 
 //        #case1 use for UIViewController
@@ -70,7 +70,7 @@ class PaymentViewController: UIViewController, WKNavigationDelegate {
             Iamport.shared.useNaviButton(enable: true)
 
             Iamport.shared.payment(viewController: self,
-                    userCode: userCode.value, iamPortRequest: request) { iamPortResponse in
+                    userCode: userCode.value, payment: payment) { iamPortResponse in
                 viewModel.iamportCallback(iamPortResponse)
             }
 

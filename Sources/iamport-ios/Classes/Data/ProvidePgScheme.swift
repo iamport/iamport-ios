@@ -5,8 +5,7 @@
 import Foundation
 
 public enum ProvidePgScheme: String, CaseIterable {
-
-// url 에서 제공하지 않는 PG와 앱 패키지
+    // url 에서 제공하지 않는 PG와 앱 패키지
     case BANKPAY = "kftc-bankpay"
     case ISP = "ispmobile"
     case KB_BANKPAY = "kb-bankpay"
@@ -19,7 +18,7 @@ public enum ProvidePgScheme: String, CaseIterable {
 
     func getNiceBankPayPrefix() -> String {
         let process = "://eftpay?"
-        return "\(self.rawValue)\(process)"
+        return "\(rawValue)\(process)"
     }
 
 //    func getNiceBankPayAppCls() -> String {

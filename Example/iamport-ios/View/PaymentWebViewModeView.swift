@@ -87,11 +87,11 @@ class PaymentWebViewModeViewController: UIViewController, WKNavigationDelegate {
         }
 
         let userCode = viewModel.order.userCode // iamport 에서 부여받은 가맹점 식별코드
-        if let request = viewModel.createPaymentData() {
-            dump(request)
+        if let payment = viewModel.createPaymentData() {
+            dump(payment)
 
             //WebView 사용
-            Iamport.shared.paymentWebView(webViewMode: wkWebView, userCode: userCode.value, iamPortRequest: request) { [weak self] iamPortResponse in
+            Iamport.shared.paymentWebView(webViewMode: wkWebView, userCode: userCode.value, payment: payment) { [weak self] iamPortResponse in
                 viewModel.iamportCallback(iamPortResponse)
                 self?.presentationMode?.wrappedValue.dismiss()
             }

@@ -18,7 +18,7 @@ import RxSwift
 class PaymentResultViewController: UIViewController, UIGestureRecognizerDelegate {
 
     // 결과 전달 받을 RxSubject
-    let impResponseRelay = BehaviorRelay<IamPortResponse?>(value: nil)
+    let impResponseRelay = BehaviorRelay<IamportResponse?>(value: nil)
     var disposeBag = DisposeBag()
 
     override func viewDidLoad() {
@@ -53,7 +53,7 @@ class PaymentResultViewController: UIViewController, UIGestureRecognizerDelegate
     // imp_success, success 해당 값을 맹신할 수 없습니다.
     // 뱅크페이 실시간 계좌이체는 해당 값이 전달되지 않는 케이스가 있습니다.
     // 결과 콜백을 받으면, Iamport REST API 등을 통해 "실제 결제 여부" 를 체크하셔야 합니다.
-    private func isSuccess(_ iamportResponse: IamPortResponse) -> Bool {
+    private func isSuccess(_ iamportResponse: IamportResponse) -> Bool {
         iamportResponse.imp_success ?? false || iamportResponse.success ?? false
     }
 

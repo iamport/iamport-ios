@@ -78,8 +78,8 @@ public enum PayMethod: String, CaseIterable, Codable {
     }
 
     public static func convertPayMethod(_ payMethodString: String) -> PayMethod {
-        for value in self.allCases {
-            if (payMethodString == value.rawValue) {
+        for value in allCases {
+            if payMethodString == value.rawValue {
                 return value
             }
         }

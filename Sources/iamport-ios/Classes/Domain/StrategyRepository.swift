@@ -26,13 +26,11 @@ class StrategyRepository {
 //        EventBus.shared.clearRelay.accept(())
 //    }
 
-
     /**
      * PG 와 PayMethod 로 결제 타입하여 가져옴
      * @return PaymentKinds
      */
-    private func getPaymentKinds(payment: Payment) -> PaymentKinds {
-
+    private func getPaymentKinds(request: IamportRequest) -> PaymentKinds {
         func isChaiPayment(pgPair: (PG, PayMethod)) -> Bool {
             pgPair.0 == PG.chai
         }
@@ -45,32 +43,30 @@ class StrategyRepository {
             pgPair.0 == PG.html5_inicis && pgPair.1 == PayMethod.trans
         }
 
-        dlog(payment.iamPortRequest?.pgEnum)
+        guard case let .payment(payment) = request.payload else { return .WEB }
 
-        if let request = payment.iamPortRequest, let it = request.pgEnum {
-            let pair = (it, PayMethod.convertPayMethod(request.pay_method))
+        if let it = payment.pgEnum {
+            let pair = (it, PayMethod.convertPayMethod(payment.pay_method))
 
-            if (isChaiPayment(pgPair: pair)) {
+            if isChaiPayment(pgPair: pair) {
                 return PaymentKinds.CHAI
 
-            } else if (isNiceTransPayment(pgPair: pair)) {
+            } else if isNiceTransPayment(pgPair: pair) {
                 return PaymentKinds.NICE
 
-            } else if (isInisisTransPayment(pgPair: pair)) {
+            } else if isInisisTransPayment(pgPair: pair) {
                 return PaymentKinds.INISIS
 
             } else {
-
                 return PaymentKinds.WEB
             }
         } else {
-
             return PaymentKinds.WEB // default WEB
         }
     }
 
-    func getWebViewStrategy(_ payment: Payment) -> IStrategy {
-        switch getPaymentKinds(payment: payment) {
+    func getWebViewStrategy(_ payment: IamportRequest) -> IStrategy {
+        switch getPaymentKinds(request: payment) {
         case .NICE:
             return niceTransWebViewStrategy
 
@@ -89,18 +85,16 @@ class StrategyRepository {
         niceTransWebViewStrategy
     }
 
-    func processBankPayPayment(_ payment: Payment, _ url: URL) {
-        if (getPaymentKinds(payment: payment) == PaymentKinds.NICE) {
+    func processBankPayPayment(_ payment: IamportRequest, _ url: URL) {
+        if getPaymentKinds(request: payment) == PaymentKinds.NICE {
             niceTransWebViewStrategy.processBankPayPayment(url)
             return
         }
 
-        dlog("NICE 가 아니므로 무시")
+        debug_log("NICE 가 아니므로 무시")
     }
 
-    func requestCertification(_ payment: Payment) {
+    func requestCertification(_ payment: IamportRequest) {
         certificationWebViewStrategy.doWork(payment)
     }
-
-
 }

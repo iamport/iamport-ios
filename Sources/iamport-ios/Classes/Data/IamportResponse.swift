@@ -5,16 +5,16 @@
 import Foundation
 import Then
 
-public class IamPortResponse: Encodable, Then {
+public class IamportResponse: Encodable, Then {
     public var imp_success: Bool? = false
     public var success: Bool? = false
     public var imp_uid: String?
     public var merchant_uid: String?
-    public var error_msg: String? = nil
-    public var error_code: String? = nil
+    public var error_msg: String?
+    public var error_code: String?
 
-    static func structToClass(_ impStruct: IamPortResponseStruct) -> IamPortResponse {
-        IamPortResponse().then { it in
+    static func structToClass(_ impStruct: IamPortResponseStruct) -> IamportResponse {
+        IamportResponse().then { it in
             it.imp_success = impStruct.imp_success
             it.success = impStruct.success
             it.imp_uid = impStruct.imp_uid
@@ -24,9 +24,8 @@ public class IamPortResponse: Encodable, Then {
         }
     }
 
-
-    static func makeSuccess(payment: Payment, prepareData: PrepareData? = nil, msg: String) -> IamPortResponse {
-        IamPortResponse().then { it in
+    static func makeSuccess(payment: IamportRequest, prepareData: PrepareData? = nil, msg: String) -> IamportResponse {
+        IamportResponse().then { it in
             it.imp_success = true
             it.success = true
             it.imp_uid = prepareData?.impUid
@@ -35,8 +34,8 @@ public class IamPortResponse: Encodable, Then {
         }
     }
 
-    static func makeFail(payment: Payment, prepareData: PrepareData? = nil, msg: String) -> IamPortResponse {
-        IamPortResponse().then { it in
+    static func makeFail(payment: IamportRequest, prepareData: PrepareData? = nil, msg: String) -> IamportResponse {
+        IamportResponse().then { it in
             it.imp_success = false
             it.success = false
             it.imp_uid = prepareData?.impUid
@@ -46,9 +45,8 @@ public class IamPortResponse: Encodable, Then {
     }
 }
 
-extension IamPortResponse: CustomStringConvertible {
+extension IamportResponse: CustomStringConvertible {
     public var description: String {
-
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         let jsonData = try? encoder.encode(self)
@@ -56,14 +54,14 @@ extension IamPortResponse: CustomStringConvertible {
             return responseJson
         } else {
             return """
-                   IamPortResponse ::
-                       imp_success: \(String(describing: imp_success))
-                       success: \(String(describing: success))
-                       imp_uid: \(String(describing: imp_uid))
-                       merchant_uid : \(String(describing: merchant_uid))
-                       error_msg: \(String(describing: error_msg))
-                       error_code: \(String(describing: error_code)))
-                   """
+            IamPortResponse ::
+                imp_success: \(String(describing: imp_success))
+                success: \(String(describing: success))
+                imp_uid: \(String(describing: imp_uid))
+                merchant_uid : \(String(describing: merchant_uid))
+                error_msg: \(String(describing: error_msg))
+                error_code: \(String(describing: error_code)))
+            """
         }
     }
 }
@@ -83,7 +81,6 @@ public struct IamPortResponseStruct {
 
 extension IamPortResponseStruct: Decodable {
     public init(from decoder: Decoder) throws {
-
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let decodeImp_success = try? values.decode(String.self, forKey: .imp_success)
 
@@ -112,4 +109,3 @@ extension IamPortResponseStruct: Decodable {
         error_msg = try? values.decode(String.self, forKey: .error_msg)
     }
 }
-

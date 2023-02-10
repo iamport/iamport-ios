@@ -50,15 +50,15 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     // 아임포트 SDK 본인인증 요청
     func requestCertification() {
         let userCode = "iamport" // 다날
-        let request = createCertificationData()
-        dump(request)
+        let certification = createCertificationData()
+        dump(certification)
 
         guard let navController = navigationController else {
             print("navigationController 를 찾을 수 없습니다")
             return
         }
 
-        Iamport.shared.certification(navController: navController, userCode: userCode, iamPortCertification: request) { [weak self] iamPortResponse in
+        Iamport.shared.certification(navController: navController, userCode: userCode, certification: certification) { [weak self] iamPortResponse in
             self?.paymentCallback(iamPortResponse)
         }
 
@@ -106,7 +106,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         } else {
         }
         Iamport.shared.paymentWebView(webViewMode: wkWebView,
-                userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+                userCode: userCode, payment: request) { [weak self] iamPortResponse in
             self?.paymentCallback(iamPortResponse)
         }
 
@@ -132,11 +132,11 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     // 아임포트 결제 데이터 생성
-    func createPaymentData() -> IamPortRequest {
+    func createPaymentData() -> IamportPayment {
         let display = CardQuota()
         display.card_quota = []
 
-        return IamPortRequest(
+        return IamportPayment(
                 pg: PG.html5_inicis.makePgRawName(pgId: ""),
                 merchant_uid: "muid_ios_\(Int(Date().timeIntervalSince1970))",
                 amount: "1000").then {
@@ -149,8 +149,8 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     // 아임포트 본인인증 데이터 생성
-    func createCertificationData() -> IamPortCertification {
-        IamPortCertification(merchant_uid: "muid_ios_\(Int(Date().timeIntervalSince1970))").then {
+    func createCertificationData() -> IamportCertification {
+        IamportCertification(merchant_uid: "muid_ios_\(Int(Date().timeIntervalSince1970))").then {
             $0.min_age = 19
             $0.name = "김빙봉"
             $0.phone = "010-1234-5678"
@@ -160,7 +160,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     // 결제 완료 후 콜백 함수 (예시)
-    func paymentCallback(_ response: IamPortResponse?) {
+    func paymentCallback(_ response: IamportResponse?) {
         print("------------------------------------------")
         print("결과 왔습니다~~")
         print("Iamport Payment response: \(response)")

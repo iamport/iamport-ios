@@ -3,28 +3,25 @@
 //
 
 import Foundation
-import RxSwift
 import RxBusForPort
+import RxSwift
 
 class MainViewModel {
-
     private var disposeBag = DisposeBag()
-    private let repository = StrategyRepository() // TODO dependency inject
+    private let repository = StrategyRepository() // TODO: dependency inject
 
     func clear() {
         disposeBag = DisposeBag()
     }
 
-    func judgePayment(_ payment: Payment, ignoreNative: Bool = false) {
-
+    func judgePayment(_ payment: IamportRequest, ignoreNative: Bool = false) {
         subscribe()
 
         DispatchQueue.main.async { [weak self] in
-
-            Payment.validator(payment) { valid, desc in
+            IamportRequest.validator(payment) { valid, desc in
                 print("one more Payment validator valid :: \(valid), valid :: \(desc)")
-                if (!valid) {
-                    IamPortResponse.makeFail(payment: payment, msg: desc).do { it in
+                if !valid {
+                    IamportResponse.makeFail(payment: payment, msg: desc).do { it in
                         self?.clear()
                         EventBus.shared.impResponseRelay.accept(it)
                     }
@@ -48,10 +45,9 @@ class MainViewModel {
         }.disposed(by: disposeBag)
     }
 
-
     // 판단 결과 처리
-    private func judgeProcess(_ judge: (JudgeStrategy.JudgeKinds, UserData?, Payment)) {
-        dlog("JudgeEvent \(judge)")
+    private func judgeProcess(_ judge: (JudgeStrategy.JudgeKinds, UserData?, IamportRequest)) {
+        debug_log("JudgeEvent \(judge)")
         switch judge.0 {
         case .CHAI:
             judge.1?.do { userData in
@@ -65,7 +61,6 @@ class MainViewModel {
             print("판단불가 \(judge)")
         }
     }
-
 
     /**
      * 차이 최종 결제 요청
@@ -82,5 +77,4 @@ class MainViewModel {
         print("차이 앱 없으므로 폴링 stop")
         repository.chaiStrategy.clear()
     }
-
 }

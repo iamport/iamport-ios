@@ -4,52 +4,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-<!-- 현재 콜백은 불필요 할 듯 onPageFinished 쓰니까..! -->
     <script type="text/javascript">
         console.log("Wait cdn-iamport-sdk...");
 
-        const iosHandler = window.webkit.messageHandlers
+        const handlers = window.webkit.messageHandlers;
         document.addEventListener('DOMContentLoaded', () => {
             console.log("Load finish cdn-iamport-sdk...");
-            iosHandler.startWorkingSdk.postMessage("")
+            handlers.startWorkingSdk.postMessage("");
         });
 
         function dLog(log) {
-<!--            console.log(log)-->
-            iosHandler.debugConsoleLog.postMessage(log)
+            handlers.debugConsoleLog.postMessage(log);
         }
 
         function callback(response) {
-            dLog(response)
-            iosHandler.customCallback.postMessage(JSON.stringify(response))
+            dLog(response);
+            handlers.customCallback.postMessage(JSON.stringify(response));
         }
 
         function init(userCode) {
-            dLog("init userCode :: " + dLog)
+            dLog("init userCode :: " + dLog);
             IMP.init(userCode);
         }
 
         function agency(userCode, tierCode) {
-            dLog("agency userCode :: " + dLog + ", tierCode :: " + tierCode)
+            dLog("agency userCode :: " + dLog + ", tierCode :: " + tierCode);
             IMP.agency(userCode, tierCode);
         }
 
-        function requestPay(impRequest) {
-            dLog("requestPay :: " + impRequest)
-            IMP.request_pay(JSON.parse(impRequest), callback);
+        function requestPay(request) {
+            dLog("requestPay :: " + request);
+            IMP.request_pay(JSON.parse(request), callback);;
         }
 
-        function requestPayWithCustomData(impRequest, customData) {
-            var data = JSON.parse(impRequest)
+        function requestPayWithCustomData(request, customData) {
+            var data = JSON.parse(request);
 
-            var decodeCustom = decodeURIComponent(escape(window.atob(customData)))
-            dLog(decodeCustom)
+            var decodeCustom = decodeURIComponent(escape(window.atob(customData)));
+            dLog(decodeCustom);
 
             try {
-                data.custom_data = JSON.parse(decodeCustom)
+                data.custom_data = JSON.parse(decodeCustom);
             } catch (error) {
-                dLog(error.message)
-                data.custom_data = decodeCustom
+                dLog(error.message);
+                data.custom_data = decodeCustom;
             }
 
             IMP.request_pay(data, callback);
@@ -61,7 +59,6 @@
         }
 
     </script>
-    <script defer type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
-    <script defer type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+    <script defer type="text/javascript" src="https://cdn.iamport.kr/v1/iamport.js"></script>
 </body>
 </html>

@@ -5,7 +5,6 @@
 import Foundation
 
 enum AppScheme: CaseIterable {
-
     case bankpay // 뱅크페이
     case ispmobile // ISP/페이북
     case hdcard // 현대카드 앱카드
@@ -35,7 +34,6 @@ enum AppScheme: CaseIterable {
 
     var scheme: String {
         switch self {
-
         case .bankpay:
             return "kftc-bankpay"
         case .ispmobile:
@@ -93,7 +91,6 @@ enum AppScheme: CaseIterable {
 
     var appID: String {
         switch self {
-
         case .bankpay:
             return "id398456030"
         case .ispmobile:
@@ -150,9 +147,8 @@ enum AppScheme: CaseIterable {
     }
 
     private static func findAppScheme(_ scheme: String) -> AppScheme? {
-
         for value in AppScheme.allCases {
-            if (scheme.caseInsensitiveCompare(value.scheme) == .orderedSame) {
+            if scheme.caseInsensitiveCompare(value.scheme) == .orderedSame {
                 return value
             }
         }
@@ -160,7 +156,7 @@ enum AppScheme: CaseIterable {
         return nil
     }
 
-    // TODO appId 를 api 에서 받아왔으면 좋겠다..
+    // TODO: appId 를 api 에서 받아왔으면 좋겠다..
     static func getAppStoreUrl(scheme: String) -> String? {
         let appScheme = findAppScheme(scheme)
 
@@ -172,7 +168,4 @@ enum AppScheme: CaseIterable {
         let marketUrl = "itms-apps://itunes.apple.com/app/\(appId)"
         return marketUrl
     }
-
 }
-
-
