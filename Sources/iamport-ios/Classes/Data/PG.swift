@@ -30,6 +30,8 @@ public enum PG: String, CaseIterable, Codable {
     case bluewalnut
     case tosspay
     case smartro
+    case tosspayments
+    case ksnet
 
     public var name: String {
         switch self {
@@ -42,7 +44,9 @@ public enum PG: String, CaseIterable, Codable {
         case .kcp_billing:
             return "NHN KCP 정기결제"
         case .uplus:
-            return "LGU+"
+            return "토스페이먼츠 (구모듈)"
+        case .tosspayments:
+            return "토스페이먼츠 (신모듈)"
         case .jtnet:
             return "JTNet"
         case .kakaopay:
@@ -55,6 +59,8 @@ public enum PG: String, CaseIterable, Codable {
             return "다날일반결제"
         case .kicc:
             return "한국정보통신"
+        case .ksnet:
+            return "KSNET"
         case .paypal:
             return "페이팔"
         case .mobilians:
