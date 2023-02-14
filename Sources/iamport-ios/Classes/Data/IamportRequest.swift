@@ -29,7 +29,7 @@ struct IamportRequest: Codable, Then {
 
     var isCertification: Bool {
         switch payload {
-        case .payment:
+        case .certification:
             return true
         default:
             return false
