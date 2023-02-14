@@ -47,7 +47,7 @@ struct IamportRequest: Codable, Then {
         switch payload {
         case let .payment(payment): return payment.customer_uid
         // TODO: throw error instead
-        case let .certification(certification): return nil
+        case .certification: return nil
         }
     }
 

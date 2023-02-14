@@ -88,9 +88,6 @@ class PaymentMobileViewModeViewController: UIViewController, WKUIDelegate, WKNav
 //        wkWebView.uiDelegate = webViewDelegate as WKUIDelegate
 //        wkWebView.navigationDelegate = webViewDelegate as WKNavigationDelegate
 
-        wkWebView.uiDelegate = IamportWKWebViewDelegate()
-        wkWebView.navigationDelegate = IamportWKWebViewDelegate()
-
         let bundle = Bundle(for: type(of: self))
         guard let url = bundle.url(forResource: "mobileweb", withExtension: "html") else {
             print("html file url 비정상")
@@ -98,9 +95,7 @@ class PaymentMobileViewModeViewController: UIViewController, WKUIDelegate, WKNav
         }
 
         let urlRequest = URLRequest(url: url)
-        DispatchQueue.main.async { [weak self] in
-            self?.wkWebView.load(urlRequest)
-        }
+        self.wkWebView.load(urlRequest)
     }
 
 
@@ -109,8 +104,8 @@ class PaymentMobileViewModeViewController: UIViewController, WKUIDelegate, WKNav
         openWebView()
 
         // IamportWKWebViewDelegate 또는 아래의 Iamport.shared.updateWebViewUrl 을 통해 변경되는 url 을 체크 가능합니다.
-        Iamport.shared.updateWebViewUrl.subscribe { [weak self] url in
-            print("updateWebViewUrl received url : \(url.element)")
+        Iamport.shared.updateWebViewUrl.subscribe { url in
+            print("updateWebViewUrl received url : \(String(describing: url.element))")
         }.disposed(by: disposeBag)
 
         Iamport.shared.pluginMobileWebSupporter(mobileWebMode: wkWebView)
