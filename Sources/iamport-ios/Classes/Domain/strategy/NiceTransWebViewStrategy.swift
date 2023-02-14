@@ -12,7 +12,7 @@ class NiceTransWebViewStrategy: WebViewStrategy {
     var niceTransUrl: String?
 
     override func onUpdatedUrl(url: URL) {
-        debug_log("아주 나이스~ \(url)")
+        debug_log("try to update url: \(url)")
         if isNiceTransScheme(url) {
             let queryParams = url.queryParams()
             bankTid = (queryParams[NiceBankpay.USER_KEY] as? String)
@@ -30,7 +30,7 @@ class NiceTransWebViewStrategy: WebViewStrategy {
      뱅크페이 결제 결과 처리
      - Parameter url: 외부앱 뱅크페이 결제 종료시 받은 URL
      */
-    public func processBankPayPayment(_ url: URL) {
+    public func processBankpayPayment(_ url: URL) {
         // bankpaycode값과 bankpayvalue값을 추출해 각각 bankpay_code와 bankpay_value값으로 전달
         let queryItems = URLComponents(string: url.absoluteString)?.queryItems
 

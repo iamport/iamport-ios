@@ -181,7 +181,6 @@ class ChaiStrategy: BaseStrategy {
                     self?.failure(request: payment, msg: "success but \(error.localizedDescription)")
                 }
             case let .failure(error):
-//                self?.failureFinish(payment: payment, msgC: "통신실패 \(error.localizedDescription)")
                 print("네트워크 통신실패로 인한 폴링 시도!! \(error.localizedDescription)")
                 self?.tryPolling()
             }
@@ -190,14 +189,13 @@ class ChaiStrategy: BaseStrategy {
 
     private func tryPolling() {
         if isTimeOut() {
-            guard let payment = payment, let prepareData = prepareData else {
-                print("isTimeOut 이나, payment : \(self.payment), prepareData : \(self.prepareData)")
-//                sdkFinish(nil)
+            guard let _ = payment, let _ = prepareData else {
+                print("isTimeOut 이나, payment : \(String(describing: self.payment)), prepareData : \(String(describing: self.prepareData))")
+
                 clear()
                 return
             }
 
-//            failureFinish(payment: payment, prepareData: prepareData, msg: "I'mport : 타임아웃으로 인해 결제를 진행하지 않습니다")
             print("[\(Constant.TIME_OUT_MIN)] 분 이상 결제되지 않아 미결제 처리합니다. 결제를 재시도 해주세요.")
             clear()
             return

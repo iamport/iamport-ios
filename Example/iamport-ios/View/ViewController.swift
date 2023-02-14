@@ -159,7 +159,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     func paymentCallback(_ response: IamportResponse?) {
         print("------------------------------------------")
         print("결과 왔습니다~~")
-        print("Iamport Payment response: \(response)")
+        print("Iamport Payment response: \(String(describing: response))")
         print("------------------------------------------")
         let resultVC = PaymentResultViewController()
         resultVC.impResponseRelay.accept(response)

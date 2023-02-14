@@ -23,7 +23,7 @@ public class IamportSdk: Then {
     var disposeBag = DisposeBag()
 
     var animate = true
-    var useNaviButton = false
+    var useNavigationButton = false
 
     public init(navController: UINavigationController) {
         self.navController = navController
@@ -241,7 +241,7 @@ public class IamportSdk: Then {
             self?.navController?.pushViewController(wvc, animated: self?.animate ?? true)
 
             wvc.modalPresentationStyle = .fullScreen
-            wvc.useNaviButton = self?.useNaviButton ?? false
+            wvc.useNavigationButton = self?.useNavigationButton ?? false
             self?.viewController?.present(wvc, animated: self?.animate ?? true)
 
             debug_log("check viewController :: \(String(describing: self?.viewController))")

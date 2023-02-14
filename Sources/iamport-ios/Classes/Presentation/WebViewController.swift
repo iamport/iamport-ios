@@ -29,15 +29,13 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
     var popupWebView: WKWebView? // window.open()으로 열리는 새창
     var request: IamportRequest?
 
-    var useNaviButton = false
-    var naviHeight: CGFloat = 0
+    var useNavigationButton = false
+    var navigationHeight: CGFloat = 0
     var safeArea: CGFloat = 0
 
-    // Disappear
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         debug_log("viewWillDisappear")
-//        clearAll()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -46,14 +44,13 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
         clearAll()
     }
 
-    // loaded
     override func viewDidLoad() {
         super.viewDidLoad()
         debug_log("WebViewController 어서오고")
 
         view.backgroundColor = UIColor.white
 
-        if useNaviButton {
+        if useNavigationButton {
             setTopNaviBar()
         }
 
@@ -66,9 +63,9 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
     // 버튼 생성
     private func setTopNaviBar() {
         safeArea = statusBarHeight()
-        naviHeight = 45 // FIXME: 실제 ui 만큼 사이즈를 가져올 수 없음
+        navigationHeight = 45 // FIXME: 실제 ui 만큼 사이즈를 가져올 수 없음
 
-        let navbar = UINavigationBar(frame: CGRect(x: 0, y: safeArea, width: UIScreen.main.bounds.width, height: naviHeight))
+        let navbar = UINavigationBar(frame: CGRect(x: 0, y: safeArea, width: UIScreen.main.bounds.width, height: navigationHeight))
         navbar.backgroundColor = UIColor.white
         navbar.delegate = self
 
@@ -105,8 +102,6 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
     }
 
     private func clearAll() {
-//        clearWebView()
-//        view.removeFromSuperview()
         request = nil
         disposeBag = DisposeBag()
     }
@@ -131,8 +126,8 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
             wv.backgroundColor = UIColor.white
 
             // navi top bar 쓸 때
-            if useNaviButton {
-                wv.frame = CGRect(x: 0, y: safeArea + naviHeight, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - naviHeight - safeArea)
+            if useNavigationButton {
+                wv.frame = CGRect(x: 0, y: safeArea + navigationHeight, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - navigationHeight - safeArea)
             } else {
                 wv.frame = view.bounds
             }
@@ -149,21 +144,14 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
 
         // 결제 데이터
         eventBus.webViewPaymentBus.subscribe { [weak self] event in
-            guard let el = event.element, let pay = el else {
+            guard let el = event.element, let request = el else {
                 print("Error not found PaymentEvent")
                 return
             }
 
             debug_log("PaymentEvent 있음!")
-            self?.subscribe(pay)
+            self?.subscribe(request)
         }.disposed(by: disposeBag)
-
-        // 외부 종료 시그널
-//        eventBus.clearBus.subscribe { [weak self] in
-//            print("clearBus")
-        ////            self?.sdkFinish(nil)
-//            self?.clearAll()
-//        }.disposed(by: disposeBag)
     }
 
     // isCertification 에 따라 bind 할 항목이 달라짐
@@ -178,48 +166,23 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
     // 결제 데이터가 있을때 처리 할 이벤트들
     private func subscribeCertification(_ request: IamportRequest) {
         self.request = request
-
-        let bus = RxBus.shared
-        let webViewEvents = EventBus.WebViewEvents.self
-
-        bus.asObservable(event: webViewEvents.ImpResponse.self).subscribe { [weak self] event in
-            guard let el = event.element else {
-                print("Error not found ImpResponse")
-                return
-            }
-
-            debug_log("receive ImpResponse")
-            self?.sdkFinish(el.impResponse)
-        }.disposed(by: disposeBag)
-
-        bus.asObservable(event: webViewEvents.OpenWebView.self).subscribe { [weak self] event in
-            guard event.element != nil else {
-                print("Error not found OpenWebView")
-                return
-            }
-            self?.openWebView()
-        }.disposed(by: disposeBag)
-
-        bus.asObservable(event: webViewEvents.ThirdPartyUri.self).subscribe { [weak self] event in
-            guard let el = event.element else {
-                print("Error not found ThirdPartyUri")
-                return
-            }
-            self?.openThirdPartyApp(el.thirdPartyUri)
-        }.disposed(by: disposeBag)
-
+        subscribeWebViewEvents()
         requestCertification(request)
     }
 
     // 결제 데이터가 있을때 처리 할 이벤트들
     private func subscribePayment(_ request: IamportRequest) {
-        debug_log("subscribePayment vc")
-
         self.request = request
-        let bus = RxBus.shared
-        let webViewEvents = EventBus.WebViewEvents.self
+        subscribeWebViewEvents()
+        subscribeForBankPay()
+        requestPayment(request)
+    }
 
-        bus.asObservable(event: webViewEvents.ImpResponse.self).subscribe { [weak self] event in
+    private func subscribeWebViewEvents() {
+        let bus = RxBus.shared
+        let events = EventBus.WebViewEvents.self
+
+        bus.asObservable(event: events.ImpResponse.self).subscribe { [weak self] event in
             guard let el = event.element else {
                 print("Error not found ImpResponse")
                 return
@@ -229,7 +192,7 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
             self?.sdkFinish(el.impResponse)
         }.disposed(by: disposeBag)
 
-        bus.asObservable(event: webViewEvents.OpenWebView.self).subscribe { [weak self] event in
+        bus.asObservable(event: events.OpenWebView.self).subscribe { [weak self] event in
             guard event.element != nil else {
                 print("Error not found OpenWebView")
                 return
@@ -237,16 +200,13 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
             self?.openWebView()
         }.disposed(by: disposeBag)
 
-        bus.asObservable(event: webViewEvents.ThirdPartyUri.self).subscribe { [weak self] event in
+        bus.asObservable(event: events.ThirdPartyUri.self).subscribe { [weak self] event in
             guard let el = event.element else {
                 print("Error not found ThirdPartyUri")
                 return
             }
             self?.openThirdPartyApp(el.thirdPartyUri)
         }.disposed(by: disposeBag)
-
-        subscribeForBankPay()
-        requestPayment(request)
     }
 
     private func subscribeForBankPay() {
@@ -378,25 +338,12 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
      * 결제 요청 실행
      */
     private func openWebView() {
-        print("오픈! 웹뷰 vc")
+        debug_log("Try to open WebView")
 
         let bundle = Bundle.module
-        var urlRequest: URLRequest? // for webView load
-        var htmlContents: String? // for webView loadHtml(smilepay 자동 로그인)
 
-        if case let .payment(payment) = request?.payload, payment.pgEnum == PG.smilepay {
-            if let filepath = bundle.path(forResource: Constant.CDN_FILE_NAME, ofType: Constant.CDN_FILE_EXTENSION) {
-                htmlContents = try? String(contentsOfFile: filepath, encoding: .utf8)
-            }
-        } else {
-            guard let url = bundle.url(forResource: Constant.CDN_FILE_NAME, withExtension: Constant.CDN_FILE_EXTENSION) else {
-                print("html file url 비정상")
-                return
-            }
-
-            debug_dump(url)
-
-            urlRequest = URLRequest(url: url)
+        guard let filepath = bundle.path(forResource: Constant.CDN_FILE_NAME, ofType: Constant.CDN_FILE_EXTENSION), let contents = try? String(contentsOfFile: filepath, encoding: .utf8) else {
+            return
         }
 
         DispatchQueue.main.async { [weak self] in
@@ -405,16 +352,11 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
                 return
             }
 
-            if case let .payment(payment) = self?.request?.payload, payment.pgEnum == PG.smilepay {
-                if let base = URL(string: Constant.SMILE_PAY_BASE_URL),
-                   let contents = htmlContents
-                {
-                    wv.loadHTMLString(contents, baseURL: base)
-                }
+            // SMILEPAY 자동로그인
+            if case let .payment(payment) = self?.request?.payload, payment.pgEnum == PG.smilepay, let base = URL(string: Constant.SMILE_PAY_BASE_URL) {
+                wv.loadHTMLString(contents, baseURL: base)
             } else {
-                if let request = urlRequest {
-                    wv.load(request)
-                }
+                wv.loadHTMLString(contents, baseURL: nil)
             }
         }
     }
@@ -550,7 +492,7 @@ extension WebViewController: WKScriptMessageHandler {
     }
 
     private func initSDK(userCode: String, tierCode: String? = nil) {
-        debug_log("userCode : '\(userCode)', tierCode : '\(tierCode)'")
+        debug_log("userCode : '\(userCode)', tierCode : '\(tierCode ?? "-")'")
 
         var jsInitMethod = "init('\(userCode)');" // IMP.init
         if !tierCode.nilOrEmpty {

@@ -17,7 +17,7 @@ import UIKit
 
 func debug_log(_ log: Any..., file: String = #file, line: UInt = #line, column: UInt = #column, function: String = #function) {
     #if DEBUG
-    debugPrint("\((file as NSString).lastPathComponent)(\(function)):\(line):\(column) \(log)")
+        debugPrint("\((file as NSString).lastPathComponent)(\(function)):\(line):\(column) \(log)")
     #endif
 }
 

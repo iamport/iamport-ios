@@ -9,8 +9,8 @@ class StrategyRepository {
     /**
      * 실제로 앱 띄울 결제 타입
      */
-    enum PaymentKinds {
-        case CHAI, NICE, WEB, INISIS
+    enum PaymentKind {
+        case CHAI, NICE, WEB, INICIS
     }
 
     let judgeStrategy = JudgeStrategy() // 결제 판별
@@ -22,55 +22,28 @@ class StrategyRepository {
 
     private let certificationWebViewStrategy = CertificationWebViewStrategy()
 
-//    func clear() {
-//        EventBus.shared.clearRelay.accept(())
-//    }
-
     /**
      * PG 와 PayMethod 로 결제 타입하여 가져옴
-     * @return PaymentKinds
+     * @return PaymentKind
      */
-    private func getPaymentKinds(request: IamportRequest) -> PaymentKinds {
-        func isChaiPayment(pgPair: (PG, PayMethod)) -> Bool {
-            pgPair.0 == PG.chai
-        }
+    private func getPaymentKind(request: IamportRequest) -> PaymentKind {
+        guard case let .payment(payment) = request.payload,
+              let pg = payment.pgEnum else { return .WEB }
 
-        func isNiceTransPayment(pgPair: (PG, PayMethod)) -> Bool {
-            pgPair.0 == PG.nice && pgPair.1 == PayMethod.trans
-        }
-
-        func isInisisTransPayment(pgPair: (PG, PayMethod)) -> Bool {
-            pgPair.0 == PG.html5_inicis && pgPair.1 == PayMethod.trans
-        }
-
-        guard case let .payment(payment) = request.payload else { return .WEB }
-
-        if let it = payment.pgEnum {
-            let pair = (it, PayMethod.convertPayMethod(payment.pay_method))
-
-            if isChaiPayment(pgPair: pair) {
-                return PaymentKinds.CHAI
-
-            } else if isNiceTransPayment(pgPair: pair) {
-                return PaymentKinds.NICE
-
-            } else if isInisisTransPayment(pgPair: pair) {
-                return PaymentKinds.INISIS
-
-            } else {
-                return PaymentKinds.WEB
-            }
-        } else {
-            return PaymentKinds.WEB // default WEB
+        switch (pg, PayMethod.convertPayMethod(payment.pay_method)) {
+        case (PG.chai, _): return PaymentKind.CHAI
+        case (PG.nice, PayMethod.trans): return PaymentKind.NICE
+        case (PG.html5_inicis, PayMethod.trans): return PaymentKind.INICIS
+        default: return PaymentKind.WEB
         }
     }
 
-    func getWebViewStrategy(_ payment: IamportRequest) -> IStrategy {
-        switch getPaymentKinds(request: payment) {
+    func getWebViewStrategy(_ request: IamportRequest) -> IStrategy {
+        switch getPaymentKind(request: request) {
         case .NICE:
             return niceTransWebViewStrategy
 
-        case .INISIS:
+        case .INICIS:
             return inicisTransWebViewStrategy
 
         case .WEB:
@@ -85,16 +58,15 @@ class StrategyRepository {
         niceTransWebViewStrategy
     }
 
-    func processBankPayPayment(_ payment: IamportRequest, _ url: URL) {
-        if getPaymentKinds(request: payment) == PaymentKinds.NICE {
-            niceTransWebViewStrategy.processBankPayPayment(url)
+    func processBankPayPayment(_ request: IamportRequest, _ url: URL) {
+        // NICE인 경우 뱅크페이를 수행합니다.
+        if getPaymentKind(request: request) == PaymentKind.NICE {
+            niceTransWebViewStrategy.processBankpayPayment(url)
             return
         }
-
-        debug_log("NICE 가 아니므로 무시")
     }
 
-    func requestCertification(_ payment: IamportRequest) {
-        certificationWebViewStrategy.doWork(payment)
+    func requestCertification(_ request: IamportRequest) {
+        certificationWebViewStrategy.doWork(request)
     }
 }

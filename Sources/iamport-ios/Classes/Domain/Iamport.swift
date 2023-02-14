@@ -14,7 +14,7 @@ open class Iamport {
     private var sdk: IamportSdk?
     private var paymentResult: ((IamportResponse?) -> Void)? // 결제 결과 callback
     private var animate = true
-    private var useNaviButton = false
+    private var useNavigationButton = false
 
     init() {
         // WebView 쿠키 enable 위해 추가
@@ -25,7 +25,7 @@ open class Iamport {
         paymentResult = paymentResultCallback
         self.sdk = sdk
         sdk.animate = animate
-        sdk.useNaviButton = useNaviButton
+        sdk.useNavigationButton = useNavigationButton
         sdk.initStart(request: IamportRequest(userCode: userCode, tierCode: tierCode, payment: payment), approveCallback: approveCallback, paymentResultCallback: paymentResultCallback)
     }
 
@@ -33,7 +33,7 @@ open class Iamport {
         paymentResult = certificationResultCallback
         self.sdk = sdk
         sdk.animate = animate
-        sdk.useNaviButton = useNaviButton
+        sdk.useNavigationButton = useNavigationButton
         sdk.initStart(request: IamportRequest(userCode: userCode, tierCode: tierCode, certification: certification), certificationResultCallback: certificationResultCallback)
     }
 
@@ -82,7 +82,7 @@ open class Iamport {
     }
 
     public func useNaviButton(enable: Bool) {
-        useNaviButton = enable
+        useNavigationButton = enable
     }
 
     /**
