@@ -41,7 +41,7 @@ class EventBus {
     enum MainEvents {
         // 현재 결제 종류 판별
         struct JudgeEvent: BusEvent {
-            let judge: (JudgeStrategy.JudgeKinds, UserData?, IamportRequest)
+            let judge: (JudgeStrategy.JudgeKind, UserData?, IamportRequest)
         }
 
         // 차이앱 열기 위한 url

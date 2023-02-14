@@ -190,7 +190,7 @@ class ChaiStrategy: BaseStrategy {
     private func tryPolling() {
         if isTimeOut() {
             guard let _ = payment, let _ = prepareData else {
-                print("isTimeOut 이나, payment : \(String(describing: self.payment)), prepareData : \(String(describing: self.prepareData))")
+                print("isTimeOut 이나, payment : \(String(describing: payment)), prepareData : \(String(describing: prepareData))")
 
                 clear()
                 return

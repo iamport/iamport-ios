@@ -9,7 +9,7 @@ import RxSwift
 
 public class JudgeStrategy: BaseStrategy {
     // 유저 정보 판단 결과 타입
-    enum JudgeKinds {
+    enum JudgeKind {
         case CHAI, WEB, CERT, ERROR
     }
 
@@ -55,10 +55,10 @@ public class JudgeStrategy: BaseStrategy {
         }
     }
 
-    private func judge(_ request: IamportRequest, _ userDataList: [UserData]) -> (JudgeKinds, UserData?, IamportRequest) {
+    private func judge(_ request: IamportRequest, _ userDataList: [UserData]) -> (JudgeKind, UserData?, IamportRequest) {
         guard !userDataList.isEmpty else {
             failure(request: request, msg: "User data list is empty")
-            return (JudgeKinds.ERROR, nil, request)
+            return (JudgeKind.ERROR, nil, request)
         }
         debug_log("userDataList :: \(userDataList)")
 
@@ -68,21 +68,21 @@ public class JudgeStrategy: BaseStrategy {
                 data.pg_provider != nil && data.type == Constant.USER_TYPE_CERTIFICATION
             }) else {
                 failure(request: request, msg: "본인인증 설정 또는 가입을 먼저 해주세요.")
-                return (JudgeKinds.ERROR, nil, request)
+                return (JudgeKind.ERROR, nil, request)
             }
 
-            return (JudgeKinds.CERT, defCertUser, request)
+            return (JudgeKind.CERT, defCertUser, request)
         }
 
         // 2. 결제요청의 경우 판단
         guard let defPaymentUser = findDefaultUserData(userDataList) else {
             failure(request: request, msg: "Not found Default PG. All PG empty.")
-            return (JudgeKinds.ERROR, nil, request)
+            return (JudgeKind.ERROR, nil, request)
         }
 
         guard case let .payment(payment) = request.payload else {
             failure(request: request, msg: "Not found My PG.")
-            return (JudgeKinds.ERROR, nil, request)
+            return (JudgeKind.ERROR, nil, request)
         }
 
         let split = payment.pg.split(separator: ".")
@@ -103,14 +103,14 @@ public class JudgeStrategy: BaseStrategy {
 
         debug_log("findPg \(String(describing: findPg))")
 
-        let result: (JudgeKinds, UserData?, IamportRequest)
+        let result: (JudgeKind, UserData?, IamportRequest)
         switch findPg {
         case .none:
             guard let pg_provider = defPaymentUser.pg_provider,
                   let pg = PG.convertPG(pgString: pg_provider)
             else {
                 failure(request: request, msg: "Not found defPaymentUser pg_provider")
-                return (JudgeKinds.ERROR, nil, request)
+                return (JudgeKind.ERROR, nil, request)
             }
 
             result = getPgTriple(user: defPaymentUser, request: replacePG(pg: pg, request: request))
@@ -130,20 +130,20 @@ public class JudgeStrategy: BaseStrategy {
     /**
      * pg 정보 값 가져옴 first : 타입, second : pg유저, third : 결제 요청 데이터
      */
-    private func getPgTriple(user: UserData, request: IamportRequest) -> (JudgeKinds, UserData?, IamportRequest) {
+    private func getPgTriple(user: UserData, request: IamportRequest) -> (JudgeKind, UserData?, IamportRequest) {
         if let pgProvider = user.pg_provider, let pg = PG.convertPG(pgString: pgProvider) {
             switch pg {
             case .chai:
                 if ignoreNative { // ignoreNative 인 경우 webview strategy 가 동작하기 위하여
-                    return (JudgeKinds.WEB, user, request)
+                    return (JudgeKind.WEB, user, request)
                 }
-                return (JudgeKinds.CHAI, user, request)
+                return (JudgeKind.CHAI, user, request)
 
             default:
-                return (JudgeKinds.WEB, user, request)
+                return (JudgeKind.WEB, user, request)
             }
         } else {
-            return (JudgeKinds.WEB, user, request)
+            return (JudgeKind.WEB, user, request)
         }
     }
 

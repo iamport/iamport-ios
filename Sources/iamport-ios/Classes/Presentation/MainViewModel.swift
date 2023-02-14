@@ -46,7 +46,7 @@ class MainViewModel {
     }
 
     // 판단 결과 처리
-    private func judgeProcess(_ judge: (JudgeStrategy.JudgeKinds, UserData?, IamportRequest)) {
+    private func judgeProcess(_ judge: (JudgeStrategy.JudgeKind, UserData?, IamportRequest)) {
         debug_log("JudgeEvent \(judge)")
         switch judge.0 {
         case .CHAI:
