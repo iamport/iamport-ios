@@ -22,15 +22,15 @@ iOS 네이티브 앱에서 결제 개발을 간편하게 도와주는 아임포�
 
 --- 
 
-- [아임포트][1]
+- [포트원][1]
 
-- [아임포트 블로그][2]
+- [포트원 블로그][2]
 
-- [아임포트 docs][3]
+- [포트원 docs][3]
 
-[1]: https://www.iamport.kr/
-[2]: http://blog.iamport.kr/
-[3]: https://docs.iamport.kr/?lang=ko
+[1]: https://portone.io/
+[2]: http://blog.portone.io/
+[3]: https://portone.gitbook.io/
 
 
 ---
@@ -159,7 +159,7 @@ iamport-ios 1.1.0 부터 지원
 
 ```swift
   // 결제 요청 데이터 구성 
-  let request = IamportRequest(
+  let payment = IamportPayment(
                 pg: PG.html5_inicis.getPgSting(pgId: ""), // PG 사
                 merchant_uid: "mid_123456",                   // 주문번호                
                 amount: "1000").then {                        // 가격
@@ -173,7 +173,7 @@ iamport-ios 1.1.0 부터 지원
   // case1 : UINavigationController 사용
   Iamport.shared.payment(navController: navigationController, // 네비게이션 컨트롤러
                          userCode: userCode, // 머천트 유저 식별 코드
-                         iamportRequest: request) // 결제 요청 데이터
+                         payment: payment) // 결제 요청 데이터
                          { [weak self] iamportResponse in
                             // 결제 종료 콜백
                          }
@@ -259,7 +259,7 @@ const params = {
 ```  
 
 - 예시코드
-~~~javascript
+```javascript
 // 예시
 // start of 추가되는 부분
 const isIOS = (/iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase()));
@@ -278,7 +278,7 @@ if(isIOS) {
 
 // 기존의 js IMP.request_pay
 IMP.request_pay(data, ... // 생략
-~~~
+```
 
   
 
@@ -351,17 +351,17 @@ class IamportPaymentViewController: UIViewController {
   // 아임포트 SDK 결제 요청 
   func requestIamportPayment() {
     let userCode = "iamport" // iamport 에서 부여받은 가맹점 식별코드
-    let request = createPaymentData()
+    let payment = createPaymentData()
     
     Iamport.shared.payment(viewController: self,
-            userCode: userCode, iamportRequest: request) { [weak self] iamportResponse in
+            userCode: userCode, payment: payment) { [weak self] response in
       print("결과 : \(response)")
     }
   }
 
   // 아임포트 결제 데이터 생성
-  func createPaymentData() -> IamportRequest {
-    return IamportRequest(
+  func createPaymentData() -> IamportPayment {
+    return IamportPayment(
             pg: PG.html5_inicis.makePgRawName(pgId: ""),
             merchant_uid: "swiftui_ios_\(Int(Date().timeIntervalSince1970))",
             amount: "1000").then {
