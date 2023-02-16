@@ -33,15 +33,15 @@ public class IamportApprove: Then {
         self.status = status
     }
 
-    static func make(payment: IamportRequest, prepareData: PrepareData, status: ChaiPaymentStatus) -> IamportApprove {
-        IamportApprove(userCode: payment.userCode,
-                       merchantUid: payment.getMerchantUid(),
+    static func make(request: IamportRequest, prepareData: PrepareData, status: ChaiPaymentStatus) -> IamportApprove {
+        IamportApprove(userCode: request.userCode,
+                       merchantUid: request.getMerchantUid(),
                        paymentId: prepareData.paymentId,
                        impUid: prepareData.impUid,
                        idempotencyKey: prepareData.idempotencyKey,
                        publicAPIKey: prepareData.publicAPIKey,
                        status: status.rawValue,
                        subscriptionId: prepareData.subscriptionId,
-                       customerUid: payment.getCustomerUid() ?? Constant.EMPTY_STR)
+                       customerUid: request.getCustomerUid() ?? Constant.EMPTY_STR)
     }
 }

@@ -82,20 +82,20 @@ class IamportWebViewMode: UIView, WKUIDelegate {
     }
 
     // isCertification 에 따라 bind 할 항목이 달라짐
-    internal func subscribe(_ payment: IamportRequest) {
+    internal func subscribe(_ request: IamportRequest) {
         debug_log("IamportWebViewMode :: subscribe")
-        request = payment
-        if payment.isCertification {
+        self.request = request
+        if request.isCertification {
             debug_log("IamportWebViewMode :: subscribeCertification")
-            subscribeCertification(payment)
+            subscribeCertification(request)
         } else {
             debug_log("IamportWebViewMode :: subscribePayment")
-            subscribePayment(payment)
+            subscribePayment(request)
         }
     }
 
     // 본인인증 데이터가 있을때 처리 할 이벤트들
-    internal func subscribeCertification(_ payment: IamportRequest) {
+    internal func subscribeCertification(_ request: IamportRequest) {
         debug_log("IamportWebViewMode :: subscribeCertification")
 
         let bus = RxBus.shared
@@ -127,11 +127,11 @@ class IamportWebViewMode: UIView, WKUIDelegate {
             self?.openThirdPartyApp(el.thirdPartyUri)
         }.disposed(by: disposeBag)
 
-        requestCertification(payment)
+        requestCertification(request)
     }
 
     // 결제 데이터가 있을때 처리 할 이벤트들
-    internal func subscribePayment(_ payment: IamportRequest) {
+    internal func subscribePayment(_ request: IamportRequest) {
         debug_log("IamportWebViewMode :: subscribePayment")
 
         let bus = RxBus.shared
@@ -164,7 +164,7 @@ class IamportWebViewMode: UIView, WKUIDelegate {
         }.disposed(by: disposeBag)
 
         subscribeForBankPay()
-        requestPayment(payment)
+        requestPayment(request)
     }
 
     internal func subscribeForBankPay() {
@@ -206,11 +206,11 @@ class IamportWebViewMode: UIView, WKUIDelegate {
      */
     internal func requestPayment(_ it: IamportRequest) {
         if !Utils.isInternetAvailable() {
-            sdkFinish(IamportResponse.makeFail(payment: it, msg: "네트워크 연결 안됨"))
+            sdkFinish(IamportResponse.makeFail(request: it, msg: "네트워크 연결 안됨"))
             return
         }
 
-        viewModel.requestPayment(payment: it)
+        viewModel.requestPayment(request: it)
     }
 
     /**
@@ -218,7 +218,7 @@ class IamportWebViewMode: UIView, WKUIDelegate {
      */
     internal func requestCertification(_ it: IamportRequest) {
         if !Utils.isInternetAvailable() {
-            sdkFinish(IamportResponse.makeFail(payment: it, msg: "네트워크 연결 안됨"))
+            sdkFinish(IamportResponse.makeFail(request: it, msg: "네트워크 연결 안됨"))
             return
         }
 
@@ -336,8 +336,8 @@ class IamportWebViewMode: UIView, WKUIDelegate {
     }
 
     func failFinish(errMsg: String) {
-        if let pay = request {
-            IamportResponse.makeFail(payment: pay, prepareData: nil, msg: errMsg).do { it in
+        if let request = request {
+            IamportResponse.makeFail(request: request, prepareData: nil, msg: errMsg).do { it in
                 sdkFinish(it)
             }
         } else {

@@ -196,13 +196,13 @@ public class IamportSdk: Then {
         IamportRequest.validator(request) { valid, desc in
             print("Payment validator valid :: \(valid), valid :: \(desc)")
             if !valid {
-                self.finish(IamportResponse.makeFail(payment: request, msg: desc))
+                self.finish(IamportResponse.makeFail(request: request, msg: desc))
                 return
             }
         }
 
         if !Utils.isInternetAvailable() {
-            finish(IamportResponse.makeFail(payment: request, msg: "네트워크 연결 안됨"))
+            finish(IamportResponse.makeFail(request: request, msg: "네트워크 연결 안됨"))
             return
         }
 
@@ -218,7 +218,7 @@ public class IamportSdk: Then {
 
     private func requestCertification(_ request: IamportRequest) {
         if !Utils.isInternetAvailable() {
-            finish(IamportResponse.makeFail(payment: request, msg: "네트워크 연결 안됨"))
+            finish(IamportResponse.makeFail(request: request, msg: "네트워크 연결 안됨"))
             return
         }
 
@@ -226,10 +226,10 @@ public class IamportSdk: Then {
     }
 
     // 웹뷰 컨트롤러 열기 및 데이터 전달
-    private func openWebViewController(_ payment: IamportRequest) {
+    private func openWebViewController(_ request: IamportRequest) {
         DispatchQueue.main.async { [weak self] in
 
-            EventBus.shared.webViewPaymentRelay.accept(payment) // 여기서 먼저 결제 데이터를 넘김
+            EventBus.shared.webViewPaymentRelay.accept(request) // 여기서 먼저 결제 데이터를 넘김
 
             if let wv = self?.webview {
                 self?.iamportWebViewMode?.start(webview: wv)

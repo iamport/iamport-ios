@@ -66,7 +66,7 @@ class PrepareRequest: DictionaryEncodable, Then {
         }
     }
 
-    static func makeDictionary(chaiId: String, payment: IamportRequest) -> [String: Any]? {
-        make(chaiId: chaiId, request: payment)?.dictionary()
+    static func makeDictionary(chaiId: String, request: IamportRequest) -> [String: Any]? {
+        make(chaiId: chaiId, request: request)?.dictionary()
     }
 }

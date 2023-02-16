@@ -248,11 +248,11 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
      */
     private func requestPayment(_ it: IamportRequest) {
         if !Utils.isInternetAvailable() {
-            sdkFinish(IamportResponse.makeFail(payment: it, msg: "네트워크 연결 안됨"))
+            sdkFinish(IamportResponse.makeFail(request: it, msg: "네트워크 연결 안됨"))
             return
         }
 
-        viewModel.requestPayment(payment: it)
+        viewModel.requestPayment(request: it)
     }
 
     /**
@@ -260,7 +260,7 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
      */
     private func requestCertification(_ it: IamportRequest) {
         if !Utils.isInternetAvailable() {
-            sdkFinish(IamportResponse.makeFail(payment: it, msg: "네트워크 연결 안됨"))
+            sdkFinish(IamportResponse.makeFail(request: it, msg: "네트워크 연결 안됨"))
             return
         }
 
@@ -435,8 +435,8 @@ extension WebViewController: WKNavigationDelegate {
     }
 
     func failFinish(errMsg: String) {
-        if let pay = request {
-            IamportResponse.makeFail(payment: pay, prepareData: nil, msg: errMsg).do { it in
+        if let request = request {
+            IamportResponse.makeFail(request: request, prepareData: nil, msg: errMsg).do { it in
                 sdkFinish(it)
             }
         } else {

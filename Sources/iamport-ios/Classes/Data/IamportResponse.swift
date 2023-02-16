@@ -24,22 +24,22 @@ public class IamportResponse: Encodable, Then {
         }
     }
 
-    static func makeSuccess(payment: IamportRequest, prepareData: PrepareData? = nil, msg: String) -> IamportResponse {
+    static func makeSuccess(request: IamportRequest, prepareData: PrepareData? = nil, msg: String) -> IamportResponse {
         IamportResponse().then { it in
             it.imp_success = true
             it.success = true
             it.imp_uid = prepareData?.impUid
-            it.merchant_uid = payment.getMerchantUid()
+            it.merchant_uid = request.getMerchantUid()
             it.error_msg = msg
         }
     }
 
-    static func makeFail(payment: IamportRequest, prepareData: PrepareData? = nil, msg: String) -> IamportResponse {
+    static func makeFail(request: IamportRequest, prepareData: PrepareData? = nil, msg: String) -> IamportResponse {
         IamportResponse().then { it in
             it.imp_success = false
             it.success = false
             it.imp_uid = prepareData?.impUid
-            it.merchant_uid = payment.getMerchantUid()
+            it.merchant_uid = request.getMerchantUid()
             it.error_msg = msg
         }
     }

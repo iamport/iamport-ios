@@ -6,6 +6,6 @@ import Foundation
 
 protocol IStrategy {
     func clear()
-    func doWork(_ payment: IamportRequest)
+    func doWork(_ request: IamportRequest)
     func finish(_ response: IamportResponse?)
 }

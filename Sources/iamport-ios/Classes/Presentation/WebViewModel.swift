@@ -13,27 +13,27 @@ internal class WebViewModel {
     /**
      * 뱅크페이 결과 처리
      */
-    func processBankPayPayment(_ payment: IamportRequest, _ url: URL) {
-        repository.processBankPayPayment(payment, url)
+    func processBankPayPayment(_ request: IamportRequest, _ url: URL) {
+        repository.processBankPayPayment(request, url)
     }
 
     /**
      * 결제 요청
      */
-    func requestPayment(payment: IamportRequest) {
+    func requestPayment(request: IamportRequest) {
         debug_log("Payment requested")
         DispatchQueue.main.async {
-            self.repository.getWebViewStrategy(payment).doWork(payment)
+            self.repository.getWebViewStrategy(request).doWork(request)
         }
     }
 
     /**
      * 본인인증 요청
      */
-    func requestCertification(_ payment: IamportRequest) {
+    func requestCertification(_ request: IamportRequest) {
         debug_log("Certification requested")
         DispatchQueue.main.async {
-            self.repository.requestCertification(payment)
+            self.repository.requestCertification(request)
         }
     }
 }

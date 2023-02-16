@@ -62,7 +62,7 @@ class IamportMobileWebMode: IamportWebViewMode {
     }
 
     // 결제 데이터가 있을때 처리 할 이벤트들
-    override func subscribeCertification(_ payment: IamportRequest) {
+    override func subscribeCertification(_ request: IamportRequest) {
         debug_log("subscribeCertification :: subscribe mobile mode certification")
 
         let webViewEvents = EventBus.WebViewEvents.self
@@ -75,11 +75,11 @@ class IamportMobileWebMode: IamportWebViewMode {
             self?.openThirdPartyApp(el.thirdPartyUri)
         }.disposed(by: disposeBag)
 
-        requestCertification(payment)
+        requestCertification(request)
     }
 
     // 실제 결제 요청 동작
-    override func subscribePayment(_ payment: IamportRequest) {
+    override func subscribePayment(_ request: IamportRequest) {
         debug_log("subscribe mobile mode payment")
 
         let webViewEvents = EventBus.WebViewEvents.self
@@ -93,7 +93,7 @@ class IamportMobileWebMode: IamportWebViewMode {
         }.disposed(by: disposeBag)
 
         subscribeForBankPay()
-        requestPayment(payment)
+        requestPayment(request)
     }
 
     override func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
@@ -108,16 +108,16 @@ class IamportMobileWebMode: IamportWebViewMode {
                     return
                 }
 
-                guard let payment = try? JSONDecoder().decode(IamportRequest.self, from: dataJson) else {
+                guard let request = try? JSONDecoder().decode(IamportRequest.self, from: dataJson) else {
                     print("JSONDecoder 실패")
                     return
                 }
 
-                debug_log("받았어!! \(payment)")
-                debug_dump(payment)
+                debug_log("받았어!! \(request)")
+                debug_dump(request)
 
-                request = payment
-                subscribe(payment) // rxbus 구독 및 strategy doWork
+                self.request = request
+                subscribe(request) // rxbus 구독 및 strategy doWork
             }
         }
     }

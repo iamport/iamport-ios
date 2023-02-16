@@ -8,8 +8,8 @@ import RxSwift
 import WebKit
 
 class WebViewStrategy: BaseWebViewStrategy {
-    override func doWork(_ payment: IamportRequest) {
-        super.doWork(payment)
+    override func doWork(_ request: IamportRequest) {
+        super.doWork(request)
         print("헬로 WebViewStrategy")
         // 오픈 웹뷰!
         RxBus.shared.post(event: EventBus.WebViewEvents.OpenWebView())

@@ -32,7 +32,7 @@ class ChaiStrategy: BaseStrategy {
     func doWork(_ pgId: String, _ request: IamportRequest) {
         super.doWork(request)
 
-        chaiId = pgId
+        self.chaiId = pgId
         print("doWork! \(request)")
 
         // * 2. IMP 서버에 결제시작 요청 (+ chai id)
@@ -41,7 +41,7 @@ class ChaiStrategy: BaseStrategy {
         let url = Constant.IAMPORT_PROD_URL + "/chai_payments/prepare"
         debug_log(url)
 
-        let prepareRequest = PrepareRequest.makeDictionary(chaiId: pgId, payment: request)
+        let prepareRequest = PrepareRequest.makeDictionary(chaiId: pgId, request: request)
         debug_log(prepareRequest ?? "not make prepareRequest")
 
         let doNetwork = Network.alamoFireManager.request(url, method: .post, parameters: prepareRequest, encoding: JSONEncoding.default, headers: headers)
@@ -141,7 +141,7 @@ class ChaiStrategy: BaseStrategy {
 
         doNetwork.responseJSON { [weak self] response in
 
-            guard let payment = self?.payment, let prepareData = self?.prepareData else {
+            guard let payment = self?.request, let prepareData = self?.prepareData else {
                 return
             }
 
@@ -172,7 +172,7 @@ class ChaiStrategy: BaseStrategy {
                         case .user_canceled, .canceled, .failed, .timeout, .inactive, .churn:
                             print("결제취소 \(status.rawValue)")
 //                            self?.failureFinish(payment: payment, prepareData: prepareData, msg: "결제취소 \(status.rawValue)")
-                            IamportApprove.make(payment: payment, prepareData: prepareData, status: status).do {
+                            IamportApprove.make(request: payment, prepareData: prepareData, status: status).do {
                                 self?.requestApprovePayments(approve: $0)
                             }
                         }
@@ -189,8 +189,8 @@ class ChaiStrategy: BaseStrategy {
 
     private func tryPolling() {
         if isTimeOut() {
-            guard let _ = payment, let _ = prepareData else {
-                print("isTimeOut 이나, payment : \(String(describing: payment)), prepareData : \(String(describing: prepareData))")
+            guard let _ = request, let _ = prepareData else {
+                print("isTimeOut 이나, payment : \(String(describing: request)), prepareData : \(String(describing: prepareData))")
 
                 clear()
                 return
@@ -216,7 +216,7 @@ class ChaiStrategy: BaseStrategy {
     }
 
     private func confirmMerchant(payment: IamportRequest, prepareData: PrepareData, status: ChaiPaymentStatus) {
-        IamportApprove.make(payment: payment, prepareData: prepareData, status: status).do {
+        IamportApprove.make(request: payment, prepareData: prepareData, status: status).do {
             RxBus.shared.post(event: EventBus.MainEvents.AskApproveFromChai(approve: $0))
         }
 
@@ -303,8 +303,8 @@ class ChaiStrategy: BaseStrategy {
         debug_log(doNetwork)
 
         doNetwork.responseJSON { [weak self] response in
-            guard let payment = self?.payment, let prepareData = self?.prepareData else {
-                print("payment :: \(String(describing: self?.payment)), prepareData :: \(String(describing: self?.prepareData))")
+            guard let payment = self?.request, let prepareData = self?.prepareData else {
+                print("payment :: \(String(describing: self?.request)), prepareData :: \(String(describing: self?.prepareData))")
                 return
             }
 
@@ -372,8 +372,8 @@ class ChaiStrategy: BaseStrategy {
         debug_log(doNetwork)
 
         doNetwork.responseJSON { [weak self] response in
-            guard let payment = self?.payment, let prepareData = self?.prepareData else {
-                print("payment :: \(String(describing: self?.payment)), prepareData :: \(String(describing: self?.prepareData))")
+            guard let payment = self?.request, let prepareData = self?.prepareData else {
+                print("payment :: \(String(describing: self?.request)), prepareData :: \(String(describing: self?.prepareData))")
                 return
             }
 
@@ -404,7 +404,7 @@ class ChaiStrategy: BaseStrategy {
 
     private func processPrepare(_ prepareData: PrepareData) {
         guard prepareData.subscriptionId != nil || prepareData.paymentId != nil else {
-            guard let payment = payment else {
+            guard let payment = request else {
                 print("processPrepare :: payment is null")
                 return
             }

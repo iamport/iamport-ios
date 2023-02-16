@@ -8,10 +8,10 @@ import RxSwift
 
 public class BaseStrategy: IStrategy {
     var disposeBag = DisposeBag()
-    var payment: IamportRequest?
+    var request: IamportRequest?
 
     func clear() {
-        payment = nil
+        request = nil
         disposeBag = DisposeBag()
     }
 
@@ -24,14 +24,14 @@ public class BaseStrategy: IStrategy {
 
     func success(request: IamportRequest, prepareData: PrepareData? = nil, msg: String) {
         print(msg)
-        IamportResponse.makeSuccess(payment: request, prepareData: prepareData, msg: msg).do { it in
+        IamportResponse.makeSuccess(request: request, prepareData: prepareData, msg: msg).do { it in
             finish(it)
         }
     }
 
     func failure(request: IamportRequest, prepareData: PrepareData? = nil, msg: String) {
         print(msg)
-        IamportResponse.makeFail(payment: request, prepareData: prepareData, msg: msg).do { it in
+        IamportResponse.makeFail(request: request, prepareData: prepareData, msg: msg).do { it in
             finish(it)
         }
     }
@@ -41,9 +41,9 @@ public class BaseStrategy: IStrategy {
         EventBus.shared.impResponseRelay.accept(response)
     }
 
-    func doWork(_ payment: IamportRequest) {
+    func doWork(_ request: IamportRequest) {
         clear()
-        self.payment = payment
+        self.request = request
 
         EventBus.shared.clearBus.subscribe { [weak self] _ in
             self?.clear()

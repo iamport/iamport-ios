@@ -15,16 +15,16 @@ public class JudgeStrategy: BaseStrategy {
 
     var ignoreNative = false
 
-    func doWork(_ payment: IamportRequest, ignoreNative: Bool) {
+    func doWork(_ request: IamportRequest, ignoreNative: Bool) {
         self.ignoreNative = ignoreNative
-        doWork(payment)
+        doWork(request)
     }
 
-    override func doWork(_ payment: IamportRequest) {
-        super.doWork(payment)
+    override func doWork(_ request: IamportRequest) {
+        super.doWork(request)
 
         let headers: HTTPHeaders = ["Content-Type": "application/json"]
-        let url = Constant.IAMPORT_PROD_URL + "/users/pg/\(payment.userCode)"
+        let url = Constant.IAMPORT_PROD_URL + "/users/pg/\(request.userCode)"
         print(url)
 
         let doNetwork = Network.alamoFireManagerShortTimeOut.request(url, method: .get, encoding: JSONEncoding.default, headers: headers)
@@ -37,20 +37,20 @@ public class JudgeStrategy: BaseStrategy {
                     let getData = try JSONDecoder().decode(Users.self, from: dataJson)
 
                     guard getData.code == 0 else {
-                        self?.failure(request: payment, msg: "code : \(getData.code), msg : \(String(describing: getData.msg))")
+                        self?.failure(request: request, msg: "code : \(getData.code), msg : \(String(describing: getData.msg))")
                         return
                     }
 
                     // 통신 결과로 판단시작
-                    if let result = self?.judge(payment, getData.data) {
+                    if let result = self?.judge(request, getData.data) {
                         // 결과 전송
                         RxBus.shared.post(event: EventBus.MainEvents.JudgeEvent(judge: result))
                     }
                 } catch {
-                    self?.failure(request: payment, msg: "success but \(error.localizedDescription)")
+                    self?.failure(request: request, msg: "success but \(error.localizedDescription)")
                 }
             case let .failure(error):
-                self?.failure(request: payment, msg: "네트워크 연결실패 \(error.localizedDescription)")
+                self?.failure(request: request, msg: "네트워크 연결실패 \(error.localizedDescription)")
             }
         }
     }

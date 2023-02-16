@@ -18,14 +18,14 @@ public class BaseWebViewStrategy: IStrategy {
 
     func success(request: IamportRequest, msg: String) {
         print(msg)
-        IamportResponse.makeSuccess(payment: request, msg: msg).do { it in
+        IamportResponse.makeSuccess(request: request, msg: msg).do { it in
             finish(it)
         }
     }
 
     func failure(request: IamportRequest, msg: String) {
         print(msg)
-        IamportResponse.makeFail(payment: request, msg: msg).do { it in
+        IamportResponse.makeFail(request: request, msg: msg).do { it in
             finish(it)
         }
     }
@@ -35,9 +35,9 @@ public class BaseWebViewStrategy: IStrategy {
         RxBus.shared.post(event: EventBus.WebViewEvents.ImpResponse(impResponse: response))
     }
 
-    func doWork(_ payment: IamportRequest) {
+    func doWork(_ request: IamportRequest) {
         clear()
-        request = payment
+        self.request = request
 
         EventBus.shared.clearBus.subscribe { [weak self] _ in
             self?.clear() // 종료 없이 only clear

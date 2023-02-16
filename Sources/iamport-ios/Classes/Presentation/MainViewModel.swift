@@ -14,14 +14,14 @@ class MainViewModel {
         disposeBag = DisposeBag()
     }
 
-    func judgePayment(_ payment: IamportRequest, ignoreNative: Bool = false) {
+    func judgePayment(_ request: IamportRequest, ignoreNative: Bool = false) {
         subscribe()
 
         DispatchQueue.main.async { [weak self] in
-            IamportRequest.validator(payment) { valid, desc in
+            IamportRequest.validator(request) { valid, desc in
                 print("one more Payment validator valid :: \(valid), valid :: \(desc)")
                 if !valid {
-                    IamportResponse.makeFail(payment: payment, msg: desc).do { it in
+                    IamportResponse.makeFail(request: request, msg: desc).do { it in
                         self?.clear()
                         EventBus.shared.impResponseRelay.accept(it)
                     }
@@ -29,7 +29,7 @@ class MainViewModel {
             }
 
             // 판단 시작
-            self?.repository.judgeStrategy.doWork(payment, ignoreNative: ignoreNative)
+            self?.repository.judgeStrategy.doWork(request, ignoreNative: ignoreNative)
         }
     }
 
