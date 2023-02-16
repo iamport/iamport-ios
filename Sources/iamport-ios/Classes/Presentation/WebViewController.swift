@@ -270,14 +270,14 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
     /*
      모든 결과 처리 및 SDK 종료
      */
-    func sdkFinish(_ iamPortResponse: IamportResponse?) {
+    func sdkFinish(_ iamportResponse: IamportResponse?) {
         print("명시적 sdkFinish")
-        debug_dump(iamPortResponse)
+        debug_dump(iamportResponse)
         clearAll()
 
         navigationController?.popViewController(animated: false)
         dismiss(animated: true) {
-            EventBus.shared.impResponseRelay.accept(iamPortResponse)
+            EventBus.shared.impResponseRelay.accept(iamportResponse)
         }
     }
 

@@ -173,8 +173,8 @@ iamport-ios 1.1.0 부터 지원
   // case1 : UINavigationController 사용
   Iamport.shared.payment(navController: navigationController, // 네비게이션 컨트롤러
                          userCode: userCode, // 머천트 유저 식별 코드
-                         iamPortRequest: request) // 결제 요청 데이터
-                         { [weak self] iamPortResponse in
+                         iamportRequest: request) // 결제 요청 데이터
+                         { [weak self] iamportResponse in
                             // 결제 종료 콜백
                          }
 
@@ -247,13 +247,13 @@ IMP.request_pay, IMP.certification 를 호출하는 곳 위에서, 아래의 코
 // 1. IMP.request_pay 결제의 경우
 const params = {
     userCode : userCode,                                   // 가맹점 식별코드
-    iamPortRequest : data,                                 // 결제 데이터
+    iamportRequest : data,                                 // 결제 데이터
 };
 
 // 2. IMP.certification certification 경우
 const params = {
     userCode : userCode,                                   // 가맹점 식별코드
-    iamPortCertification : data,                                 // 결제 데이터
+    iamportCertification : data,                                 // 결제 데이터
 };
 
 ```  
@@ -267,7 +267,7 @@ if(isIOS) {
     try {
         const params = {
           userCode : userCode,                                   // 가맹점 식별코드
-          iamPortRequest : data,                                 // 결제 데이터
+          iamportRequest : data,                                 // 결제 데이터
         };
       window.webkit.messageHandlers.iamportmobilewebmode.postMessage(params)
     } catch (error) {
@@ -354,7 +354,7 @@ class IamportPaymentViewController: UIViewController {
     let request = createPaymentData()
     
     Iamport.shared.payment(viewController: self,
-            userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+            userCode: userCode, iamportRequest: request) { [weak self] iamportResponse in
       print("결과 : \(response)")
     }
   }

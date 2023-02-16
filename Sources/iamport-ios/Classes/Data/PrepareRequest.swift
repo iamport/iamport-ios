@@ -40,7 +40,7 @@ class PrepareRequest: DictionaryEncodable, Then {
 
     static func make(chaiId: String, request: IamportRequest) -> PrepareRequest? {
         guard case let .payment(payment) = request.payload else {
-            print("PrepareRequest, make, iamPortRequest is nil")
+            print("PrepareRequest, make, iamportRequest is nil")
             return nil
         }
 

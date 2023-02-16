@@ -91,8 +91,8 @@ class PaymentWebViewModeViewController: UIViewController, WKNavigationDelegate {
             dump(payment)
 
             // WebView 사용
-            Iamport.shared.paymentWebView(webViewMode: wkWebView, userCode: userCode.value, payment: payment) { [weak self] iamPortResponse in
-                viewModel.iamportCallback(iamPortResponse)
+            Iamport.shared.paymentWebView(webViewMode: wkWebView, userCode: userCode.value, payment: payment) { [weak self] iamportResponse in
+                viewModel.iamportCallback(iamportResponse)
                 self?.presentationMode?.wrappedValue.dismiss()
             }
         }

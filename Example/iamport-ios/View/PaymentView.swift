@@ -77,8 +77,8 @@ class PaymentViewController: UIViewController, WKNavigationDelegate {
 //          }
 //
 //          Iamport.shared.payment(navController: navController,
-//              userCode: userCode.value, iamPortRequest: request) { iamPortResponse in
-//              viewModel.iamportCallback(iamPortResponse)
+//              userCode: userCode.value, iamportRequest: request) { iamportResponse in
+//              viewModel.iamportCallback(iamportResponse)
 //          }
         }
     }

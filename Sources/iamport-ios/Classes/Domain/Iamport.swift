@@ -42,7 +42,7 @@ open class Iamport {
      - Parameters:
        - navController: ThirdParty 앱 및 웹뷰 컨트롤러를 띄우기 위한 UINavigationController
        - userCode: 아임포트 머천트 식별코드
-       - iamPortRequest: 결제요청 데이터
+       - iamportRequest: 결제요청 데이터
        - paymentResultCallback: 결제 후 콜백 함수
      */
 
@@ -90,7 +90,7 @@ open class Iamport {
      - Parameters:
        - navController: ThirdParty 웹뷰 컨트롤러를 띄우기 위한 UINavigationController
        - userCode: 아임포트 머천트 식별코드
-       - iamPortCertification: 본인인증 요청 데이터
+       - iamportCertification: 본인인증 요청 데이터
        - paymentResultCallback: 결제 후 콜백 함수
      */
     public func certification(navController: UINavigationController, userCode: String, tierCode: String? = nil, certification: IamportCertification, certificationResultCallback: @escaping (IamportResponse?) -> Void) {
@@ -99,10 +99,10 @@ open class Iamport {
         startCertification(sdk: IamportSdk(navController: navController), userCode: userCode, tierCode: tierCode, certification: certification, certificationResultCallback: certificationResultCallback)
     }
 
-    public func certification(viewController: UIViewController, userCode: String, tierCode: String? = nil, iamPortCertification: IamportCertification, certificationResultCallback: @escaping (IamportResponse?) -> Void) {
+    public func certification(viewController: UIViewController, userCode: String, tierCode: String? = nil, iamportCertification: IamportCertification, certificationResultCallback: @escaping (IamportResponse?) -> Void) {
         print("Iamport SDK certification")
 
-        startCertification(sdk: IamportSdk(viewController: viewController), userCode: userCode, tierCode: tierCode, certification: iamPortCertification, certificationResultCallback: certificationResultCallback)
+        startCertification(sdk: IamportSdk(viewController: viewController), userCode: userCode, tierCode: tierCode, certification: iamportCertification, certificationResultCallback: certificationResultCallback)
     }
 
     public func certification(webview: WKWebView, userCode: String, tierCode: String? = nil, certification: IamportCertification, certificationResultCallback: @escaping (IamportResponse?) -> Void) {

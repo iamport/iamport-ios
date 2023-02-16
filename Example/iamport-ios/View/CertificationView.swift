@@ -54,8 +54,8 @@ class CertificationViewController: UIViewController, WKNavigationDelegate {
 
 //         use for UIViewController
         Iamport.shared.certification(viewController: self,
-                userCode: userCode.value, iamPortCertification: request) { [weak self] iamPortResponse in
-            viewModel.iamportCallback(iamPortResponse)
+                userCode: userCode.value, iamportCertification: request) { [weak self] iamportResponse in
+            viewModel.iamportCallback(iamportResponse)
             self?.presentationMode?.wrappedValue.dismiss()
         }
     }

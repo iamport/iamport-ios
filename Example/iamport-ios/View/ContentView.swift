@@ -100,7 +100,7 @@ struct ContentView: View {
 
         }.actionSheet(isPresented: $viewModel.showResult) {
             ActionSheet(title: Text("결제 결과 도착~"),
-                    message: Text("\(String(describing: viewModel.iamPortResponse))"),
+                    message: Text("\(String(describing: viewModel.iamportResponse))"),
                     buttons: [.default(Text("닫기"))])
         }
     }

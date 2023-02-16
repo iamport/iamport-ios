@@ -46,7 +46,7 @@ public class ViewModel: ObservableObject, Then {
     @Published var isCert: Bool = false
     @Published var showResult: Bool = false
     @Published var CardDirectCode: String = ""
-    var iamPortResponse: IamportResponse?
+    var iamportResponse: IamportResponse?
 
     init() {
         order = Order().then { order in
@@ -152,7 +152,7 @@ public class ViewModel: ObservableObject, Then {
         }
         print("------------------------------------------")
 
-        iamPortResponse = response
+        iamportResponse = response
         showResult = true
         clearButton()
     }
