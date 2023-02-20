@@ -239,21 +239,21 @@ Iamport.shared.pluginMobileWebSupporter(mobileWebMode: wkWebView)
 ```
 
 - 반영방법 Step2 : 기존 js sdk 를 사용하는 웹 프론트엔드(html) 의  
-IMP.request_pay, IMP.certification 를 호출하는 곳 위에서, 아래의 코드를 추가합니다.  
+`IMP.request_pay`, `IMP.certification` 를 호출하는 곳 위에서, 아래의 코드를 추가합니다.  
 
 
 - 전달하는 데이터 형식
 ```javascript
-// 1. IMP.request_pay 결제의 경우
+// 1. `IMP.request_pay`를 통한 결제의 경우
 const params = {
-    userCode : userCode,                                   // 가맹점 식별코드
-    iamportRequest : data,                                 // 결제 데이터
+    userCode: userCode, // 가맹점 식별코드
+    payment: payment,   // 결제 데이터
 };
 
-// 2. IMP.certification certification 경우
+// 2. `IMP.certification`를 통한 본인인증의 경우
 const params = {
-    userCode : userCode,                                   // 가맹점 식별코드
-    iamportCertification : data,                                 // 결제 데이터
+    userCode: userCode,           // 가맹점 식별코드
+    certification: certification, // 본인인증 데이터
 };
 
 ```  
@@ -427,9 +427,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 - [UIKit 예제는 링크를 참조하세요](./Example/iamport-ios/View/ViewController.swift)
 
 
-## Author
+## Support
 
-I'mport 기술지원, support@iamport.kr
+PortOne 기술지원, support@portone.io
 
 ## License
 

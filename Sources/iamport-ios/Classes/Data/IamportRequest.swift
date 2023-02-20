@@ -87,3 +87,37 @@ struct IamportRequest: Codable, Then {
         validateResult(validResult)
     }
 }
+
+extension IamportRequest {
+    private enum legacyCodingKeys: CodingKey {
+        case userCode, tierCode
+        /// 리팩토링 이전 SDK과 웹뷰 간의 통신에 사용한 키, 하위호환성 보장을 위해 필요함.
+        case iamPortRequest, iamPortCertification
+        /// 리팩토링 이후 SDK과 웹뷰 간의 통신에 사용할 키
+        case payment, certification
+    }
+
+    struct RequestDecodingError: Error {
+        let message: String
+        init(_ message: String) {
+            self.message = message
+        }
+    }
+    
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: legacyCodingKeys.self)
+        userCode = try values.decode(String.self, forKey: .userCode)
+        tierCode = try? values.decode(String.self, forKey: .tierCode)
+        let payment = (try? values.decode(IamportPayment.self, forKey: .iamPortRequest)) ?? (try? values.decode(IamportPayment.self, forKey: .payment))
+        let certification = (try? values.decode(IamportCertification.self, forKey: .iamPortCertification)) ?? (try? values.decode(IamportCertification.self, forKey: .certification))
+        var data: IamportPayload?
+        if let payment = payment {
+            data = IamportPayload.payment(payment)
+        }
+        if let certification = certification {
+            data = IamportPayload.certification(certification)
+        }
+        guard let data = data else { throw RequestDecodingError("Unexpected Error") }
+        payload = data
+    }
+}

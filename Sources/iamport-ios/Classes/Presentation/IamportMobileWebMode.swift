@@ -57,10 +57,6 @@ class IamportMobileWebMode: IamportWebViewMode {
         }
     }
 
-    override func subscribePayment() {
-        //
-    }
-
     // 결제 데이터가 있을때 처리 할 이벤트들
     override func subscribeCertification(_ request: IamportRequest) {
         debug_log("subscribeCertification :: subscribe mobile mode certification")

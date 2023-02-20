@@ -63,7 +63,7 @@ class PaymentViewController: UIViewController, WKNavigationDelegate {
 
 //          #case1 use for UIViewController
 //          WebViewController 용 닫기버튼 생성(PG "uplus(토스페이먼츠 구모듈)"는 자체취소 버튼이 없는 것으로 보임)
-            Iamport.shared.useNaviButton(enable: true)
+            Iamport.shared.useNavigationButton(enable: true)
 
             Iamport.shared.payment(viewController: self,
                 userCode: userCode.value, payment: payment) { response in

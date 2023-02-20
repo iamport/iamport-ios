@@ -81,7 +81,7 @@ open class Iamport {
         self.animate = animate
     }
 
-    public func useNaviButton(enable: Bool) {
+    public func useNavigationButton(enable: Bool) {
         useNavigationButton = enable
     }
 
@@ -99,10 +99,10 @@ open class Iamport {
         startCertification(sdk: IamportSdk(navController: navController), userCode: userCode, tierCode: tierCode, certification: certification, certificationResultCallback: certificationResultCallback)
     }
 
-    public func certification(viewController: UIViewController, userCode: String, tierCode: String? = nil, iamportCertification: IamportCertification, certificationResultCallback: @escaping (IamportResponse?) -> Void) {
+    public func certification(viewController: UIViewController, userCode: String, tierCode: String? = nil, certification: IamportCertification, certificationResultCallback: @escaping (IamportResponse?) -> Void) {
         print("Iamport SDK certification")
 
-        startCertification(sdk: IamportSdk(viewController: viewController), userCode: userCode, tierCode: tierCode, certification: iamportCertification, certificationResultCallback: certificationResultCallback)
+        startCertification(sdk: IamportSdk(viewController: viewController), userCode: userCode, tierCode: tierCode, certification: certification, certificationResultCallback: certificationResultCallback)
     }
 
     public func certification(webview: WKWebView, userCode: String, tierCode: String? = nil, certification: IamportCertification, certificationResultCallback: @escaping (IamportResponse?) -> Void) {

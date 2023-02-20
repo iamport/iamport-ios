@@ -71,12 +71,12 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     // 아임포트 SDK 결제 요청
     func requestPayment() {
         let userCode = "iamport"
-        let request = createPaymentData()
-        dump(request)
+        let payment = createPaymentData()
+        dump(payment)
 
         // 결제요청 case 1
         // Iamport.shared.payment(navController: navController,
-        //     userCode: userCode, iamportRequest: request,
+        //     userCode: userCode, request: request,
         //     approveCallback: { approve in
         //         self.approveCallback(iamportApprove: approve)
         //     },
@@ -87,13 +87,13 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
 
         // 결제요청 case 2
         // Iamport.shared.payment(navController: navigationController,
-        //     userCode: userCode, iamportRequest: request) { [weak self] iamportResponse in
+        //     userCode: userCode, request: request) { [weak self] iamportResponse in
         //     self?.paymentCallback(iamportResponse)
         // }
 
         // use for UIViewController
         // Iamport.shared.payment(viewController: self,
-        //     userCode: userCode, iamportRequest: request) { [weak self] iamportResponse in
+        //     userCode: userCode, request: request) { [weak self] iamportResponse in
         //     self?.paymentCallback(iamportResponse)
         // }
 
@@ -102,7 +102,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         } else {}
         
         Iamport.shared.paymentWebView(webViewMode: wkWebView,
-                userCode: userCode, payment: request) { [weak self] iamportResponse in
+                userCode: userCode, payment: payment) { [weak self] iamportResponse in
             self?.paymentCallback(iamportResponse)
         }
 
