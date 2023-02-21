@@ -125,6 +125,7 @@ open class Iamport {
     }
 
     public func close() {
+        sdk?.clearData()
         sdk = nil
         paymentResult = nil
     }
