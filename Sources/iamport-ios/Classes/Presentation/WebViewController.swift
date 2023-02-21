@@ -503,60 +503,38 @@ extension WebViewController: WKScriptMessageHandler {
     }
 
     private func requestPay(payment: IamportPayment) {
-        guard let impRequestJsonData = try? JSONEncoder().encode(payment) else {
+        guard let requestJsonData = try? JSONEncoder().encode(payment) else {
             print("requestPay :: payment 데이터를 JSONEncoder encode 할 수 없습니다.")
             return
         }
+        
+        guard let requestPayload = String(data: requestJsonData, encoding: .utf8)?.replacingOccurrences(of: "'", with: "\\'") else {
+            print("requestPayWithCustomData :: requestJsonData 을 String 화 할 수 없습니다.")
+            return
+        }
 
-        if let customData = payment.custom_data {
-            requestPayWithCustomData(payloadJsonData: impRequestJsonData, customData: customData)
+        if let encodedCustomData = payment.custom_data?.getBase64Encode() {
+            debug_log("requestPayWithCustomData request : '\(requestPayload)', encodedCustomData : '\(encodedCustomData)'")
+            evaluateJavaScript(method: "requestPayWithCustomData('\(requestPayload)', '\(encodedCustomData)');")
         } else {
-            requestPayNormal(payloadJsonData: impRequestJsonData)
+            debug_log("requestPay request : '\(requestPayload)'")
+            evaluateJavaScript(method: "requestPay('\(requestPayload)');")
         }
-    }
-
-    private func requestPayNormal(payloadJsonData: Data) {
-        guard let request = String(data: payloadJsonData, encoding: .utf8) else {
-            print("requestPayNormal :: impRequestJsonData 을 String 화 할 수 없습니다.")
-            return
-        }
-
-        debug_log("requestPay request : '\(request)'")
-        evaluateJavaScript(method: "requestPay('\(request)');")
-    }
-
-    private func requestPayWithCustomData(payloadJsonData: Data, customData: String) {
-        guard let request = String(data: payloadJsonData, encoding: .utf8) else {
-            print("requestPayWithCustomData :: impRequestJsonData 을 String 화 할 수 없습니다.")
-            return
-        }
-
-        guard let encodedCustomData = customData.getBase64Encode() else {
-            print("requestPayWithCustomData :: getBase64Encode 를 가져올 수 없어 requestPayNormal 실행")
-            requestPayNormal(payloadJsonData: payloadJsonData)
-            return
-        }
-
-        debug_log("requestPayWithCustomData request : '\(request)', encodedCustomData : '\(encodedCustomData)'")
-        evaluateJavaScript(method: "requestPayWithCustomData('\(request)', '\(encodedCustomData)');")
     }
 
     private func requestCertification(certification: IamportCertification) {
-        guard let impCertificationJsonData = try? JSONEncoder().encode(certification) else {
-            print("requestPay :: certification 데이터를 JSONEncoder encode 할 수 없습니다.")
+        guard let certificationJsonData = try? JSONEncoder().encode(certification) else {
+            print("requestCertification :: certification 데이터를 JSONEncoder encode 할 수 없습니다.")
             return
         }
 
-        requestCertification(payloadJsonData: impCertificationJsonData)
-    }
-
-    private func requestCertification(payloadJsonData: Data?) {
-        if let json = payloadJsonData,
-           let request = String(data: json, encoding: .utf8)
-        {
-            debug_log("certification request : '\(request)'")
-            evaluateJavaScript(method: "certification('\(request)');")
+        guard let request = String(data: certificationJsonData, encoding: .utf8)?.replacingOccurrences(of: "'", with: "\\'") else {
+            print("requestCertification :: certificationJsonData를 String으로 변환할 수 없습니다.")
+            return
         }
+        
+        debug_log("certification request : '\(request)'")
+        evaluateJavaScript(method: "certification('\(request)');")
     }
 }
 

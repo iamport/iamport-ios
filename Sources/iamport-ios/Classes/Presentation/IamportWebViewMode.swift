@@ -409,20 +409,20 @@ extension IamportWebViewMode: WKScriptMessageHandler {
     }
 
     private func requestPay(payloadJsonData: Data?) {
-        if let json = payloadJsonData,
-           let request = String(data: json, encoding: .utf8)
-        {
-            debug_log("requestPay request : '\(request)'")
-            evaluateJavaScript(method: "requestPay('\(request)');")
+        guard let json = payloadJsonData, let request = String(data: json, encoding: .utf8)?.replacingOccurrences(of: "'", with: "\\'") else {
+            print("Failed to encode payload for `requestPay`")
+            return
         }
+        debug_log("payment request : '\(request)'")
+        evaluateJavaScript(method: "requestPay('\(request)');")
     }
 
     private func requestCertification(payloadJsonData: Data?) {
-        if let json = payloadJsonData,
-           let request = String(data: json, encoding: .utf8)
-        {
-            debug_log("certification request : '\(request)'")
-            evaluateJavaScript(method: "certification('\(request)');")
+        guard let json = payloadJsonData, let request = String(data: json, encoding: .utf8)?.replacingOccurrences(of: "'", with: "\\'") else {
+            print("Failed to encode payload for `requestCertification`")
+            return
         }
+        debug_log("certification request : '\(request)'")
+        evaluateJavaScript(method: "certification('\(request)');")
     }
 }
