@@ -105,7 +105,7 @@ public class ViewModel: ObservableObject, Then {
                 $0.digital = order.digital.flag
             } else if (payMethod == PayMethod.vbank.rawValue) {
                 // @FIXME: PG마다 vbank_due의 형식이 다르므로 입력 컴포넌트를 만들거나(RN처럼) 예제 고도화 필요
-                if (order.pg.value == PG.ksnet.rawValue) {
+                if (order.pg.value.hasPrefix(PG.ksnet.rawValue)) {
                     $0.vbank_due = "20250101153000"
                 } else {
                     $0.vbank_due = "202501011530"
