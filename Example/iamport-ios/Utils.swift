@@ -22,6 +22,8 @@ class Utils {
         case imp87936124
         case imp42284830
         case imp02690184
+        case imp89347847
+        case imp67688738
 
         var name: String {
             switch self {
@@ -47,6 +49,10 @@ class Utils {
                 return "payple 테스트"
             case .imp02690184:
                 return "smartro 테스트"
+            case .imp89347847:
+                return "tosspayments(신모듈) 테스트"
+            case .imp67688738:
+                return "KSNET 테스트"
             case .imp96304110:
                 return "빙봉"
             }
