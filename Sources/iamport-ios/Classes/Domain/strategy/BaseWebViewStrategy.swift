@@ -3,66 +3,65 @@
 //
 
 import Foundation
-import WebKit
 import RxBusForPort
 import RxSwift
+import WebKit
 
 public class BaseWebViewStrategy: IStrategy {
     var disposeBag = DisposeBag()
-    var payment: Payment?
+    var request: IamportRequest?
 
     func clear() {
-        payment = nil
+        request = nil
         disposeBag = DisposeBag()
     }
 
-    func successFinish(payment: Payment, msg: String) {
+    func success(request: IamportRequest, msg: String) {
         print(msg)
-        IamPortResponse.makeSuccess(payment: payment, msg: msg).do { it in
-            sdkFinish(it)
+        IamportResponse.makeSuccess(request: request, msg: msg).do { it in
+            finish(it)
         }
     }
 
-    func failureFinish(payment: Payment, msg: String) {
+    func failure(request: IamportRequest, msg: String) {
         print(msg)
-        IamPortResponse.makeFail(payment: payment, msg: msg).do { it in
-            sdkFinish(it)
+        IamportResponse.makeFail(request: request, msg: msg).do { it in
+            finish(it)
         }
     }
 
-    func sdkFinish(_ response: IamPortResponse?) {
+    func finish(_ response: IamportResponse?) {
         clear()
         RxBus.shared.post(event: EventBus.WebViewEvents.ImpResponse(impResponse: response))
     }
 
-    func doWork(_ payment: Payment) {
+    func doWork(_ request: IamportRequest) {
         clear()
-        self.payment = payment
+        self.request = request
 
-        EventBus.shared.clearBus.subscribe { [weak self] event in
+        EventBus.shared.clearBus.subscribe { [weak self] _ in
             self?.clear() // 종료 없이 only clear
         }.disposed(by: disposeBag)
 
         RxBus.shared.asObservable(event: EventBus.WebViewEvents.UpdateUrl.self)
-                .subscribe { [weak self] event in
-                    guard let el = event.element else {
-                        print("Error not found WebViewEvents")
-                        return
-                    }
-                    dlog("onUpdatedUrl \(el.url)")
-                    self?.onUpdatedUrl(url: el.url)
-                }.disposed(by: disposeBag)
+            .subscribe { [weak self] event in
+                guard let el = event.element else {
+                    print("Error not found WebViewEvents")
+                    return
+                }
+                debug_log("onUpdatedUrl \(el.url)")
+                self?.onUpdatedUrl(url: el.url)
+            }.disposed(by: disposeBag)
     }
 
-    func onUpdatedUrl(url: URL) {
+    func onUpdatedUrl(url _: URL) {
         // NOTHING here, use Child Strategy
     }
 
     /**
      * 성공해서 SDK 종료
      */
-    func successFinish(payment: Payment) {
-        successFinish(payment: payment, msg: CONST.EMPTY_STR)
+    func success(request: IamportRequest) {
+        success(request: request, msg: Constant.EMPTY_STR)
     }
-
 }

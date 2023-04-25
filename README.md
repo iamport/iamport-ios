@@ -22,15 +22,15 @@ iOS 네이티브 앱에서 결제 개발을 간편하게 도와주는 아임포�
 
 --- 
 
-- [아임포트][1]
+- [포트원][1]
 
-- [아임포트 블로그][2]
+- [포트원 블로그][2]
 
-- [아임포트 docs][3]
+- [포트원 docs][3]
 
-[1]: https://www.iamport.kr/
-[2]: http://blog.iamport.kr/
-[3]: https://docs.iamport.kr/?lang=ko
+[1]: https://portone.io/
+[2]: http://blog.portone.io/
+[3]: https://portone.gitbook.io/
 
 
 ---
@@ -141,7 +141,7 @@ it, simply add the following line to your Podfile:
 
 - cocoapods 이용시 (RxSwift 5.x 사용)
 ```ruby
-pod 'iamport-ios', '~> 1.1.0'
+pod 'iamport-ios', '~> 1.4.0'
 ```
 
 
@@ -159,7 +159,7 @@ iamport-ios 1.1.0 부터 지원
 
 ```swift
   // 결제 요청 데이터 구성 
-  let request = IamPortRequest(
+  let payment = IamportPayment(
                 pg: PG.html5_inicis.getPgSting(pgId: ""), // PG 사
                 merchant_uid: "mid_123456",                   // 주문번호                
                 amount: "1000").then {                        // 가격
@@ -173,8 +173,8 @@ iamport-ios 1.1.0 부터 지원
   // case1 : UINavigationController 사용
   Iamport.shared.payment(navController: navigationController, // 네비게이션 컨트롤러
                          userCode: userCode, // 머천트 유저 식별 코드
-                         iamPortRequest: request) // 결제 요청 데이터
-                         { [weak self] iamPortResponse in
+                         payment: payment) // 결제 요청 데이터
+                         { [weak self] iamportResponse in
                             // 결제 종료 콜백
                          }
 
@@ -239,27 +239,27 @@ Iamport.shared.pluginMobileWebSupporter(mobileWebMode: wkWebView)
 ```
 
 - 반영방법 Step2 : 기존 js sdk 를 사용하는 웹 프론트엔드(html) 의  
-IMP.request_pay, IMP.certification 를 호출하는 곳 위에서, 아래의 코드를 추가합니다.  
+`IMP.request_pay`, `IMP.certification` 를 호출하는 곳 위에서, 아래의 코드를 추가합니다.  
 
 
 - 전달하는 데이터 형식
 ```javascript
-// 1. IMP.request_pay 결제의 경우
+// 1. `IMP.request_pay`를 통한 결제의 경우
 const params = {
-    userCode : userCode,                                   // 가맹점 식별코드
-    iamPortRequest : data,                                 // 결제 데이터
+    userCode: userCode, // 가맹점 식별코드
+    payment: payment,   // 결제 데이터
 };
 
-// 2. IMP.certification certification 경우
+// 2. `IMP.certification`를 통한 본인인증의 경우
 const params = {
-    userCode : userCode,                                   // 가맹점 식별코드
-    iamPortCertification : data,                                 // 결제 데이터
+    userCode: userCode,           // 가맹점 식별코드
+    certification: certification, // 본인인증 데이터
 };
 
 ```  
 
 - 예시코드
-~~~javascript
+```javascript
 // 예시
 // start of 추가되는 부분
 const isIOS = (/iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase()));
@@ -267,7 +267,7 @@ if(isIOS) {
     try {
         const params = {
           userCode : userCode,                                   // 가맹점 식별코드
-          iamPortRequest : data,                                 // 결제 데이터
+          iamportRequest : data,                                 // 결제 데이터
         };
       window.webkit.messageHandlers.iamportmobilewebmode.postMessage(params)
     } catch (error) {
@@ -278,7 +278,7 @@ if(isIOS) {
 
 // 기존의 js IMP.request_pay
 IMP.request_pay(data, ... // 생략
-~~~
+```
 
   
 
@@ -288,11 +288,11 @@ IMP.request_pay(data, ... // 생략
 
 /**
  webview url 을 통해 처리하는 로직이 있을 경우에 
- [IamPortWKWebViewDelegate] 상속하여 사용 하시거나,
+ [IamportWKWebViewDelegate] 상속하여 사용 하시거나,
  [Iamport.shared.updateWebViewUrl] 의 subscribe 을 통해 변경되는 url 을 체크 가능합니다.
  */
-// CASE1 : IamPortWKWebViewDelegate 상속
-class MyWKWebViewDelegate: IamPortWKWebViewDelegate {
+// CASE1 : IamportWKWebViewDelegate 상속
+class MyWKWebViewDelegate: IamportWKWebViewDelegate {
     override func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         if let url = navigationAction.request.url {
             // TODO : write your logic
@@ -308,7 +308,7 @@ let webViewDelegate = MyWKWebViewDelegate()
 class MyView: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         ..
-        // IamPortWKWebViewDelegate 사용
+        // IamportWKWebViewDelegate 사용
         wkWebView.navigationDelegate = webViewDelegate as WKNavigationDelegate
         
 //       CASE2 : [Iamport.shared.updateWebViewUrl] 사용
@@ -351,17 +351,17 @@ class IamportPaymentViewController: UIViewController {
   // 아임포트 SDK 결제 요청 
   func requestIamportPayment() {
     let userCode = "iamport" // iamport 에서 부여받은 가맹점 식별코드
-    let request = createPaymentData()
+    let payment = createPaymentData()
     
     Iamport.shared.payment(viewController: self,
-            userCode: userCode, iamPortRequest: request) { [weak self] iamPortResponse in
+            userCode: userCode, payment: payment) { [weak self] response in
       print("결과 : \(response)")
     }
   }
 
   // 아임포트 결제 데이터 생성
-  func createPaymentData() -> IamPortRequest {
-    return IamPortRequest(
+  func createPaymentData() -> IamportPayment {
+    return IamportPayment(
             pg: PG.html5_inicis.makePgRawName(pgId: ""),
             merchant_uid: "swiftui_ios_\(Int(Date().timeIntervalSince1970))",
             amount: "1000").then {
@@ -427,9 +427,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 - [UIKit 예제는 링크를 참조하세요](./Example/iamport-ios/View/ViewController.swift)
 
 
-## Author
+## Support
 
-I'mport 기술지원, support@iamport.kr
+PortOne 기술지원, support@portone.io
 
 ## License
 

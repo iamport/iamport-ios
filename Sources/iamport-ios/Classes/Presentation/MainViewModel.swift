@@ -3,28 +3,25 @@
 //
 
 import Foundation
-import RxSwift
 import RxBusForPort
+import RxSwift
 
 class MainViewModel {
-
     private var disposeBag = DisposeBag()
-    private let repository = StrategyRepository() // TODO dependency inject
+    private let repository = StrategyRepository() // TODO: dependency inject
 
     func clear() {
         disposeBag = DisposeBag()
     }
 
-    func judgePayment(_ payment: Payment, ignoreNative: Bool = false) {
-
+    func judgePayment(_ request: IamportRequest, ignoreNative: Bool = false) {
         subscribe()
 
         DispatchQueue.main.async { [weak self] in
-
-            Payment.validator(payment) { valid, desc in
+            IamportRequest.validator(request) { valid, desc in
                 print("one more Payment validator valid :: \(valid), valid :: \(desc)")
-                if (!valid) {
-                    IamPortResponse.makeFail(payment: payment, msg: desc).do { it in
+                if !valid {
+                    IamportResponse.makeFail(request: request, msg: desc).do { it in
                         self?.clear()
                         EventBus.shared.impResponseRelay.accept(it)
                     }
@@ -32,7 +29,7 @@ class MainViewModel {
             }
 
             // 판단 시작
-            self?.repository.judgeStrategy.doWork(payment, ignoreNative: ignoreNative)
+            self?.repository.judgeStrategy.doWork(request, ignoreNative: ignoreNative)
         }
     }
 
@@ -48,10 +45,9 @@ class MainViewModel {
         }.disposed(by: disposeBag)
     }
 
-
     // 판단 결과 처리
-    private func judgeProcess(_ judge: (JudgeStrategy.JudgeKinds, UserData?, Payment)) {
-        dlog("JudgeEvent \(judge)")
+    private func judgeProcess(_ judge: (JudgeStrategy.JudgeKind, UserData?, IamportRequest)) {
+        debug_log("JudgeEvent \(judge)")
         switch judge.0 {
         case .CHAI:
             judge.1?.do { userData in
@@ -66,11 +62,10 @@ class MainViewModel {
         }
     }
 
-
     /**
      * 차이 최종 결제 요청
      */
-    func requestApprovePayments(approve: IamPortApprove) {
+    func requestApprovePayments(approve: IamportApprove) {
         print("차이 최종 결제 요청")
         repository.chaiStrategy.requestApprovePayments(approve: approve)
     }
@@ -82,5 +77,4 @@ class MainViewModel {
         print("차이 앱 없으므로 폴링 stop")
         repository.chaiStrategy.clear()
     }
-
 }

@@ -5,7 +5,6 @@
 import Foundation
 import Then
 
-
 enum OS: String, Codable {
     case aos, ios
 }

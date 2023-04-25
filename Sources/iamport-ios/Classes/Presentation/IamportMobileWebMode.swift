@@ -2,30 +2,27 @@
 // Created by BingBong on 2021/06/21.
 //
 
-
 import Foundation
+import RxBusForPort
+import RxRelay
+import RxSwift
 import UIKit
 import WebKit
-import RxBusForPort
-import RxSwift
-import RxRelay
 
-class IamPortMobileWebMode: IamPortWebViewMode {
-
+class IamportMobileWebMode: IamportWebViewMode {
     // for communicate WebView
     enum JsInterface: String, CaseIterable {
         case IAMPORT_MOBILE_WEB_MODE = "iamportmobilewebmode"
 
         static func convertJsInterface(s: String) -> JsInterface? {
-            for value in self.allCases {
-                if (s == value.rawValue) {
+            for value in allCases {
+                if s == value.rawValue {
                     return value
                 }
             }
             return nil
         }
     }
-
 
     override func clearWebView() {
         if let wv = webview {
@@ -36,12 +33,9 @@ class IamPortMobileWebMode: IamPortWebViewMode {
             }
             wv.stopLoading()
         }
-//        super.clearWebView()
     }
 
-
     override func setupWebView() {
-
         webview?.do { wv in
             wv.configuration.userContentController.do { controller in
                 for value in JsInterface.allCases {
@@ -52,33 +46,20 @@ class IamPortMobileWebMode: IamPortWebViewMode {
 
             wv.backgroundColor = UIColor.white
 
-            dlog("wv.uiDelegate : \(wv.uiDelegate)")
-            if ((wv.uiDelegate is IamPortWKWebViewDelegate) == false) {
-                dlog("새로 할당 uiDelegate")
-                wv.uiDelegate = viewModel.iamPortWKWebViewDelegate
-            } else {
-                dlog("기존꺼 사용 uiDelegate")
+            if !(wv.uiDelegate is IamportWKWebViewDelegate) {
+                debug_log("setUpWebView :: UIDelegate is not IamportWKWebViewDelegate, assigned new one")
+                wv.uiDelegate = viewModel.delegate
             }
-
-            dlog("wv.navigationDelegate : \(wv.navigationDelegate)")
-            if ((wv.navigationDelegate is IamPortWKWebViewDelegate) == false) {
-                dlog("새로 할당 navigationDelegate")
-                wv.navigationDelegate = viewModel.iamPortWKWebViewDelegate
-            } else {
-                dlog("기존꺼 사용 navigationDelegate")
+            if !(wv.navigationDelegate is IamportWKWebViewDelegate) {
+                debug_log("setUpWebView :: NavigationDelegate is not IamportWKWebViewDelegate, assigned new one")
+                wv.navigationDelegate = viewModel.delegate
             }
-
         }
     }
 
-    override func subscribePayment() {
-        //
-    }
-
-
     // 결제 데이터가 있을때 처리 할 이벤트들
-    override func subscribeCertification(_ payment: Payment) {
-        dlog("subscribe mobile mode certification")
+    override func subscribeCertification(_ request: IamportRequest) {
+        debug_log("subscribeCertification :: subscribe mobile mode certification")
 
         let webViewEvents = EventBus.WebViewEvents.self
 
@@ -90,13 +71,12 @@ class IamPortMobileWebMode: IamPortWebViewMode {
             self?.openThirdPartyApp(el.thirdPartyUri)
         }.disposed(by: disposeBag)
 
-        requestCertification(payment)
+        requestCertification(request)
     }
 
-
     // 실제 결제 요청 동작
-    override func subscribePayment(_ payment: Payment) {
-        dlog("subscribe mobile mode payment")
+    override func subscribePayment(_ request: IamportRequest) {
+        debug_log("subscribe mobile mode payment")
 
         let webViewEvents = EventBus.WebViewEvents.self
 
@@ -109,12 +89,11 @@ class IamPortMobileWebMode: IamPortWebViewMode {
         }.disposed(by: disposeBag)
 
         subscribeForBankPay()
-        requestPayment(payment)
+        requestPayment(request)
     }
 
-    override func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-
-        dlog("body \(message.body)")
+    override func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
+        debug_log("body \(message.body)")
 
         if let jsMethod = JsInterface.convertJsInterface(s: message.name) {
             switch jsMethod {
@@ -125,18 +104,17 @@ class IamPortMobileWebMode: IamPortWebViewMode {
                     return
                 }
 
-                guard let payment = try? JSONDecoder().decode(Payment.self, from: dataJson) else {
+                guard let request = try? JSONDecoder().decode(IamportRequest.self, from: dataJson) else {
                     print("JSONDecoder 실패")
                     return
                 }
 
-                dlog("받았어!! \(payment)")
-                ddump(payment)
+                debug_log("받았어!! \(request)")
+                debug_dump(request)
 
-                self.payment = payment
-                subscribe(payment) // rxbus 구독 및 strategy doWork
+                self.request = request
+                subscribe(request) // rxbus 구독 및 strategy doWork
             }
         }
     }
-
 }

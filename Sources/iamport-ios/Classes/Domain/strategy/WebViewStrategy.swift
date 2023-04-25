@@ -3,14 +3,13 @@
 //
 
 import Foundation
-import WebKit
 import RxBusForPort
 import RxSwift
+import WebKit
 
 class WebViewStrategy: BaseWebViewStrategy {
-
-    override func doWork(_ payment: Payment) {
-        super.doWork(payment)
+    override func doWork(_ request: IamportRequest) {
+        super.doWork(request)
         print("헬로 WebViewStrategy")
         // 오픈 웹뷰!
         RxBus.shared.post(event: EventBus.WebViewEvents.OpenWebView())
@@ -19,20 +18,20 @@ class WebViewStrategy: BaseWebViewStrategy {
     override func onUpdatedUrl(url: URL) {
         super.onUpdatedUrl(url: url)
 
-        if (url.scheme == CONST.ABOUT_BLANK_SCHEME) {
+        if url.scheme == Constant.ABOUT_BLANK_SCHEME {
             return // 이동하지 않음
         }
 
-        if (Utils.isAppUrl(url)) {
+        if Utils.isAppUrl(url) {
             RxBus.shared.post(event: EventBus.WebViewEvents.ThirdPartyUri(thirdPartyUri: url))
             return
         }
 
-        if (Utils.isPaymentOver(url)) {
+        if Utils.isPaymentOver(url) {
             let response = Utils.getQueryStringToImpResponse(url)
-            dlog("paymentOver :: \(String(describing: response))")
-            ddump(response)
-            sdkFinish(response)
+            debug_log("paymentOver :: \(String(describing: response))")
+            debug_dump(response)
+            finish(response)
             return
         }
     }

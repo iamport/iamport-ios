@@ -13,8 +13,8 @@ enum BankPayResultCode: String, CaseIterable {
     case FAIL_CERT_MODULE_INIT
 
     static func from(_ s: String) -> BankPayResultCode? {
-        for value in self.allCases {
-            if (s == value.code) {
+        for value in allCases {
+            if s == value.code {
                 return value
             }
         }
@@ -38,7 +38,7 @@ enum BankPayResultCode: String, CaseIterable {
         }
     }
 
-    var desc: String {
+    var description: String {
         switch self {
         case .OK:
             return "결제성공 하였습니다"
@@ -54,5 +54,4 @@ enum BankPayResultCode: String, CaseIterable {
             return "인증모듈 초기화 오류"
         }
     }
-
 }

@@ -3,23 +3,22 @@
 //
 
 import Foundation
+import RxBusForPort
+import RxRelay
+import RxSwift
+import Then
 import UIKit
 import WebKit
-import RxBusForPort
-import RxSwift
-import RxRelay
-import Then
 
-class IamPortWebViewMode: UIView, WKUIDelegate {
-
+class IamportWebViewMode: UIView, WKUIDelegate {
     var disposeBag = DisposeBag()
     let viewModel = WebViewModel()
 
     var webview: WKWebView?
-    var payment: Payment?
+    var request: IamportRequest?
 
     func start(webview: WKWebView) {
-        dlog("IamPortWebViewMode 어서오고")
+        debug_log("IamportWebViewMode :: start")
         clearAll()
         self.webview = webview
         setupWebView()
@@ -27,7 +26,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 
     func close() {
-        dlog("IamPortWebViewMode close")
+        debug_log("IamportWebViewMode :: close")
         clearAll()
     }
 
@@ -45,14 +44,13 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 
     private func clearAll() {
-        dlog("clearAll")
+        debug_log("IamportWebViewMode :: clearAll")
         clearWebView()
-        payment = nil
+        request = nil
         disposeBag = DisposeBag()
     }
 
     internal func setupWebView() {
-
         if let wv = webview {
             wv.configuration.userContentController.do { controller in
                 for value in WebViewController.JsInterface.allCases {
@@ -61,7 +59,7 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
             }
 
             wv.backgroundColor = UIColor.white
-            viewModel.iamPortWKWebViewDelegate.do { delegate in
+            viewModel.delegate.do { delegate in
                 wv.uiDelegate = delegate
                 wv.navigationDelegate = delegate
             }
@@ -69,53 +67,53 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 
     internal func subscribePayment() {
-        dlog("webviewmode subscribePayment")
+        debug_log("IamportWebViewMode :: subscribePayment")
         let eventBus = EventBus.shared
 
         // 결제 데이터
         eventBus.webViewPaymentBus.subscribe { [weak self] event in
-            guard let el = event.element, let pay = el else {
-                print("Error not found PaymentEvent")
+            guard let elem = event.element, let payment = elem else {
+                print("IamportWebViewMode :: Error not found PaymentEvent")
                 return
             }
 
-            self?.subscribe(pay)
+            self?.subscribe(payment)
         }.disposed(by: disposeBag)
     }
 
     // isCertification 에 따라 bind 할 항목이 달라짐
-    internal func subscribe(_ payment: Payment) {
-        dlog("나왔니?")
-        self.payment = payment
-        if (payment.isCertification()) {
-            dlog("subscribeCertification?")
-            subscribeCertification(payment)
+    internal func subscribe(_ request: IamportRequest) {
+        debug_log("IamportWebViewMode :: subscribe")
+        self.request = request
+        if request.isCertification {
+            debug_log("IamportWebViewMode :: subscribeCertification")
+            subscribeCertification(request)
         } else {
-            dlog("subscribePayment?")
-            subscribePayment(payment)
+            debug_log("IamportWebViewMode :: subscribePayment")
+            subscribePayment(request)
         }
     }
 
-    // 결제 데이터가 있을때 처리 할 이벤트들
-    internal func subscribeCertification(_ payment: Payment) {
-        dlog("subscribe webview mode certification")
+    // 본인인증 데이터가 있을때 처리 할 이벤트들
+    internal func subscribeCertification(_ request: IamportRequest) {
+        debug_log("IamportWebViewMode :: subscribeCertification")
 
         let bus = RxBus.shared
         let webViewEvents = EventBus.WebViewEvents.self
 
         bus.asObservable(event: webViewEvents.ImpResponse.self).subscribe { [weak self] event in
             guard let el = event.element else {
-                print("Error not found ImpResponse")
+                print("IamportWebViewMode :: Cannot find ImpResponse")
                 return
             }
 
-            print("receive ImpResponse")
+            print("IamportWebViewMode :: ImpResponse received")
             self?.sdkFinish(el.impResponse)
         }.disposed(by: disposeBag)
 
         bus.asObservable(event: webViewEvents.OpenWebView.self).subscribe { [weak self] event in
-            guard nil != event.element else {
-                print("Error not found OpenWebView")
+            guard event.element != nil else {
+                print("IamportWebViewMode :: Error not found OpenWebView")
                 return
             }
             self?.openWebView()
@@ -123,35 +121,35 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
 
         bus.asObservable(event: webViewEvents.ThirdPartyUri.self).subscribe { [weak self] event in
             guard let el = event.element else {
-                print("Error not found ThirdPartyUri")
+                print("IamportWebViewMode :: Error not found ThirdPartyUri")
                 return
             }
             self?.openThirdPartyApp(el.thirdPartyUri)
         }.disposed(by: disposeBag)
 
-        requestCertification(payment)
+        requestCertification(request)
     }
 
     // 결제 데이터가 있을때 처리 할 이벤트들
-    internal func subscribePayment(_ payment: Payment) {
-        dlog("subscribe webview mode payment")
+    internal func subscribePayment(_ request: IamportRequest) {
+        debug_log("IamportWebViewMode :: subscribePayment")
 
         let bus = RxBus.shared
         let webViewEvents = EventBus.WebViewEvents.self
 
         bus.asObservable(event: webViewEvents.ImpResponse.self).subscribe { [weak self] event in
             guard let el = event.element else {
-                print("Error not found ImpResponse")
+                print("IamportWebViewMode :: Cannot find ImpResponse")
                 return
             }
 
-            print("receive ImpResponse")
+            print("IamportWebViewMode :: receive ImpResponse")
             self?.sdkFinish(el.impResponse)
         }.disposed(by: disposeBag)
 
         bus.asObservable(event: webViewEvents.OpenWebView.self).subscribe { [weak self] event in
-            guard nil != event.element else {
-                print("Error not found OpenWebView")
+            guard event.element != nil else {
+                print("IamportWebViewMode :: Cannot find OpenWebView")
                 return
             }
             self?.openWebView()
@@ -159,18 +157,17 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
 
         bus.asObservable(event: webViewEvents.ThirdPartyUri.self).subscribe { [weak self] event in
             guard let el = event.element else {
-                print("Error not found ThirdPartyUri")
+                print("IamportWebViewMode :: Error not found ThirdPartyUri")
                 return
             }
             self?.openThirdPartyApp(el.thirdPartyUri)
         }.disposed(by: disposeBag)
 
         subscribeForBankPay()
-        requestPayment(payment)
+        requestPayment(request)
     }
 
     internal func subscribeForBankPay() {
-
         let bus = RxBus.shared
         let events = EventBus.WebViewEvents.self
 
@@ -207,47 +204,43 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     /**
      * 결제 요청 실행
      */
-    internal func requestPayment(_ it: Payment) {
-        if (!Utils.isInternetAvailable()) {
-            sdkFinish(IamPortResponse.makeFail(payment: it, msg: "네트워크 연결 안됨"))
+    internal func requestPayment(_ it: IamportRequest) {
+        if !Utils.isInternetAvailable() {
+            sdkFinish(IamportResponse.makeFail(request: it, msg: "네트워크 연결 안됨"))
             return
         }
 
-        viewModel.requestPayment(payment: it)
+        viewModel.requestPayment(request: it)
     }
 
     /**
      * 본인인증 요청 실행
      */
-    internal func requestCertification(_ it: Payment) {
-        if (!Utils.isInternetAvailable()) {
-            sdkFinish(IamPortResponse.makeFail(payment: it, msg: "네트워크 연결 안됨"))
+    internal func requestCertification(_ it: IamportRequest) {
+        if !Utils.isInternetAvailable() {
+            sdkFinish(IamportResponse.makeFail(request: it, msg: "네트워크 연결 안됨"))
             return
         }
 
         viewModel.requestCertification(it)
     }
 
-
-    /*
-     모든 결과 처리 및 SDK 종료
+    /**
+     * 모든 결과 처리 및 SDK 종료
      */
-    func sdkFinish(_ iamPortResponse: IamPortResponse?) {
+    func sdkFinish(_ iamportResponse: IamportResponse?) {
         print("명시적 sdkFinish")
-        ddump(iamPortResponse)
+        debug_dump(iamportResponse)
 
-//        navigationController?.popViewController(animated: false)
-//        dismiss(animated: true) {
         close()
-        EventBus.shared.impResponseRelay.accept(iamPortResponse)
-//        }
+        EventBus.shared.impResponseRelay.accept(iamportResponse)
     }
 
     /**
      * 뱅크페이 결과 처리 viewModel 에 요청
      */
     func processBankPayPayment(_ url: URL) {
-        if let it = payment {
+        if let it = request {
             // 나이스 PG 의 뱅크페이만 동작
             // 이니시스 PG 의 뱅크페이의 경우 페이지 전환 후 m_redirect_url 이 내려오므로 그걸 이용
             viewModel.processBankPayPayment(it, url)
@@ -258,9 +251,9 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
      * 뱅크페이 결과 처리 viewModel 에 요청
      */
     func finalProcessBankPayPayment(_ url: URL) {
-        dlog("finalProcessBankPayPayment :: \(url)")
-        var request = URLRequest(url: url)
-////        request.httpMethod = "POST" // 해보니까 굳이 post 날릴 필요 없는 것 같음
+        debug_log("finalProcessBankPayPayment :: \(url)")
+        let request = URLRequest(url: url)
+        /// request.httpMethod = "POST" 해보니까 굳이 post 날릴 필요 없는 것 같음
         DispatchQueue.main.async { [weak self] in
             self?.webview?.load(request)
         }
@@ -275,20 +268,19 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
         }
     }
 
-
     func openThirdPartyApp(_ url: URL) {
-        dlog("openThirdPartyApp \(url)")
+        debug_log("openThirdPartyApp \(url)")
         let result = Utils.openAppWithCanOpen(url) // 앱 열기
-        if (!result) {
-
-            // 한번 더 열어보고 취소시 앱스토어 이동
+        if !result {
+            /// 한번 더 열어보고 취소시 앱스토어 이동
             Utils.justOpenApp(url) { [weak self] in
                 if let scheme = url.scheme,
                    let urlString = AppScheme.getAppStoreUrl(scheme: scheme),
-                   let url = URL(string: urlString) {
+                   let url = URL(string: urlString)
+                {
                     Utils.justOpenApp(url) // 앱스토어로 이동
                 } else {
-                    guard (self?.payment) != nil else {
+                    guard (self?.request) != nil else {
                         self?.sdkFinish(nil)
                         return
                     }
@@ -301,35 +293,24 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
      * 결제 요청 실행
      */
     private func openWebView() {
-        dlog("오픈! 웹뷰 webview mode")
+        debug_log("OpenWebView in WebViewMode")
 
-        let myPG = payment?.iamPortRequest?.pgEnum
-
-//        func bundle() -> Bundle {
-//            let spmBundle = Bundle.module // spm 에서 리소스 가져오는 방법임, 에러처럼 보이지만 xcode 빌드시 정상 동작(cmd + b)
-//            guard let _ = spmBundle.url(forResource: CONST.CDN_FILE_NAME, withExtension: CONST.CDN_FILE_EXTENSION) else {
-//                return Bundle(for: type(of: self)) // use for cocoapods
-//            }
-//            return spmBundle // use for swift package manager
-//        }
-
-//        let bundle = bundle()
         let bundle = Bundle.module
 
-        var urlRequest: URLRequest? = nil // for webView load
-        var htmlContents: String? = nil // for webView loadHtml(smilepay 자동 로그인)
+        var urlRequest: URLRequest? // for webView load
+        var htmlContents: String? // for webView loadHtml(smilepay 자동 로그인)
 
-        if (myPG == PG.smilepay) {
-            if let filepath = bundle.path(forResource: CONST.CDN_FILE_NAME, ofType: CONST.CDN_FILE_EXTENSION) {
+        if case let .payment(payment) = request?.payload, payment.pgEnum == PG.smilepay {
+            if let filepath = bundle.path(forResource: Constant.CDN_FILE_NAME, ofType: Constant.CDN_FILE_EXTENSION) {
                 htmlContents = try? String(contentsOfFile: filepath, encoding: .utf8)
             }
         } else {
-            guard let url = bundle.url(forResource: CONST.CDN_FILE_NAME, withExtension: CONST.CDN_FILE_EXTENSION) else {
+            guard let url = bundle.url(forResource: Constant.CDN_FILE_NAME, withExtension: Constant.CDN_FILE_EXTENSION) else {
                 print("html file url 비정상")
                 return
             }
 
-            ddump(url)
+            debug_dump(url)
 
             urlRequest = URLRequest(url: url)
         }
@@ -340,9 +321,10 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
                 return
             }
 
-            if (myPG == PG.smilepay) {
-                if let base = URL(string: CONST.SMILE_PAY_BASE_URL),
-                   let contents = htmlContents {
+            if case let .payment(payment) = self?.request?.payload, payment.pgEnum == PG.smilepay {
+                if let base = URL(string: Constant.SMILE_PAY_BASE_URL),
+                   let contents = htmlContents
+                {
                     wv.loadHTMLString(contents, baseURL: base)
                 }
             } else {
@@ -354,8 +336,8 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 
     func failFinish(errMsg: String) {
-        if let pay = payment {
-            IamPortResponse.makeFail(payment: pay, prepareData: nil, msg: errMsg).do { it in
+        if let request = request {
+            IamportResponse.makeFail(request: request, prepareData: nil, msg: errMsg).do { it in
                 sdkFinish(it)
             }
         } else {
@@ -364,33 +346,33 @@ class IamPortWebViewMode: UIView, WKUIDelegate {
     }
 }
 
-
-extension IamPortWebViewMode: WKScriptMessageHandler {
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        dlog("body \(message.body)")
+extension IamportWebViewMode: WKScriptMessageHandler {
+    func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
+        debug_log("body \(message.body)")
 
         if let jsMethod = WebViewController.JsInterface.convertJsInterface(s: message.name) {
             switch jsMethod {
             case .START_WORKING_SDK:
                 print("JS SDK 통한 결제 시작 요청")
 
-                guard let pay = payment else {
+                guard let pay = request else {
                     print(".START_WORKING_SDK payment 를 찾을 수 없음")
                     return
                 }
-                ddump(pay)
+                debug_dump(pay)
 
                 let encoder = JSONEncoder()
-                // encoder.outputFormatting = .prettyPrinted
 
                 initSDK(userCode: pay.userCode, tierCode: pay.tierCode)
 
-                if (pay.isCertification()) {
-                    let jsonData = try? encoder.encode(pay.iamPortCertification)
-                    certification(impCertificationJsonData: jsonData)
-                } else {
-                    let jsonData = try? encoder.encode(pay.iamPortRequest)
-                    requestPay(impRequestJsonData: jsonData)
+                switch pay.payload {
+                case let .payment(payload):
+                    let jsonData = try? encoder.encode(payload)
+                    requestPay(payloadJsonData: jsonData)
+
+                case let .certification(payload):
+                    let jsonData = try? encoder.encode(payload)
+                    requestCertification(payloadJsonData: jsonData)
                 }
 
             case .RECEIVED:
@@ -399,47 +381,48 @@ extension IamPortWebViewMode: WKScriptMessageHandler {
             case .CUSTOM_CALL_BACK:
                 print("Received payment callback")
                 if let data = (message.body as? String)?.data(using: .utf8),
-                   let impStruct = try? JSONDecoder().decode(IamPortResponseStruct.self, from: data) {
-                    let response = IamPortResponse.structToClass(impStruct)
+                   let impStruct = try? JSONDecoder().decode(IamportResponseStruct.self, from: data)
+                {
+                    let response = IamportResponse.structToClass(impStruct)
                     sdkFinish(response)
                 }
 
             case .DEBUG_CONSOLE_LOG:
-                dlog("DEBUG_CONSOLE_LOG :: \(message.body)")
+                debug_log("DEBUG_CONSOLE_LOG :: \(message.body)")
             }
         }
     }
 
-    private func evaluateJS(method: String) {
+    private func evaluateJavaScript(method: String) {
         webview?.evaluateJavaScript(method)
     }
 
     private func initSDK(userCode: String, tierCode: String? = nil) {
-        dlog("userCode : '\(userCode)', tierCode : '\(tierCode)'")
+        debug_log("userCode : '\(userCode)', tierCode : '\(tierCode ?? "-")'")
 
         var jsInitMethod = "init('\(userCode)');" // IMP.init
-        if (!tierCode.nilOrEmpty) {
+        if !tierCode.nilOrEmpty {
             jsInitMethod = "agency('\(userCode)', '\(String(describing: tierCode))');" // IMP.agency
         }
 
-        evaluateJS(method: jsInitMethod)
+        evaluateJavaScript(method: jsInitMethod)
     }
 
-    private func requestPay(impRequestJsonData: Data?) {
-        if let json = impRequestJsonData,
-           let request = String(data: json, encoding: .utf8) {
-            dlog("requestPay request : '\(request)'")
-            evaluateJS(method: "requestPay('\(request)');")
+    private func requestPay(payloadJsonData: Data?) {
+        guard let json = payloadJsonData, let request = String(data: json, encoding: .utf8)?.replacingOccurrences(of: "'", with: "\\'") else {
+            print("Failed to encode payload for `requestPay`")
+            return
         }
+        debug_log("payment request : '\(request)'")
+        evaluateJavaScript(method: "requestPay('\(request)');")
     }
 
-    private func certification(impCertificationJsonData: Data?) {
-        if let json = impCertificationJsonData,
-           let request = String(data: json, encoding: .utf8) {
-            dlog("certification request : '\(request)'")
-            evaluateJS(method: "certification('\(request)');")
+    private func requestCertification(payloadJsonData: Data?) {
+        guard let json = payloadJsonData, let request = String(data: json, encoding: .utf8)?.replacingOccurrences(of: "'", with: "\\'") else {
+            print("Failed to encode payload for `requestCertification`")
+            return
         }
+        debug_log("certification request : '\(request)'")
+        evaluateJavaScript(method: "certification('\(request)');")
     }
-
 }
-

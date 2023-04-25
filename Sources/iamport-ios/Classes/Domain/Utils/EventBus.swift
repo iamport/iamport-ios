@@ -4,24 +4,23 @@
 
 import Foundation
 import RxBusForPort
-import RxSwift
 import RxRelay
+import RxSwift
 
 class EventBus {
-
     public static let shared = EventBus()
 
     // SDK 에 결제요청
-    let paymentRelay = PublishRelay<Payment?>()
+    let paymentRelay = PublishRelay<IamportRequest?>()
 
-    var paymentBus: Observable<Payment?> {
+    var paymentBus: Observable<IamportRequest?> {
         paymentRelay.asObservable()
     }
 
     // 실제 종료 시그널 IamportSdk 에서 사용
-    let impResponseRelay = PublishRelay<IamPortResponse?>()
+    let impResponseRelay = PublishRelay<IamportResponse?>()
 
-    public var impResponseBus: Observable<IamPortResponse?> {
+    public var impResponseBus: Observable<IamportResponse?> {
         impResponseRelay.asObservable()
     }
 
@@ -33,17 +32,16 @@ class EventBus {
     }
 
     // WebViewController 에 결제요청
-    let webViewPaymentRelay = BehaviorRelay<Payment?>(value: nil)
+    let webViewPaymentRelay = BehaviorRelay<IamportRequest?>(value: nil)
 
-    var webViewPaymentBus: Observable<Payment?> {
+    var webViewPaymentBus: Observable<IamportRequest?> {
         webViewPaymentRelay.asObservable()
     }
 
-    struct MainEvents {
-
+    enum MainEvents {
         // 현재 결제 종류 판별
         struct JudgeEvent: BusEvent {
-            let judge: (JudgeStrategy.JudgeKinds, UserData?, Payment)
+            let judge: (JudgeStrategy.JudgeKind, UserData?, IamportRequest)
         }
 
         // 차이앱 열기 위한 url
@@ -53,25 +51,23 @@ class EventBus {
 
         // 머천트에게 최종 컨펌 받기 위한 요청
         struct AskApproveFromChai: BusEvent {
-            let approve: IamPortApprove
+            let approve: IamportApprove
         }
     }
 
-    struct WebViewEvents {
-
+    enum WebViewEvents {
         /**
          * WebViewController, WebViewStrategy 에서만 사용
          * 결제 결과 콜백 및 종료
          */
         struct ImpResponse: BusEvent {
-            let impResponse: IamPortResponse?
+            let impResponse: IamportResponse?
         }
 
         /**
          * 오픈 웹뷰 이벤트
          */
-        struct OpenWebView: BusEvent {
-        }
+        struct OpenWebView: BusEvent {}
 
         // webview 에 업데이트 되는 현재 url
         struct UpdateUrl: BusEvent {
@@ -82,8 +78,8 @@ class EventBus {
             let url: URL
         }
 
-        /*
-         외부앱 종료시 받은 URL(for 뱅크페이 앱 처리)
+        /**
+         * 외부앱 종료시 받은 URL(for 뱅크페이 앱 처리)
          */
         struct ReceivedAppDelegateURL: BusEvent {
             let url: URL
@@ -102,7 +98,5 @@ class EventBus {
         struct ThirdPartyUri: BusEvent {
             let thirdPartyUri: URL
         }
-
     }
-
 }

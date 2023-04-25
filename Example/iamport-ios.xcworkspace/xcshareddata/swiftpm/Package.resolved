@@ -6,17 +6,17 @@
         "repositoryURL": "https://github.com/Alamofire/Alamofire.git",
         "state": {
           "branch": null,
-          "revision": "f96b619bcb2383b43d898402283924b80e2c4bae",
-          "version": "5.4.3"
+          "revision": "78424be314842833c04bc3bef5b72e85fff99204",
+          "version": "5.6.4"
         }
       },
       {
-        "package": "RxBus",
-        "repositoryURL": "https://github.com/ridi/RxBus-swift.git",
+        "package": "RxBusForPort",
+        "repositoryURL": "https://github.com/iamport/RxBus-Swift",
         "state": {
           "branch": null,
-          "revision": "b154da5fffb4c5d0d17b7f46e9cd38f382e298e4",
-          "version": "1.3.2"
+          "revision": "24458425acf1da825a8e7587231052cef90c3a6b",
+          "version": "1.3.5"
         }
       },
       {
@@ -24,8 +24,17 @@
         "repositoryURL": "https://github.com/ReactiveX/RxSwift.git",
         "state": {
           "branch": null,
-          "revision": "7c17a6ccca06b5c107cfa4284e634562ddaf5951",
-          "version": "6.2.0"
+          "revision": "b4307ba0b6425c0ba4178e138799946c3da594f8",
+          "version": "6.5.0"
+        }
+      },
+      {
+        "package": "SwiftFormat",
+        "repositoryURL": "https://github.com/nicklockwood/SwiftFormat",
+        "state": {
+          "branch": null,
+          "revision": "fee7e1a1ac9518cfe3c4673382368641ccbdc62c",
+          "version": "0.51.7"
         }
       },
       {

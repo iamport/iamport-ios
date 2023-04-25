@@ -14,7 +14,7 @@ public enum Platform: String, CaseIterable {
     var redirectUrl: String {
         switch self {
         case .native:
-            return CONST.IAMPORT_DETECT_URL
+            return Constant.IAMPORT_DETECT_URL
         case .reactnative:
             return Utils.getRedirectUrl(platformKey: "rn")
         case .flutter:
@@ -27,13 +27,12 @@ public enum Platform: String, CaseIterable {
     }
 
     static func convertPlatform(platformStr: String) -> Platform? {
-        for value in self.allCases {
-            if (platformStr == value.rawValue) {
+        for value in allCases {
+            if platformStr == value.rawValue {
                 return value
             }
         }
 
         return nil
     }
-
 }

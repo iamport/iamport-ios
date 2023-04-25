@@ -57,81 +57,72 @@
 <button onclick="onClickCertification()">본인인증하기</button>
 
 <script type="text/javascript">
-
-          const userCode = 'iamport'
-          document.addEventListener('DOMContentLoaded', () => {
-                  IMP.init(userCode);
-            });
-
-            // web -> ios 결제 데이터를 전달
-            function sendDataToNative(params) {
-                const isIOS = (/iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase()));
-                if(isIOS) {
-                    try {
-                        window.webkit.messageHandlers.iamportmobilewebmode.postMessage(params)
-                    } catch (error) {
-                        console.error(error);
-                    }
-                }
+    const userCode = 'iamport';
+    document.addEventListener('DOMContentLoaded', () => {
+        IMP.init(userCode);
+    });
+    
+    // web -> ios 결제 데이터를 전달
+    function sendDataToNative(params) {
+        const isIOS = (/iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase()));
+        if (isIOS) {
+            try {
+                window.webkit.messageHandlers.iamportmobilewebmode.postMessage(params);
+            } catch (error) {
+                console.error(error);
             }
+        }
+    }
+    
+    function onClickPayment() {
+        const payment = {
+            pg: 'html5_inicis',
+            pay_method : 'card',
+            niceMobileV2: true,
+            amount: '1000',
+            merchant_uid: `mid_${new Date().getTime()}`,
+            name: '테스트',
+            buyer_name: '홍길동',
+            buyer_email: 'example@example.com',
+            buyer_addr: '신사동 661-16',
+            buyer_postcode: '06018',
+            m_redirect_url: 'https://www.iamport.kr?orderId=order_uid_123456789#result',
+            app_scheme: 'iamport',
+        };
 
-            function onClickPayment() {
+        const params = {
+            userCode, // 가맹점 식별코드
+            payment,  // 결제 데이터
+        };
+        sendDataToNative(params);
 
-                const data = {
-                      pg: 'html5_inicis',
-                      pay_method : 'card',
-                      niceMobileV2: true,
-                      amount: '1000',
-                      merchant_uid: `mid_${new Date().getTime()}`,
-                      name: '테스트',
-                      buyer_name: '홍길동',
-                      buyer_email: 'example@example.com',
-                      buyer_addr: '신사동 661-16',
-                      buyer_postcode: '06018',
-                      m_redirect_url: 'https://www.iamport.kr?orderId=order_uid_123456789#result',
-//                      m_redirect_url: 'https://httpstat.us/200',
-                      app_scheme: 'iamport',
-                  }
+        IMP.request_pay(payment, function(response) {
+            console.log(response);
+            alert(JSON.stringify(response));
+        });
+    }
 
-                  const params = {
-                    userCode : userCode,                 // 가맹점 식별코드
-                    iamPortRequest : data,              // 결제 데이터
-                  };
-                  sendDataToNative(params)
+    function onClickCertification() {
+        const certification = {
+            merchant_uid: `mid_${new Date().getTime()}`,
+            // birth: '19921010',
+            carrier: '',
+            name: '',
+            phone: '',
+            company: '아임포트',
+        }
 
-
-                  IMP.request_pay(data, function(response) {
-                    console.log(response);
-                    alert(JSON.stringify(response))
-                  });
-            }
-
-            function onClickCertification() {
-
-                const data = {
-                  merchant_uid: `mid_${new Date().getTime()}`,
-                  // birth: '19921010',
-                  carrier: '',
-                  name: '',
-                  phone: '',
-                  company: '아임포트',
-                  }
-
-                const params = {
-                    userCode : userCode,               // 가맹점 식별코드
-                    iamPortCertification : data,       // 본인인증 데이터
-                };
-                sendDataToNative(params)
-
-                IMP.certification(data, function(response) {
-                  console.log(response);
-                  alert(JSON.stringify(response))
-                });
-            }
-
-
-
-
+        const params = {
+            userCode,      // 가맹점 식별코드
+            certification, // 본인인증 데이터
+        };
+        sendDataToNative(params);
+        
+        IMP.certification(certification, function(response) {
+            console.log(response);
+            alert(JSON.stringify(response));
+        });
+    }
 </script>
 </body>
 </html>

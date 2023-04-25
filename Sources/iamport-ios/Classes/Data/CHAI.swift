@@ -15,9 +15,7 @@ struct CHAI {
     static let CHANNEL = "mobile"
 }
 
-
 public enum CHAI_MODE: String, CaseIterable, Codable {
-
     case prod
     case staging
     case dev
@@ -25,18 +23,18 @@ public enum CHAI_MODE: String, CaseIterable, Codable {
     var url: String {
         switch self {
         case .prod:
-            return CONST.CHAI_SERVICE_URL
+            return Constant.CHAI_SERVICE_URL
         case .staging:
-            return CONST.CHAI_SERVICE_STAGING_URL
+            return Constant.CHAI_SERVICE_STAGING_URL
         case .dev:
-            return CONST.CHAI_SERVICE_DEV_URL
+            return Constant.CHAI_SERVICE_DEV_URL
         }
     }
 
     static func getChaiUrl(mode: String) -> String {
-        for value in self.allCases {
-            if (mode == value.rawValue) {
-                dlog("Found CHAI mode => [\(mode)]")
+        for value in allCases {
+            if mode == value.rawValue {
+                debug_log("Found CHAI mode => [\(mode)]")
                 return value.url
             }
         }

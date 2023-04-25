@@ -3,10 +3,8 @@
 //
 
 import Foundation
-import WebKit
 import RxBusForPort
 import RxSwift
+import WebKit
 
-class CertificationWebViewStrategy: WebViewStrategy {
-
-}
+class CertificationWebViewStrategy: WebViewStrategy {}

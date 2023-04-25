@@ -83,13 +83,10 @@ class PaymentMobileViewModeViewController: UIViewController, WKUIDelegate, WKNav
 
         /*
           setup I'mport WKUIDelegate & WKNavigationDelegate
-          url 을 통해 업데이트 하는 로직이 있을 경우에 [IamPortWKWebViewDelegate] 사용
+          url 을 통해 업데이트 하는 로직이 있을 경우에 [IamportWKWebViewDelegate] 사용
          */
 //        wkWebView.uiDelegate = webViewDelegate as WKUIDelegate
 //        wkWebView.navigationDelegate = webViewDelegate as WKNavigationDelegate
-
-        wkWebView.uiDelegate = IamPortWKWebViewDelegate()
-        wkWebView.navigationDelegate = IamPortWKWebViewDelegate()
 
         let bundle = Bundle(for: type(of: self))
         guard let url = bundle.url(forResource: "mobileweb", withExtension: "html") else {
@@ -98,9 +95,7 @@ class PaymentMobileViewModeViewController: UIViewController, WKUIDelegate, WKNav
         }
 
         let urlRequest = URLRequest(url: url)
-        DispatchQueue.main.async { [weak self] in
-            self?.wkWebView.load(urlRequest)
-        }
+        self.wkWebView.load(urlRequest)
     }
 
 
@@ -108,9 +103,9 @@ class PaymentMobileViewModeViewController: UIViewController, WKUIDelegate, WKNav
     func requestPayment() {
         openWebView()
 
-        // IamPortWKWebViewDelegate 또는 아래의 Iamport.shared.updateWebViewUrl 을 통해 변경되는 url 을 체크 가능합니다.
-        Iamport.shared.updateWebViewUrl.subscribe { [weak self] url in
-            print("updateWebViewUrl received url : \(url.element)")
+        // IamportWKWebViewDelegate 또는 아래의 Iamport.shared.updateWebViewUrl 을 통해 변경되는 url 을 체크 가능합니다.
+        Iamport.shared.updateWebViewUrl.subscribe { url in
+            print("updateWebViewUrl received url : \(String(describing: url.element))")
         }.disposed(by: disposeBag)
 
         Iamport.shared.pluginMobileWebSupporter(mobileWebMode: wkWebView)
@@ -120,10 +115,10 @@ class PaymentMobileViewModeViewController: UIViewController, WKUIDelegate, WKNav
 
 
 /**
- url 을 통해 업데이트 하는 로직이 있을 경우에 [IamPortWKWebViewDelegate] 사용하시거나,
+ url 을 통해 업데이트 하는 로직이 있을 경우에 [IamportWKWebViewDelegate] 사용하시거나,
  또는 Iamport.shared.updateWebViewUrl 의 subscribe 을 통해 변경되는 url 을 체크 가능합니다.
  */
-class MyWKWebViewDelegate: IamPortWKWebViewDelegate {
+class MyWKWebViewDelegate: IamportWKWebViewDelegate {
     override func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         if let url = navigationAction.request.url {
             // TODO : write your logic

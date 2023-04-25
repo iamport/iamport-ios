@@ -46,26 +46,26 @@ class CertificationViewController: UIViewController, WKNavigationDelegate {
         }
 
         let userCode = viewModel.cert.userCode // iamport 에서 부여받은 가맹점 식별코드
-        let request = viewModel.createCertificationData()
-        dump(request)
+        let certification = viewModel.createCertificationData()
+        dump(certification)
 
-//            WebViewContorller 용 닫기버튼 생성
-        Iamport.shared.useNaviButton(enable: true)
+        // WebViewContorller 용 닫기버튼 생성
+        Iamport.shared.useNavigationButton(enable: true)
 
-//         use for UIViewController
+        // use for UIViewController
         Iamport.shared.certification(viewController: self,
-                userCode: userCode.value, iamPortCertification: request) { [weak self] iamPortResponse in
-            viewModel.iamportCallback(iamPortResponse)
+                userCode: userCode.value, certification: certification) { [weak self] iamportResponse in
+            viewModel.iamportCallback(iamportResponse)
             self?.presentationMode?.wrappedValue.dismiss()
         }
     }
 
 }
 
-struct PaymentVieww_Previews: PreviewProvider {
+struct CertificationView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            PaymentView()
+            CertificationView()
         }
     }
 }

@@ -2,53 +2,38 @@
 // Created by BingBong on 2021/01/05.
 //
 
+import Foundation
 import RxBusForPort
 import RxSwift
-import Foundation
 
 internal class WebViewModel {
-
     let repository = StrategyRepository()
-    let iamPortWKWebViewDelegate = IamPortWKWebViewDelegate()
-
-//    func clear() {
-//        repository.clear()
-//    }
+    let delegate = IamportWKWebViewDelegate()
 
     /**
      * 뱅크페이 결과 처리
      */
-    func processBankPayPayment(_ payment : Payment, _ url : URL) {
-        repository.processBankPayPayment(payment, url)
+    func processBankPayPayment(_ request: IamportRequest, _ url: URL) {
+        repository.processBankPayPayment(request, url)
     }
 
     /**
      * 결제 요청
      */
-    func requestPayment(payment: Payment) {
-        dlog("뷰모델에 결제 요청했니")
+    func requestPayment(request: IamportRequest) {
+        debug_log("Payment requested")
         DispatchQueue.main.async {
-            self.repository.getWebViewStrategy(payment).doWork(payment)
+            self.repository.getWebViewStrategy(request).doWork(request)
         }
     }
-
-//    /**
-//     * WebMode Only 결제 요청
-//     */
-//    func requestPaymentIgnoreNativePG(payment: Payment) {
-//        dlog("뷰모델에 결제 요청했니 IgnoreNativePG ")
-//        DispatchQueue.main.async {
-//            self.repository.getWebViewStrategy(payment).doWork(payment)
-//        }
-//    }
 
     /**
      * 본인인증 요청
      */
-    func requestCertification(_ payment: Payment) {
-        dlog("뷰모델에 본인인증 요청했니")
+    func requestCertification(_ request: IamportRequest) {
+        debug_log("Certification requested")
         DispatchQueue.main.async {
-            self.repository.requestCertification(payment)
+            self.repository.requestCertification(request)
         }
     }
 }

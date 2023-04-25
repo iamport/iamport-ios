@@ -3,36 +3,35 @@
 //
 
 import Foundation
-import UIKit
 import RxSwift
 import SystemConfiguration
+import UIKit
 
 #if !IAMPORTSPM
-extension Bundle {
-    static var module: Bundle {
-        Bundle(identifier: "org.cocoapods.iamport-ios")!
+    extension Bundle {
+        static var module: Bundle {
+            Bundle(identifier: "org.cocoapods.iamport-ios")!
+        }
     }
-}
 #endif
 
-func dlog(_ log: Any...) {
+func debug_log(_ log: Any..., file: String = #file, line: UInt = #line, column: UInt = #column, function: String = #function) {
     #if DEBUG
-    debugPrint(log)
+        debugPrint("\((file as NSString).lastPathComponent)(\(function)):\(line):\(column) \(log)")
     #endif
 }
 
-func ddump<T>(_ value: T) {
+func debug_dump<T>(_ value: T) {
     #if DEBUG
-    dump(value)
+        dump(value)
     #endif
 }
 
 extension UIView {
-    // 뷰컨트롤러 찾기
     var viewController: UIViewController? {
-        if let vc = self.next as? UIViewController {
+        if let vc = next as? UIViewController {
             return vc
-        } else if let superView = self.superview {
+        } else if let superView = superview {
             return superView.viewController
         } else {
             return nil
@@ -53,7 +52,7 @@ extension URL {
     }
 
     func valueOf(_ queryParameterName: String) -> String? {
-        guard let url = URLComponents(string: self.absoluteString) else {
+        guard let url = URLComponents(string: absoluteString) else {
             return nil
         }
         return url.queryItems?.first(where: { $0.name == queryParameterName })?.value
@@ -104,14 +103,12 @@ extension Data {
 
 extension String {
     func trim() -> String {
-        return self.trimmingCharacters(in: CharacterSet.whitespaces)
+        return trimmingCharacters(in: CharacterSet.whitespaces)
     }
 }
 
 extension Optional where Wrapped == String {
-
     var nilOrEmpty: Bool {
-
         guard let strongSelf = self else {
             return true
         }
@@ -120,25 +117,23 @@ extension Optional where Wrapped == String {
     }
 }
 
-
-class Utils {
-
-    static public func getQueryStringToImpResponse(_ url: URL) -> IamPortResponse? {
+enum Utils {
+    public static func getQueryStringToImpResponse(_ url: URL) -> IamportResponse? {
         #if DEBUG
-        dlog(url.queryParams().toJsonString())
+            debug_log(url.queryParams().toJsonString())
         #endif
         let data = url.queryParams().toJsonData()
-        if let impStruct = try? JSONDecoder().decode(IamPortResponseStruct.self, from: data) {
-            return IamPortResponse.structToClass(impStruct)
+        if let impStruct = try? JSONDecoder().decode(IamportResponseStruct.self, from: data) {
+            return IamportResponse.structToClass(impStruct)
         }
         return nil
     }
 
     static func justOpenApp(_ url: URL, moveAppStore: (() -> Void)? = nil) {
         return UIApplication.shared.open(url, options: [:]) { openApp in
-            if (!openApp) {
+            if !openApp {
                 if let move = moveAppStore {
-                    dlog("앱스토어로 이동")
+                    debug_log("앱스토어로 이동")
                     move()
                 }
             }
@@ -147,7 +142,7 @@ class Utils {
 
     static func openAppWithCanOpen(_ url: URL) -> Bool {
         let result = UIApplication.shared.canOpenURL(url)
-        if (result) {
+        if result {
             justOpenApp(url)
         }
         return result
@@ -158,7 +153,7 @@ class Utils {
      */
     static func isAppUrl(_ uri: URL) -> Bool {
         if let it = uri.scheme {
-            return it != CONST.HTTP_SCHEME && it != CONST.HTTPS_SCHEME && it != CONST.ABOUT_BLANK_SCHEME && it != CONST.FILE_SCHEME;
+            return it != Constant.HTTP_SCHEME && it != Constant.HTTPS_SCHEME && it != Constant.ABOUT_BLANK_SCHEME && it != Constant.FILE_SCHEME
         }
         return false
     }
@@ -167,7 +162,7 @@ class Utils {
      * 결제 끝났는지 여부
      */
     static func isPaymentOver(_ uri: URL) -> Bool {
-        return uri.absoluteString.contains(CONST.IAMPORT_DETECT_URL)
+        return uri.absoluteString.contains(Constant.IAMPORT_DETECT_URL)
     }
 
     static func getActionPolicy(_ uri: URL) -> Bool {
@@ -175,7 +170,6 @@ class Utils {
     }
 
     static func isInternetAvailable() -> Bool {
-
         var zeroAddress = sockaddr_in()
         zeroAddress.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
         zeroAddress.sin_family = sa_family_t(AF_INET)
@@ -201,12 +195,11 @@ class Utils {
 
     static func getOrEmpty(value: String?) -> String {
         if let result = value {
-            return !result.isEmpty ? result : CONST.EMPTY_STR
+            return !result.isEmpty ? result : Constant.EMPTY_STR
         }
 
-        return CONST.EMPTY_STR
+        return Constant.EMPTY_STR
     }
-
 
     public static func delay(bySeconds seconds: Double, dispatchLevel: DispatchLevel = .userInteractive, closure: @escaping () -> Void) {
         let dispatchTime = DispatchTime.now() + seconds
@@ -214,23 +207,21 @@ class Utils {
     }
 
     public static func getRedirectUrl(platformKey: String) -> String {
-        "\(CONST.IAMPORT_DETECT_SCHEME)\(CONST.IAMPORT_DETECT_ADDRESS)/\(platformKey)"
+        "\(Constant.IAMPORT_DETECT_SCHEME)\(Constant.IAMPORT_DETECT_ADDRESS)/\(platformKey)"
     }
 
     public enum DispatchLevel {
         case main, userInteractive, userInitiated, utility, background
         var dispatchQueue: DispatchQueue {
             switch self {
-            case .main:                 return DispatchQueue.main
-            case .userInteractive:      return DispatchQueue.global(qos: .userInteractive)
-            case .userInitiated:        return DispatchQueue.global(qos: .userInitiated)
-            case .utility:              return DispatchQueue.global(qos: .utility)
-            case .background:           return DispatchQueue.global(qos: .background)
+            case .main: return DispatchQueue.main
+            case .userInteractive: return DispatchQueue.global(qos: .userInteractive)
+            case .userInitiated: return DispatchQueue.global(qos: .userInitiated)
+            case .utility: return DispatchQueue.global(qos: .utility)
+            case .background: return DispatchQueue.global(qos: .background)
             }
         }
     }
-
-
 }
 
 extension String {

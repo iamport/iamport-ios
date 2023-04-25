@@ -46,7 +46,7 @@ public class ViewModel: ObservableObject, Then {
     @Published var isCert: Bool = false
     @Published var showResult: Bool = false
     @Published var CardDirectCode: String = ""
-    var iamPortResponse: IamPortResponse?
+    var iamportResponse: IamportResponse?
 
     init() {
         order = Order().then { order in
@@ -91,10 +91,10 @@ public class ViewModel: ObservableObject, Then {
     }
 
     // 아임포트 결제 데이터 생성
-    func createPaymentData() -> IamPortRequest? {
+    func createPaymentData() -> IamportPayment? {
         let payMethod = order.payMethod.value
 
-        let req = IamPortRequest(
+        let req = IamportPayment(
                 pg: order.pg.value,
                 merchant_uid: order.merchantUid.value,
                 amount: order.price.value).then {
@@ -104,11 +104,16 @@ public class ViewModel: ObservableObject, Then {
             if (payMethod == PayMethod.phone.rawValue) {
                 $0.digital = order.digital.flag
             } else if (payMethod == PayMethod.vbank.rawValue) {
-                $0.vbank_due = "202501011530"
+                // @FIXME: PG마다 vbank_due의 형식이 다르므로 입력 컴포넌트를 만들거나(RN처럼) 예제 고도화 필요
+                if (order.pg.value.hasPrefix(PG.ksnet.rawValue)) {
+                    $0.vbank_due = "20250101153000"
+                } else {
+                    $0.vbank_due = "202501011530"
+                }
             }
             $0.app_scheme = order.appScheme.value
             if (isCardDirect) {
-                $0.card = Card(direct: Direct(code: order.cardCode.value))
+                $0.card = Card(direct: CardDirect(code: order.cardCode.value))
             }
             $0.custom_data = """
                              {
@@ -144,7 +149,7 @@ public class ViewModel: ObservableObject, Then {
 
 
     // 결제 완료 후 콜백 함수 (예시)
-    func iamportCallback(_ response: IamPortResponse?) {
+    func iamportCallback(_ response: IamportResponse?) {
         print("------------------------------------------")
         print("결과 왔습니다~~")
         if let res = response {
@@ -152,7 +157,7 @@ public class ViewModel: ObservableObject, Then {
         }
         print("------------------------------------------")
 
-        iamPortResponse = response
+        iamportResponse = response
         showResult = true
         clearButton()
     }
@@ -163,8 +168,8 @@ public class ViewModel: ObservableObject, Then {
     }
 
     // 아임포트 본인인증 데이터 생성
-    func createCertificationData() -> IamPortCertification {
-        IamPortCertification(merchant_uid: cert.merchantUid.value).then {
+    func createCertificationData() -> IamportCertification {
+        IamportCertification(merchant_uid: cert.merchantUid.value).then {
             $0.min_age = Int(cert.minAge.value)
             $0.name = cert.name.value
             $0.phone = cert.phone.value

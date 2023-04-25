@@ -5,11 +5,9 @@
 import Foundation
 
 public enum PG: String, CaseIterable, Codable {
-
     case chai
     case kcp
     case html5_inicis // only for 결제
-//    case inicis // only for 본인인증
     case kcp_billing
     case uplus
     case jtnet
@@ -32,6 +30,8 @@ public enum PG: String, CaseIterable, Codable {
     case bluewalnut
     case tosspay
     case smartro
+    case tosspayments
+    case ksnet
 
     public var name: String {
         switch self {
@@ -44,7 +44,9 @@ public enum PG: String, CaseIterable, Codable {
         case .kcp_billing:
             return "NHN KCP 정기결제"
         case .uplus:
-            return "LGU+"
+            return "토스페이먼츠 (구모듈)"
+        case .tosspayments:
+            return "토스페이먼츠 (신모듈)"
         case .jtnet:
             return "JTNet"
         case .kakaopay:
@@ -57,6 +59,8 @@ public enum PG: String, CaseIterable, Codable {
             return "다날일반결제"
         case .kicc:
             return "한국정보통신"
+        case .ksnet:
+            return "KSNET"
         case .paypal:
             return "페이팔"
         case .mobilians:
@@ -85,15 +89,13 @@ public enum PG: String, CaseIterable, Codable {
             return "토스페이"
         case .smartro:
             return "스마트로"
-//        case .inicis:
-//            return "이니시스본인인증"
         }
     }
 
     public func makePgRawName(pgId: String? = nil) -> String {
-        var id: String = CONST.EMPTY_STR
+        var id: String = Constant.EMPTY_STR
         if let pg = pgId {
-            if (pg.count > 0) {
+            if pg.count > 0 {
                 id = ".\(pg)"
             }
         }
@@ -101,18 +103,12 @@ public enum PG: String, CaseIterable, Codable {
     }
 
     public static func convertPG(pgString: String) -> PG? {
-        for value in self.allCases {
-            if (pgString == value.rawValue) {
+        for value in allCases {
+            if pgString == value.rawValue {
                 return value
             }
         }
 
         return nil
     }
-
-//    static func getPGNames() -> Array<String> {
-//        values().map {
-//            "${it.korName} (${it.name})"
-//        }.toList()
-//    }
 }

@@ -5,7 +5,7 @@
 import Foundation
 import Then
 
-public class IamPortApprove: Then {
+public class IamportApprove: Then {
     var userCode: String
     var merchantUid: String
     var customerUid: String?
@@ -15,12 +15,13 @@ public class IamPortApprove: Then {
     var idempotencyKey: String
     var publicAPIKey: String
     var status: String
-    var msg: String? = nil
+    var msg: String?
 
     init(userCode: String, merchantUid: String, paymentId: String?,
          impUid: String, idempotencyKey: String, publicAPIKey: String,
          status: String,
-         subscriptionId: String?, customerUid: String) {
+         subscriptionId: String?, customerUid: String)
+    {
         self.userCode = userCode
         self.merchantUid = merchantUid
         self.customerUid = customerUid
@@ -32,16 +33,15 @@ public class IamPortApprove: Then {
         self.status = status
     }
 
-    static func make(payment: Payment, prepareData: PrepareData, status: ChaiPaymentStatus) -> IamPortApprove {
-        IamPortApprove(userCode: payment.userCode,
-                merchantUid: payment.getMerchantUid(),
-                paymentId: prepareData.paymentId,
-                impUid: prepareData.impUid,
-                idempotencyKey: prepareData.idempotencyKey,
-                publicAPIKey: prepareData.publicAPIKey,
-                status: status.rawValue,
-                subscriptionId: prepareData.subscriptionId,
-                customerUid: payment.getCustomerUid())
+    static func make(request: IamportRequest, prepareData: PrepareData, status: ChaiPaymentStatus) -> IamportApprove {
+        IamportApprove(userCode: request.userCode,
+                       merchantUid: request.getMerchantUid(),
+                       paymentId: prepareData.paymentId,
+                       impUid: prepareData.impUid,
+                       idempotencyKey: prepareData.idempotencyKey,
+                       publicAPIKey: prepareData.publicAPIKey,
+                       status: status.rawValue,
+                       subscriptionId: prepareData.subscriptionId,
+                       customerUid: request.getCustomerUid() ?? Constant.EMPTY_STR)
     }
 }
-
