@@ -46,6 +46,10 @@ public class IamportPayment: Codable, Then {
     public var naverCultureBenefit: Bool?
     public var naverProductCode: String?
     public var naverActionType: String?
+    public var naverPurchaserName: String?
+    public var naverPurchaserBirthday: String?
+    public var naverChainId: String?
+    public var naverMerchantUserKey: String?
 
     public var cultureBenefit: Bool?
     public var naverInterface: NaverInterface?
@@ -67,7 +71,7 @@ public class IamportPayment: Codable, Then {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case pg, pay_method, escrow, merchant_uid, customer_uid, name, amount, tax_free, currency, language, buyer_name, buyer_tel, buyer_email, buyer_addr, buyer_postcode, notice_url, display, digital, vbank_due, m_redirect_url, app_scheme, biz_num, popup, niceMobileV2, naverPopupMode, naverUseCfm, naverProducts, naverCultureBenefit, naverProductCode, naverActionType, cultureBenefit, naverInterface, card, confirm_url, period
+        case pg, pay_method, escrow, merchant_uid, customer_uid, name, amount, tax_free, currency, language, buyer_name, buyer_tel, buyer_email, buyer_addr, buyer_postcode, notice_url, display, digital, vbank_due, m_redirect_url, app_scheme, biz_num, popup, niceMobileV2, naverPopupMode, naverUseCfm, naverProducts, naverCultureBenefit, naverProductCode, naverActionType, naverPurchaserName, naverPurchaserBirthday, naverChainId, naverMerchantUserKey, cultureBenefit, naverInterface, card, confirm_url, period
     }
 }
 
