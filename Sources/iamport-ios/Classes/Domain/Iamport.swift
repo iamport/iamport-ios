@@ -9,7 +9,7 @@ import WebKit
 
 // 머천트에서 직접 가져다가 쓰는 부분
 open class Iamport {
-    public static let shared = Iamport()
+     nonisolated(unsafe) public static var shared = Iamport()
 
     private var sdk: IamportSdk?
     private var paymentResult: ((IamportResponse?) -> Void)? // 결제 결과 callback
