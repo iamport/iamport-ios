@@ -355,24 +355,19 @@ extension IamportWebViewMode: WKScriptMessageHandler {
             case .START_WORKING_SDK:
                 print("JS SDK 통한 결제 시작 요청")
 
-                guard let pay = request else {
+                guard let request = request else {
                     print(".START_WORKING_SDK payment 를 찾을 수 없음")
                     return
                 }
-                debug_dump(pay)
+                debug_dump(request)
 
-                let encoder = JSONEncoder()
+                initSDK(userCode: request.userCode, tierCode: request.tierCode)
 
-                initSDK(userCode: pay.userCode, tierCode: pay.tierCode)
-
-                switch pay.payload {
-                case let .payment(payload):
-                    let jsonData = try? encoder.encode(payload)
-                    requestPay(payloadJsonData: jsonData)
-
-                case let .certification(payload):
-                    let jsonData = try? encoder.encode(payload)
-                    requestCertification(payloadJsonData: jsonData)
+                switch request.payload {
+                case let .payment(payment):
+                    requestPay(payment: payment)
+                case let .certification(certification):
+                    requestCertification(certification: certification)
                 }
 
             case .RECEIVED:
@@ -408,20 +403,38 @@ extension IamportWebViewMode: WKScriptMessageHandler {
         evaluateJavaScript(method: jsInitMethod)
     }
 
-    private func requestPay(payloadJsonData: Data?) {
-        guard let json = payloadJsonData, let request = String(data: json, encoding: .utf8)?.replacingOccurrences(of: "'", with: "\\'") else {
-            print("Failed to encode payload for `requestPay`")
+    private func requestPay(payment: IamportPayment) {
+        guard let requestJsonData = try? JSONEncoder().encode(payment) else {
+            print("requestPay :: payment 데이터를 JSONEncoder encode 할 수 없습니다.")
             return
         }
-        debug_log("payment request : '\(request)'")
-        evaluateJavaScript(method: "requestPay('\(request)');")
+        
+        guard let requestPayload = String(data: requestJsonData, encoding: .utf8)?.replacingOccurrences(of: "'", with: "\\'")
+            else {
+            print("requestPayWithCustomData :: requestJsonData 을 String 화 할 수 없습니다.")
+            return
+        }
+        
+        if let encodedCustomData = payment.custom_data?.getBase64Encode() {
+            debug_log("requestPayWithCustomData request : '\(requestPayload)', encodedCustomData : '\(encodedCustomData)'")
+            evaluateJavaScript(method: "requestPayWithCustomData('\(requestPayload)', '\(encodedCustomData)');")
+        } else {
+            debug_log("requestPay request : '\(requestPayload)'")
+            evaluateJavaScript(method: "requestPay('\(requestPayload)');")
+        }
     }
 
-    private func requestCertification(payloadJsonData: Data?) {
-        guard let json = payloadJsonData, let request = String(data: json, encoding: .utf8)?.replacingOccurrences(of: "'", with: "\\'") else {
-            print("Failed to encode payload for `requestCertification`")
+    private func requestCertification(certification: IamportCertification) {
+        guard let certificationJsonData = try? JSONEncoder().encode(certification) else {
+            print("requestCertification :: certification 데이터를 JSONEncoder encode 할 수 없습니다.")
             return
         }
+
+        guard let request = String(data: certificationJsonData, encoding: .utf8)?.replacingOccurrences(of: "'", with: "\\'") else {
+            print("requestCertification :: certificationJsonData를 String으로 변환할 수 없습니다.")
+            return
+        }
+        
         debug_log("certification request : '\(request)'")
         evaluateJavaScript(method: "certification('\(request)');")
     }
