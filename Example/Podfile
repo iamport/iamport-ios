@@ -29,7 +29,7 @@ target 'iamport-ios_Example' do
   # cocoapods 사용시 enable
   # cocoapods 사용시 enable
   # pod 'iamport-ios', :path => '../' # local
-  # pod 'iamport-ios', '~> 1.4.1' # remote
+  # pod 'iamport-ios', '~> 1.4.2' # remote
   # cocoapods 사용시 enable
   # cocoapods 사용시 enable
 
