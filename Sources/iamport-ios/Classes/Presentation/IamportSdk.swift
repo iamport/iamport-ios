@@ -35,7 +35,7 @@ public class IamportSdk: Then {
       */
     public init(webViewMode: WKWebView) {
         webview = webViewMode
-        iamportWebViewMode = IamportWebViewMode()
+        iamportWebViewMode = IamportWebViewMode(eventBus: viewModel.eventBus)
     }
 
     /**
@@ -44,7 +44,7 @@ public class IamportSdk: Then {
      */
     public init(mobileWebMode: WKWebView) {
         webview = mobileWebMode
-        iamportMobileWebMode = IamportMobileWebMode().then { mode in
+        iamportMobileWebMode = IamportMobileWebMode(eventBus: viewModel.eventBus).then { mode in
             mode.start(webview: mobileWebMode)
         }
     }
@@ -61,7 +61,7 @@ public class IamportSdk: Then {
         iamportMobileWebMode?.close()
 
         viewModel.clear()
-        EventBus.shared.clearRelay.accept(())
+        viewModel.eventBus.clearRelay.accept(())
 
         disposeBag = DisposeBag()
     }
@@ -96,14 +96,14 @@ public class IamportSdk: Then {
 
     private func subscribe(_ request: IamportRequest) {
         // 결제결과 옵저빙
-        EventBus.shared.impResponseBus.subscribe { [weak self] iamportResponse in
+        viewModel.eventBus.impResponseBus.subscribe { [weak self] iamportResponse in
             self?.finish(iamportResponse)
         }.disposed(by: disposeBag)
 
         // TODO: subscribe 결제결과
 
         // subscribe 웹뷰열기
-        EventBus.shared.paymentBus.subscribe { [weak self] event in
+        viewModel.eventBus.paymentBus.subscribe { [weak self] event in
             guard let el = event.element, let pay = el else {
                 print("Error paymentBus is nil")
                 return
@@ -140,12 +140,12 @@ public class IamportSdk: Then {
 
     private func subscribeCertification(_ request: IamportRequest) {
         // 본인인증 옵저빙
-        EventBus.shared.impResponseBus.subscribe { [weak self] iamportResponse in
+        viewModel.eventBus.impResponseBus.subscribe { [weak self] iamportResponse in
             self?.finish(iamportResponse)
         }.disposed(by: disposeBag)
 
         // subscribe 웹뷰열기
-        EventBus.shared.paymentBus.subscribe { [weak self] event in
+        viewModel.eventBus.paymentBus.subscribe { [weak self] event in
             guard let el = event.element, let pay = el else {
                 print("Error paymentBus is nil")
                 return
@@ -229,14 +229,14 @@ public class IamportSdk: Then {
     private func openWebViewController(_ request: IamportRequest) {
         DispatchQueue.main.async { [weak self] in
 
-            EventBus.shared.webViewPaymentRelay.accept(request) // 여기서 먼저 결제 데이터를 넘김
+            self!.viewModel.eventBus.webViewPaymentRelay.accept(request) // 여기서 먼저 결제 데이터를 넘김
 
             if let wv = self?.webview {
                 self?.iamportWebViewMode?.start(webview: wv)
                 return
             }
 
-            let wvc = WebViewController()
+            let wvc = WebViewController(eventBus: self!.viewModel.eventBus)
 
             self?.navController?.pushViewController(wvc, animated: self?.animate ?? true)
 

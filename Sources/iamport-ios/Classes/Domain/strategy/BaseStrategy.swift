@@ -9,7 +9,11 @@ import RxSwift
 public class BaseStrategy: IStrategy {
     var disposeBag = DisposeBag()
     var request: IamportRequest?
-
+    let eventBus: EventBus
+    
+    init(eventBus: EventBus) {
+        self.eventBus = eventBus
+    }
     func clear() {
         request = nil
         disposeBag = DisposeBag()
@@ -38,14 +42,14 @@ public class BaseStrategy: IStrategy {
 
     func finish(_ response: IamportResponse?) {
         clear()
-        EventBus.shared.impResponseRelay.accept(response)
+        eventBus.impResponseRelay.accept(response)
     }
 
     func doWork(_ request: IamportRequest) {
         clear()
         self.request = request
 
-        EventBus.shared.clearBus.subscribe { [weak self] _ in
+        eventBus.clearBus.subscribe { [weak self] _ in
             self?.clear()
         }.disposed(by: disposeBag)
     }
