@@ -141,7 +141,7 @@ it, simply add the following line to your Podfile:
 
 - cocoapods 이용시 (RxSwift 5.x 사용)
 ```ruby
-pod 'iamport-ios', '~> 1.4.1'
+pod 'iamport-ios', '~> 1.4.2'
 ```
 
 
