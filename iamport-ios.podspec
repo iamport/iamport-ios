@@ -52,7 +52,6 @@ Pod::Spec.new do |s|
     s.dependency 'Alamofire', '~> 5.1'
 
     # Pods for RxSwift+MVVM
-    s.dependency 'RxBusForPort'
     s.dependency 'RxSwift', '~> 6.0'
     s.dependency 'RxCocoa'
     s.dependency 'RxRelay'
