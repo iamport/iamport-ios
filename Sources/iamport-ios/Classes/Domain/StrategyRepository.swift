@@ -12,15 +12,25 @@ class StrategyRepository {
     enum PaymentKind {
         case CHAI, NICE, WEB, INICIS
     }
+    init(eventBus: EventBus) {
+        self.eventBus = eventBus
+        judgeStrategy = JudgeStrategy(eventBus: self.eventBus)
+        chaiStrategy = ChaiStrategy(eventBus: self.eventBus)
+        webViewStrategy = WebViewStrategy(eventBus: self.eventBus)
+        niceTransWebViewStrategy = NiceTransWebViewStrategy(eventBus: self.eventBus)
+        inicisTransWebViewStrategy = InicisTransWebViewStrategy(eventBus: self.eventBus)
+        certificationWebViewStrategy = CertificationWebViewStrategy(eventBus: self.eventBus)
+    }
+    let eventBus: EventBus
 
-    let judgeStrategy = JudgeStrategy() // 결제 판별
-    let chaiStrategy = ChaiStrategy() // 결제 중 BG 폴링하는 차이 전략
+    let judgeStrategy: JudgeStrategy  // 결제 판별
+    let chaiStrategy: ChaiStrategy // 결제 중 BG 폴링하는 차이 전략
 
-    private let webViewStrategy = WebViewStrategy() // webview 사용하는 pg
-    private let niceTransWebViewStrategy = NiceTransWebViewStrategy()
-    private let inicisTransWebViewStrategy = InicisTransWebViewStrategy()
+    private let webViewStrategy: WebViewStrategy // webview 사용하는 pg
+    private let niceTransWebViewStrategy: NiceTransWebViewStrategy
+    private let inicisTransWebViewStrategy: InicisTransWebViewStrategy
 
-    private let certificationWebViewStrategy = CertificationWebViewStrategy()
+    private let certificationWebViewStrategy: CertificationWebViewStrategy
 
     /**
      * PG 와 PayMethod 로 결제 타입하여 가져옴

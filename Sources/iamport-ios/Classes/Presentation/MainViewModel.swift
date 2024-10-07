@@ -8,10 +8,14 @@ import RxSwift
 
 class MainViewModel {
     private var disposeBag = DisposeBag()
-    private let repository = StrategyRepository() // TODO: dependency inject
-
+    let eventBus: EventBus
+    private let repository: StrategyRepository // TODO: dependency inject
     func clear() {
         disposeBag = DisposeBag()
+    }
+    init() {
+        eventBus = EventBus()
+        repository = StrategyRepository(eventBus: eventBus)
     }
 
     func judgePayment(_ request: IamportRequest, ignoreNative: Bool = false) {
@@ -23,7 +27,7 @@ class MainViewModel {
                 if !valid {
                     IamportResponse.makeFail(request: request, msg: desc).do { it in
                         self?.clear()
-                        EventBus.shared.impResponseRelay.accept(it)
+                        self!.eventBus.impResponseRelay.accept(it)
                     }
                 }
             }
@@ -56,7 +60,7 @@ class MainViewModel {
                 }
             }
         case .WEB, .CERT:
-            EventBus.shared.paymentRelay.accept(judge.2) // 웹뷰 컨트롤러 열기
+            eventBus.paymentRelay.accept(judge.2) // 웹뷰 컨트롤러 열기
         case .ERROR:
             print("판단불가 \(judge)")
         }

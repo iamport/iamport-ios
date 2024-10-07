@@ -5,6 +5,7 @@ import UIKit
 import WebKit
 
 class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate {
+    let eventBus: EventBus
     // for communicate WebView
     enum JsInterface: String, CaseIterable {
         case RECEIVED = "received"
@@ -21,9 +22,18 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
             return nil
         }
     }
+    init(eventBus: EventBus){
+        self.eventBus = eventBus
+        viewModel = WebViewModel(eventBus: self.eventBus)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     var disposeBag = DisposeBag()
-    let viewModel = WebViewModel()
+    let viewModel: WebViewModel
 
     var webView: WKWebView?
     var popupWebView: WKWebView? // window.open()으로 열리는 새창
@@ -42,6 +52,7 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
         super.viewDidDisappear(animated)
         debug_log("viewDidDisappear")
         clearAll()
+        RxBus.shared.removeAllSubscription()
     }
 
     override func viewDidLoad() {
@@ -140,8 +151,6 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
     }
 
     private func subscribePayment() {
-        let eventBus = EventBus.shared
-
         // 결제 데이터
         eventBus.webViewPaymentBus.subscribe { [weak self] event in
             guard let el = event.element, let request = el else {
@@ -277,7 +286,7 @@ class WebViewController: UIViewController, WKUIDelegate, UINavigationBarDelegate
 
         navigationController?.popViewController(animated: false)
         dismiss(animated: true) {
-            EventBus.shared.impResponseRelay.accept(iamportResponse)
+            self.eventBus.impResponseRelay.accept(iamportResponse)
         }
     }
 

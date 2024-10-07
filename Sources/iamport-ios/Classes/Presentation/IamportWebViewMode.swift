@@ -12,10 +12,17 @@ import WebKit
 
 class IamportWebViewMode: UIView, WKUIDelegate {
     var disposeBag = DisposeBag()
-    let viewModel = WebViewModel()
+    let viewModel: WebViewModel
 
     var webview: WKWebView?
     var request: IamportRequest?
+    init(eventBus: EventBus) {
+        self.viewModel = WebViewModel(eventBus: eventBus)
+        super.init(frame: .zero)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     func start(webview: WKWebView) {
         debug_log("IamportWebViewMode :: start")
@@ -68,10 +75,9 @@ class IamportWebViewMode: UIView, WKUIDelegate {
 
     internal func subscribePayment() {
         debug_log("IamportWebViewMode :: subscribePayment")
-        let eventBus = EventBus.shared
 
         // 결제 데이터
-        eventBus.webViewPaymentBus.subscribe { [weak self] event in
+        viewModel.eventBus.webViewPaymentBus.subscribe { [weak self] event in
             guard let elem = event.element, let payment = elem else {
                 print("IamportWebViewMode :: Error not found PaymentEvent")
                 return
@@ -233,7 +239,7 @@ class IamportWebViewMode: UIView, WKUIDelegate {
         debug_dump(iamportResponse)
 
         close()
-        EventBus.shared.impResponseRelay.accept(iamportResponse)
+        viewModel.eventBus.impResponseRelay.accept(iamportResponse)
     }
 
     /**
