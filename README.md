@@ -4,9 +4,9 @@
 # iamport-ios
 
 [![CI Status](https://www.travis-ci.com/iamport/iamport-ios.svg?style=flat)](https://www.travis-ci.com/github/iamport/iamport-ios)
-[![Version](https://img.shields.io/cocoapods/v/iamport-ios.svg?style=flat)](https://cocoapods.org/pods/iamport-ios)
-[![License](https://img.shields.io/cocoapods/l/iamport-ios.svg?style=flat)](https://cocoapods.org/pods/iamport-ios)
-[![Platform](https://img.shields.io/cocoapods/p/iamport-ios.svg?style=flat)](https://cocoapods.org/pods/iamport-ios)
+[![Version](https://img.shields.io/cocoapods/v/IamportIos.svg?style=flat)](https://cocoapods.org/pods/IamportIos)
+[![License](https://img.shields.io/cocoapods/l/IamportIos.svg?style=flat)](https://cocoapods.org/pods/IamportIos)
+[![Platform](https://img.shields.io/cocoapods/p/IamportIos.svg?style=flat)](https://cocoapods.org/pods/IamportIos)
 
 
 
@@ -141,7 +141,7 @@ it, simply add the following line to your Podfile:
 
 - cocoapods 이용시 (RxSwift 5.x 사용)
 ```ruby
-pod 'iamport-ios', '~> 1.4.1'
+pod 'IamportIos', '~> 1.4.1'
 ```
 
 
