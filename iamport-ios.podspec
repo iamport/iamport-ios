@@ -7,7 +7,7 @@
 #
 
 Pod::Spec.new do |s|
-  s.name             = 'iamport-ios'
+  s.name             = 'IamportIos'
   s.version          = '1.4.4'
   s.summary          = 'iamport-ios will help develop for your iOS App payments'
 
@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   s.homepage         = 'https://github.com/iamport/iamport-ios'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'bingbong' => 'bingbong@chai.finance' }
+  s.author           = { 'holden' => 'holden@chai.finance' }
   s.source           = { :git => 'https://github.com/iamport/iamport-ios.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
   
