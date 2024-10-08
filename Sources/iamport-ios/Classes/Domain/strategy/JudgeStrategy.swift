@@ -4,7 +4,6 @@
 
 import Alamofire
 import Foundation
-import RxBusForPort
 import RxSwift
 
 public class JudgeStrategy: BaseStrategy {

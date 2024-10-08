@@ -11,15 +11,6 @@
         }
       },
       {
-        "package": "RxBus",
-        "repositoryURL": "https://github.com/iamport/RxBus-Swift",
-        "state": {
-          "branch": null,
-          "revision": "b154da5fffb4c5d0d17b7f46e9cd38f382e298e4",
-          "version": "1.3.2"
-        }
-      },
-      {
         "package": "RxSwift",
         "repositoryURL": "https://github.com/ReactiveX/RxSwift.git",
         "state": {
