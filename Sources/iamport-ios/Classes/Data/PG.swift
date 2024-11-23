@@ -32,6 +32,11 @@ public enum PG: String, CaseIterable, Codable {
     case smartro
     case tosspayments
     case ksnet
+    case nice_v2
+    case smartro_v2
+    case welcome
+    case hyphen
+    
 
     public var name: String {
         switch self {
@@ -89,6 +94,14 @@ public enum PG: String, CaseIterable, Codable {
             return "토스페이"
         case .smartro:
             return "스마트로"
+        case .nice_v2:
+            return "나이스 V2(신모듈)"
+        case .smartro_v2:
+            return "스마트로 V2(신모듈)"
+        case .welcome:
+            return "웰컴페이먼츠"
+        case .hyphen:
+            return "하이픈 바로계좌결제"
         }
     }
 

@@ -52,6 +52,12 @@ struct ContentView: View {
                                 }.padding()
                             }
                         }
+                        
+                        Section(header: Text("구매자")) {
+                            ForEach(viewModel.customerInfos, id: \.0) {
+                                getNaviCustomerInfoView($0.0, $0.1.value)
+                            }
+                        }
                     }
 
                     HStack(spacing: 30) {
@@ -60,7 +66,7 @@ struct ContentView: View {
                         buttonPaymentWebViewMode()
                     }.padding()
 
-                }.navigationBarTitle(Text("아임포트로 결제~~"), displayMode: .inline)
+                }.navigationBarTitle(Text("포트원 V1 IOS 결제 테스트"), displayMode: .inline)
             }.tabItem {
                 Image(systemName: "list.dash")
                 Text("결제")
@@ -99,7 +105,7 @@ struct ContentView: View {
             }
 
         }.actionSheet(isPresented: $viewModel.showResult) {
-            ActionSheet(title: Text("결제 결과 도착~"),
+            ActionSheet(title: Text("결제 결과:"),
                     message: Text("\(String(describing: viewModel.iamportResponse))"),
                     buttons: [.default(Text("닫기"))])
         }
@@ -130,6 +136,12 @@ struct ContentView: View {
             listItem(title, value)
         }
     }
+    
+    private func getNaviCustomerInfoView(_ title: String, _ value: String) -> some View {
+        NavigationLink(destination: OrderInfoView(infos: $viewModel.customerInfos)) {
+            listItem(title, value)
+        }
+    }
 
 
     // 웹뷰모드
@@ -137,7 +149,6 @@ struct ContentView: View {
         ZStack {
             Button(action: {
                 buttonTag = 1
-                viewModel.updateMerchantUid()
             }) {
                 NavigationLink(destination: paymentWebViewMode, tag: 1, selection: $buttonTag) {
                     Text("웹뷰모드 결제")
@@ -152,7 +163,6 @@ struct ContentView: View {
         ZStack {
             Button(action: {
                 viewModel.isPayment = true
-                viewModel.updateMerchantUid()
             }) {
                 Text("결제하기")
                         .font(.headline)
@@ -173,7 +183,6 @@ struct ContentView: View {
         ZStack {
             Button(action: {
                 viewModel.isCert = true
-                viewModel.updateMerchantUid()
             }) {
                 Text("본인인증")
                         .font(.headline)

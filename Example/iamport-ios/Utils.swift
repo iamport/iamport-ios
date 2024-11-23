@@ -10,7 +10,6 @@ import SwiftUI
 class Utils {
 
     enum SampleUserCode: String, CaseIterable {
-        case imp96304110
         case iamport
         case imp19424728
         case imp10391932
@@ -24,6 +23,7 @@ class Utils {
         case imp02690184
         case imp89347847
         case imp67688738
+        case imp58026550
 
         var name: String {
             switch self {
@@ -53,8 +53,8 @@ class Utils {
                 return "tosspayments(신모듈) 테스트"
             case .imp67688738:
                 return "KSNET 테스트"
-            case .imp96304110:
-                return "빙봉"
+            case .imp58026550:
+                return "PortOne Internal Test(Do Not Use)"
             }
         }
     }
