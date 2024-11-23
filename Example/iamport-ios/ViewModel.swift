@@ -39,6 +39,7 @@ public class ViewModel: ObservableObject, Then {
     @Published var iamportInfos: Array<(ItemType, PubData)> = []
     @Published var orderInfos: Array<(String, PubData)> = []
     @Published var certInfos: Array<(String, PubData)> = []
+    @Published var customerInfos: Array<(String, PubData)> = []
 
     @Published var isDigital = false
     @Published var isCardDirect = false
@@ -52,8 +53,7 @@ public class ViewModel: ObservableObject, Then {
         order = Order().then { order in
             order.userCode.value = Utils.SampleUserCode.iamport.rawValue
             order.price.value = "1000"
-            order.orderName.value = "주문할건데요?"
-            order.name.value = "박포트"
+            order.name.value = "테스트 결제"
             order.pg.value = PG.html5_inicis.rawValue
             order.appScheme.value = "iamport"
         }
@@ -61,8 +61,6 @@ public class ViewModel: ObservableObject, Then {
         cert = Cert().then { cert in
             cert.userCode.value = Utils.SampleUserCode.iamport.rawValue
         }
-
-        updateMerchantUid()
 
         // pub data init
         iamportInfos = [
@@ -73,9 +71,8 @@ public class ViewModel: ObservableObject, Then {
         ]
 
         orderInfos = [
-            ("주문명", order.orderName),
+            ("주문명", order.name),
             ("가격", order.price),
-            ("이름", order.name),
             ("주문번호", order.merchantUid),
         ]
 
@@ -85,6 +82,13 @@ public class ViewModel: ObservableObject, Then {
             ("(선택)이름", cert.name),
             ("(선택)휴대폰번호", cert.phone),
             ("(선택)최소나이", cert.minAge),
+        ]
+
+        customerInfos = [
+            ("구매자 이름", order.buyerName),
+            ("구매자 연락처", order.buyerTel),
+            ("구매자 이메일", order.buyerEmail),
+            ("구매자 주소", order.buyerAddr),
         ]
 
         updatePayMethodList(pg: order.pg.value)
@@ -99,8 +103,12 @@ public class ViewModel: ObservableObject, Then {
                 merchant_uid: order.merchantUid.value,
                 amount: order.price.value).then {
             $0.pay_method = payMethod
-            $0.name = order.orderName.value
-            $0.buyer_name = order.name.value
+            $0.name = order.name.value
+            $0.buyer_name = order.buyerName.value
+            $0.buyer_tel = order.buyerTel.value
+            $0.buyer_email = order.buyerEmail.value
+            $0.buyer_addr = order.buyerAddr.value
+                    
             if (payMethod == PayMethod.phone.rawValue) {
                 $0.digital = order.digital.flag
             } else if (payMethod == PayMethod.vbank.rawValue) {
@@ -115,33 +123,6 @@ public class ViewModel: ObservableObject, Then {
             if (isCardDirect) {
                 $0.card = Card(direct: CardDirect(code: order.cardCode.value))
             }
-            $0.custom_data = """
-                             {
-                               "employees": {
-                                 "employee": [
-                                   {
-                                     "id": "1",
-                                     "firstName": "Tom",
-                                     "lastName": "Cruise",
-                                     "photo": "https://jsonformatter.org/img/tom-cruise.jpg",
-                                     "cuppingnote": "[\\"일\\",\\"이\\",\\"삼\\",\\"사\\",\\"오\\",\\"육\\",\\"칠\\"]"
-                                   },
-                                   {
-                                     "id": "2",
-                                     "firstName": "Maria",
-                                     "lastName": "Sharapova",
-                                     "photo": "https://jsonformatter.org/img/Maria-Sharapova.jpg"
-                                   },
-                                   {
-                                     "id": "3",
-                                     "firstName": "Robert",
-                                     "lastName": "Downey Jr.",
-                                     "photo": "https://jsonformatter.org/img/Robert-Downey-Jr.jpg"
-                                   }
-                                 ]
-                               }
-                             }
-                             """
         }
 
         return req
@@ -181,12 +162,7 @@ public class ViewModel: ObservableObject, Then {
         setPayMethodList(pg: pg)
         initPayMethod()
     }
-
-    func updateMerchantUid() {
-        order.merchantUid.value = UUID().uuidString
-        cert.merchantUid.value = UUID().uuidString
-    }
-
+    
     private func initPayMethod() {
         order.payMethod.value = payMethodList[0].rawValue
     }
