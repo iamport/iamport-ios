@@ -40,7 +40,12 @@
 		<string>smhyundaiansimclick</string>
 		<string>shinhan-sr-ansimclick</string>
 		<string>smshinhanansimclick</string>
-		<string>kb-acp</string>
+  		<string>kb-acp</string>
+		<string>kb-auth</string>
+		<string>kb-screen</string>
+		<string>kbbank</string>
+		<string>liivbank</string>
+		<string>newliiv</string>
 		<string>mpocket.online.ansimclick</string>
 		<string>ansimclickscard</string>
 		<string>ansimclickipcollect</string>
@@ -58,12 +63,10 @@
 		<string>kakaotalk</string>
 		<string>payco</string>
 		<string>chaipayment</string>
-		<string>kb-auth</string>
 		<string>hyundaicardappcardid</string>
 		<string>com.wooricard.wcard</string>
 		<string>lmslpay</string>
 		<string>lguthepay-xpay</string>
-		<string>liivbank</string>
 		<string>supertoss</string>
 		<string>newsmartpib</string>
 		<string>kakaobank</string>

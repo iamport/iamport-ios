@@ -71,6 +71,11 @@ iOS에서 아임포트 결제연동 모듈을 사용하기 위해서는 아래 3
   <string>shinhan-sr-ansimclick</string> <!-- 신한카드-앱카드 -->
   <string>smshinhanansimclick</string> <!-- 신한카드-공인인증서 -->
   <string>kb-acp</string> <!-- 국민카드-앱카드 -->
+	<string>kb-auth</string> <!-- 국민 -->
+	<string>kb-screen</string> <!-- 국민 -->
+	<string>kbbank</string> <!-- 국민 -->
+	<string>liivbank</string> <!-- Liiv 국민 -->
+	<string>newliiv</string> <!-- 국민 -->
   <string>mpocket.online.ansimclick</string> <!-- 삼성카드-앱카드 -->
   <string>ansimclickscard</string> <!-- 삼성카드-온라인결제 -->
   <string>ansimclickipcollect</string> <!-- 삼성카드-온라인결제 -->
@@ -93,12 +98,10 @@ iOS에서 아임포트 결제연동 모듈을 사용하기 위해서는 아래 3
   <string>nhallonepayansimclick</string> <!-- NH 올원페이 -->
   <string>hanawalletmembers</string> <!-- 하나카드(하나멤버스 월렛) -->
   <string>chaipayment</string> <!-- 차이 -->
-  <string>kb-auth</string> <!-- 국민 -->
   <string>hyundaicardappcardid</string>  <!-- 현대카드 -->
   <string>com.wooricard.wcard</string>  <!-- 우리won페이 -->
   <string>lmslpay</string>  <!-- 롯데 L페이 -->
   <string>lguthepay-xpay</string>  <!-- 페이나우 -->
-  <string>liivbank</string>  <!-- Liiv 국민 -->
   <string>supertoss</string>   <!-- 토스 -->
   <string>newsmartpib</string>   <!-- 우리WON뱅킹 -->
 </array>
